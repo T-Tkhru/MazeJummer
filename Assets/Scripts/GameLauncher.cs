@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using Fusion;
+using Fusion.Sockets;
+using Mono.Cecil.Cil;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
+// プレハブをインスペクターから設定できるようにする
+{
+    [SerializeField]
+    private NetworkRunner networkRunnerPrefab; // NetworkRunnerのプレハブ、これを生成してセッション開始、必須。
+
+    [SerializeField]
+    private NetworkPrefabRef playerAvatarPrefab;
+    private NetworkRunner networkRunner; // NetworkRunnerのインスタンス、セッション開始時に生成される、ここで定義すればどこでも使える
+
+    private async void Start()
+    {
+        // NetworkRunnerを生成する（プレハブなので）
+        networkRunner = Instantiate(networkRunnerPrefab);
+        // GameLauncherを、NetworkRunnerのコールバック対象に追加する
+        networkRunner.AddCallbacks(this);
+        // 共有モードのセッションに参加する
+        var result = await networkRunner.StartGame(new StartGameArgs
+        {
+            GameMode = GameMode.AutoHostOrClient,
+            SessionName = "MazeGameSession",
+            PlayerCount = 2, // プレイヤー数を2に設定
+        });
+
+        if (result.Ok)
+        {
+            Debug.Log("成功！");
+        }
+        else
+        {
+            Debug.Log("失敗！");
+        }
+    }
+
+    private void Update()
+    {
+        // Debug.Log(networkRunner.SessionInfo.ToString());
+    }
+
+    void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
+        if (!runner.IsServer)
+        {
+            return;
+        }
+        // プレイヤーのアバターを生成する位置を決める
+        Vector3 spawnPosition = Vector3.zero;
+
+        // ホストとクライアントでスポーン位置を変える
+        // プレイヤーIDを使って、最初のプレイヤーと2人目以降で分岐する
+        if (player.PlayerId == 1)
+        {
+            // 最初のプレイヤー（ホスト）
+            spawnPosition = new Vector3(1, 1, -1);
+        }
+        else
+        {
+            // 2人目以降（クライアント）
+            spawnPosition = new Vector3(1, 1, 1);
+        }
+        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
+        // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+        runner.SetPlayerObject(player, avatar);
+    }
+    void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
+    {
+
+    }
+    void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+    void INetworkRunnerCallbacks.OnConnectedToServer(NetworkRunner runner) { }
+    void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+    void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+    void INetworkRunnerCallbacks.OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    void INetworkRunnerCallbacks.OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    void INetworkRunnerCallbacks.OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
+    void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+    void INetworkRunnerCallbacks.OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+    void INetworkRunnerCallbacks.OnSceneLoadDone(NetworkRunner runner) { }
+    void INetworkRunnerCallbacks.OnSceneLoadStart(NetworkRunner runner) { }
+}
