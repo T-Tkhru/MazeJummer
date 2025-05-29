@@ -43,8 +43,8 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 case nameof(NickName):
                     var reader = GetPropertyReader<NetworkString<_16>>(nameof(NickName));
-                    var (oldName, newName) = reader.Read(previous, current);
-                    OnNickNameChanged(oldName, newName);
+                    var (_, newName) = reader.Read(previous, current);
+                    OnNickNameChanged(newName);
                     break;
             }
         }
@@ -57,9 +57,9 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
     // ネットワークプロパティ（NickName）が更新された時に呼ばれるコールバック
-    private void OnNickNameChanged(NetworkString<_16> oldValue, NetworkString<_16> newValue)
+    private void OnNickNameChanged(NetworkString<_16> name)
     {
-        view.SetNickName(newValue.Value);
+        view.SetNickName(name.Value);
     }
 
 
