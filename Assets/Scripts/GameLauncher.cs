@@ -88,7 +88,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         var data = new NetworkInputData();
 
-        data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+        // 入力の方向を、ビュー座標系からワールド座標系に変換する
+        var cameraRotation = Quaternion.Euler(0f, Camera.main.transform.rotation.eulerAngles.y, 0f);
+        var inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+        data.Direction = cameraRotation * inputDirection;
         data.Buttons.Set(NetworkInputButtons.Jump, Input.GetButton("Jump"));
 
         input.Set(data);

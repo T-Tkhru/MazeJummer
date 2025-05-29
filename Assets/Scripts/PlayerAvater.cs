@@ -6,11 +6,24 @@ using UnityEngine.Networking;
 public class PlayerAvater : NetworkBehaviour
 {
     private NetworkCharacterController characterController;
+    [SerializeField]
+    private PlayerAvatarView view;
 
     public override void Spawned()
     {
         // ネットワークキャラクターコントローラーを取得
         characterController = GetComponent<NetworkCharacterController>();
+        // 自分自身のアバターにカメラを追従させる
+        if (Object.HasInputAuthority)
+        {
+            Debug.Log("自分のアバターが生成されました。カメラを設定します。");
+            view.SetCameraTarget();
+        }
+        else
+        {
+            Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
+        }
+
 
     }
 
