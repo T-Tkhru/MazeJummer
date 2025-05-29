@@ -1,7 +1,8 @@
 using CreateMaze;
+using Fusion;
 using UnityEngine;
 
-public class GenerateMaze : MonoBehaviour
+public class GenerateMaze : NetworkBehaviour
 {
     [SerializeField]
     private int width = 21; // 迷路の幅
@@ -15,11 +16,22 @@ public class GenerateMaze : MonoBehaviour
     [SerializeField]
     private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
 
-    [SerializeField]
-    private GameObject wallPrefab; // 壁のプレハブ
+    // [SerializeField]
+    // private NetworkPrefabRef wallPrefab; // 壁のプレハブ
 
-    void Start()
+    public override void Spawned()
     {
+        // ホストの場合のみ迷路を生成
+        if (Runner.IsServer || Object.HasStateAuthority)
+        {
+            Debug.Log("ホストが入室したため迷路を生成します");
+            // GenerateMazeOnServer( );
+        }
+    }
+
+    public void GenerateMazeOnServer(NetworkRunner runner, NetworkPrefabRef wallPrefab)
+    {
+        Debug.Log("迷路生成を開始します");
         var mazeCreator = new MazeCreator_Extend(width, height);
         var maze = mazeCreator.CreateMaze();
         // 迷路の情報を文字列に変換して表示
@@ -31,16 +43,12 @@ public class GenerateMaze : MonoBehaviour
                 {
                     // 壁の位置に壁のプレハブを生成
                     Vector3 position = new Vector3(x, 0.5f, y);
-                    Instantiate(wallPrefab, position, Quaternion.identity);
+                    var wall = runner.Spawn(wallPrefab, position, Quaternion.identity);
                 }
             }
         }
-        // 開始位置にボールを生成
-        // GameObject startObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        // startObject.transform.position = startPosition;
-        // startObject.name = "StartBall";
-        // startObject.GetComponent<Renderer>().material.color = Color.green; // 開始位置のボールを緑色に設定
-        // ゴール位置にボールを生成
+
+        // ゴール位置にボールを生成(これはホストでしか表示されない)
         GameObject goalObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         goalPosition.x = width - 2; // ゴール位置のX座標を迷路の幅に合わせる
         goalPosition.z = height - 2; // ゴール位置のZ座標を迷路の高さに合わせる

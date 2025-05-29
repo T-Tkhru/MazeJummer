@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6939853769536492695}
   - component: {fileID: -2435827047830170170}
   - component: {fileID: 6608498922404811434}
+  - component: {fileID: 2639353684562663575}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -32,8 +33,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5133323944388646120}
   m_Father: {fileID: 0}
@@ -132,6 +133,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6608498922404811434}
+  - {fileID: 2639353684562663575}
   ForceRemoteRenderTimeframe: 0
 --- !u!143 &-2435827047830170170
 CharacterController:
@@ -177,6 +179,18 @@ MonoBehaviour:
   braking: 10
   maxSpeed: 2
   rotationSpeed: 15
+--- !u!114 &2639353684562663575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6709683795647874679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a759d9223129f541aad766577cdc355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7401894106757163357
 GameObject:
   m_ObjectHideFlags: 0

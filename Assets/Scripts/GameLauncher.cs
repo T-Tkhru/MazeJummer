@@ -14,7 +14,14 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     [SerializeField]
     private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField]
+    private GenerateMaze mazeGenerator;
+    [SerializeField]
+    private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private NetworkRunner networkRunner; // NetworkRunnerのインスタンス、セッション開始時に生成される、ここで定義すればどこでも使える
+
+    [Networked]
+    public TickTimer Timer { get; set; } // タイマー
 
     private async void Start()
     {
@@ -63,6 +70,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             // 最初のプレイヤー（ホスト）
             spawnPosition = new Vector3(1, 1, -1);
+            // 迷路の生成
+            mazeGenerator.GenerateMazeOnServer(runner, wallPrefab);
         }
         else
         {
@@ -77,7 +86,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
+        var data = new NetworkInputData();
 
+        data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+        data.Buttons.Set(NetworkInputButtons.Jump, Input.GetButton("Jump"));
+
+        input.Set(data);
     }
     void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
