@@ -25,6 +25,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private async void Start()
     {
+
+        // ランダムなプレイヤー名を設定する
+        // PlayerData.NickName = $"Player{UnityEngine.Random.Range(0, 10000)}";
+        // Debug.Log($"プレイヤー名を {PlayerData.NickName} に設定しました。");
         // NetworkRunnerを生成する（プレハブなので）
         networkRunner = Instantiate(networkRunnerPrefab);
         // GameLauncherを、NetworkRunnerのコールバック対象に追加する
@@ -35,6 +39,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.AutoHostOrClient,
             SessionName = "MazeGameSession",
             PlayerCount = 2, // プレイヤー数を2に設定
+            Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
         });
 
         if (result.Ok)
@@ -72,11 +77,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             spawnPosition = new Vector3(1, 1, -1);
             // 迷路の生成
             mazeGenerator.GenerateMazeOnServer(runner, wallPrefab);
+            PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
         }
         else
         {
             // 2人目以降（クライアント）
             spawnPosition = new Vector3(1, 1, 1);
+            PlayerData.NickName = "ClientPlayer"; // クライアントの名前を設定
         }
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
         Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
