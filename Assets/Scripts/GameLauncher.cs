@@ -29,7 +29,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         networkRunner = Instantiate(networkRunnerPrefab);
         // GameLauncherを、NetworkRunnerのコールバック対象に追加する
         networkRunner.AddCallbacks(this);
-        // 共有モードのセッションに参加する
+        // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,

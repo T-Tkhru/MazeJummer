@@ -19,10 +19,7 @@ public class PlayerAvater : NetworkBehaviour
             Debug.Log("自分のアバターが生成されました。カメラを設定します。");
             view.SetCameraTarget();
         }
-        else
-        {
-            Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
-        }
+
 
 
     }
