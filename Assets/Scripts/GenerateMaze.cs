@@ -31,14 +31,6 @@ public class GenerateMaze : NetworkBehaviour
                     // 壁の位置に壁のプレハブを生成
                     Vector3 position = new Vector3(x, 0.5f, y);
                     var wall = runner.Spawn(wallPrefab, position, Quaternion.identity);
-                    if (wall != null)
-                    {
-                        Debug.Log($"壁スポーン成功: {position}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"壁スポーン失敗: {position}");
-                    }
                 }
             }
         }

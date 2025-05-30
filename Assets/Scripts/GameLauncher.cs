@@ -84,9 +84,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             PlayerData.NickName = "ClientPlayer"; // クライアントの名前を設定
         }
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        // var timer = runner.Spawn(timerPrefab, Vector3.zero, Quaternion.identity);
         Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
         // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
         runner.SetPlayerObject(player, avatar);
+        // runner.SetPlayerObject(player, timer);
+
     }
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
