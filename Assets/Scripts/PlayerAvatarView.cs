@@ -6,14 +6,11 @@ public class PlayerAvatarView : MonoBehaviour
 {
     [SerializeField]
     private TextMeshPro nameLabel;
+    [SerializeField]
+    private CinemachineCamera cinemachineCamera;
     public void SetCameraTarget()
     {
-        var cinemachineCamera = FindFirstObjectByType<CinemachineCamera>();
-        if (cinemachineCamera != null)
-        {
-            cinemachineCamera.LookAt = transform;
-            cinemachineCamera.Follow = transform;
-        }
+        cinemachineCamera.Priority.Value = 100;
     }
 
     public void SetNickName(string nickName)

@@ -10,7 +10,6 @@ public class PlayerAvatar : NetworkBehaviour
     private NetworkString<_16> NickName { get; set; }
     private ChangeDetector _changeDetector;
     private NetworkCharacterController characterController;
-    [SerializeField]
     private PlayerAvatarView view;
 
     public override void Spawned()
@@ -20,6 +19,8 @@ public class PlayerAvatar : NetworkBehaviour
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
         // NickName がすでにセットされている可能性があるので、即反映
+        view = GetComponent<PlayerAvatarView>();
+
         if (!string.IsNullOrEmpty(NickName.Value))
         {
             view.SetNickName(NickName.Value);
@@ -29,9 +30,13 @@ public class PlayerAvatar : NetworkBehaviour
         if (Object.HasInputAuthority)
         {
             Debug.Log("自分のアバターが生成されました。カメラを設定します。");
-            view.SetCameraTarget();
             // RPCでプレイヤー名を設定する処理をホストに実行してもらう
             Rpc_SetNickName(PlayerData.NickName);
+            view.SetCameraTarget();
+        }
+        else
+        {
+            Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
         }
     }
 

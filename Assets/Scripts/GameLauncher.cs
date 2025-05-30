@@ -50,16 +50,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log("失敗！");
         }
-    }
 
-    private void Update() { }
-
-    void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-    void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        if (!runner.IsServer)
+        if (networkRunner.IsClient)
         {
+            // cinemachineのカメラを無効化する
+            var cinemachineCamera = FindFirstObjectByType<Camera>().GetComponent<CinemachineBrain>();
+            if (cinemachineCamera != null)
+            {
+                // cinemachineのカメラを無効化する
+                cinemachineCamera.enabled = false;
+                Debug.Log("Cinemachineカメラを無効化しました");
+            }
+            else
+            {
+                Debug.LogWarning("Cinemachineカメラが見つかりませんでした");
+            }
             // クライアント用俯瞰カメラを生成する
             var cameraObject = new GameObject("Camera");
             // Cameraコンポーネントを追加
@@ -70,10 +75,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             // viewport rectを設定
             cameraComponent.rect = new Rect(0, 0.7f, 0.3f, 0.3f); // ビューポートのサイズを設定
             Debug.Log("クライアント用のカメラを生成しました");
+        }
+    }
+
+    private void Update() { }
+
+    void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        if (!runner.IsServer)
+        {
             return;
         }
-
-        // ホストとクライアントでスポーン位置を変える
         // プレイヤーIDを使って、最初のプレイヤーと2人目以降で分岐する
         if (player.PlayerId == 1)
         {
