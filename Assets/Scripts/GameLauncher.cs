@@ -74,7 +74,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (player.PlayerId == 1)
         {
             // 最初のプレイヤー（ホスト）
-            spawnPosition = new Vector3(1, 1, -1);
+            spawnPosition = new Vector3(1, 1, 1);
             // 迷路の生成
             mazeGenerator.GenerateMazeOnServer(runner, wallPrefab);
             PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
@@ -82,7 +82,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         else
         {
             // 2人目以降（クライアント）
-            spawnPosition = new Vector3(1, 1, 1);
+            spawnPosition = new Vector3(1, 1, -1);
             PlayerData.NickName = "ClientPlayer"; // クライアントの名前を設定
         }
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
