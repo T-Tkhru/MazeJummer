@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using Fusion.Sockets;
 using Mono.Cecil.Cil;
@@ -26,10 +27,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private async void Start()
     {
 
-        // ランダムなプレイヤー名を設定する
-        // PlayerData.NickName = $"Player{UnityEngine.Random.Range(0, 10000)}";
-        // Debug.Log($"プレイヤー名を {PlayerData.NickName} に設定しました。");
-        // NetworkRunnerを生成する（プレハブなので）
+        // NetworkRunnerを生成する
         networkRunner = Instantiate(networkRunnerPrefab);
         // GameLauncherを、NetworkRunnerのコールバック対象に追加する
         networkRunner.AddCallbacks(this);
@@ -74,7 +72,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (player.PlayerId == 1)
         {
             // 最初のプレイヤー（ホスト）
-            spawnPosition = new Vector3(1, 1, 1);
+            spawnPosition = new Vector3(1, 5, 1);
             // 迷路の生成
             mazeGenerator.GenerateMazeOnServer(runner, wallPrefab);
             PlayerData.NickName = "HostPlayer"; // ホストの名前を設定

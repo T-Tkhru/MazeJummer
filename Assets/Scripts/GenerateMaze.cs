@@ -16,19 +16,6 @@ public class GenerateMaze : NetworkBehaviour
     [SerializeField]
     private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
 
-    // [SerializeField]
-    // private NetworkPrefabRef wallPrefab; // 壁のプレハブ
-
-    public override void Spawned()
-    {
-        // ホストの場合のみ迷路を生成
-        if (Runner.IsServer || Object.HasStateAuthority)
-        {
-            Debug.Log("ホストが入室したため迷路を生成します");
-            // GenerateMazeOnServer( );
-        }
-    }
-
     public void GenerateMazeOnServer(NetworkRunner runner, NetworkPrefabRef wallPrefab)
     {
         Debug.Log("迷路生成を開始します");
@@ -44,6 +31,14 @@ public class GenerateMaze : NetworkBehaviour
                     // 壁の位置に壁のプレハブを生成
                     Vector3 position = new Vector3(x, 0.5f, y);
                     var wall = runner.Spawn(wallPrefab, position, Quaternion.identity);
+                    if (wall != null)
+                    {
+                        Debug.Log($"壁スポーン成功: {position}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"壁スポーン失敗: {position}");
+                    }
                 }
             }
         }
@@ -55,11 +50,5 @@ public class GenerateMaze : NetworkBehaviour
         goalObject.transform.position = goalPosition;
         goalObject.name = "GoalBall";
         goalObject.GetComponent<Renderer>().material.color = Color.red; // ゴール位置のボールを赤色に設定
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
