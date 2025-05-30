@@ -3,7 +3,7 @@ using Fusion;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
-public class TimerManager : NetworkBehaviour
+public class TimeManager : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI timeLabel;
