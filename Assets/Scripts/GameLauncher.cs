@@ -4,6 +4,7 @@ using System.Linq;
 using Fusion;
 using Fusion.Sockets;
 using Mono.Cecil.Cil;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +30,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // NetworkRunnerを生成する
         networkRunner = Instantiate(networkRunnerPrefab);
+        // シーンにあるオブジェクト数を表示
         // GameLauncherを、NetworkRunnerのコールバック対象に追加する
         networkRunner.AddCallbacks(this);
         // セッションに参加する
@@ -50,45 +52,47 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    private void Update()
-    {
-        // Debug.Log(networkRunner.SessionInfo.ToString());
-    }
+    private void Update() { }
 
     void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
         if (!runner.IsServer)
         {
+            // クライアント用俯瞰カメラを生成する
+            var cameraObject = new GameObject("Camera");
+            // Cameraコンポーネントを追加
+            var cameraComponent = cameraObject.AddComponent<Camera>();
+            // カメラの位置を設定
+            cameraObject.transform.position = new Vector3(10, 20, 10); // 適当な位置に配置
+            cameraObject.transform.rotation = Quaternion.Euler(90, 0, 0); // 迷路を見下ろす角度に設定
+            // viewport rectを設定
+            cameraComponent.rect = new Rect(0, 0.7f, 0.3f, 0.3f); // ビューポートのサイズを設定
+            Debug.Log("クライアント用のカメラを生成しました");
             return;
         }
-        // プレイヤーのアバターを生成する位置を決める
-        Vector3 spawnPosition = Vector3.zero;
 
         // ホストとクライアントでスポーン位置を変える
         // プレイヤーIDを使って、最初のプレイヤーと2人目以降で分岐する
         if (player.PlayerId == 1)
         {
             // 最初のプレイヤー（ホスト）
-            spawnPosition = new Vector3(1, 5, 1);
+            Vector3 spawnPosition = new Vector3(1, 5, 1);
             // 迷路の生成
             mazeGenerator.GenerateMazeOnServer(runner, wallPrefab);
             PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
+
+            var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+            Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
+            // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+            runner.SetPlayerObject(player, avatar);
         }
         else
         {
             // 2人目以降（クライアント）
-            spawnPosition = new Vector3(1, 1, -1);
-            PlayerData.NickName = "ClientPlayer"; // クライアントの名前を設定
+            Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを生成しません");
         }
-        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-        // var timer = runner.Spawn(timerPrefab, Vector3.zero, Quaternion.identity);
-        Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
-        // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-        runner.SetPlayerObject(player, avatar);
-        // runner.SetPlayerObject(player, timer);
 
     }
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
