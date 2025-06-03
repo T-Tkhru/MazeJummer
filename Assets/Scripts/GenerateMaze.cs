@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class GenerateMaze : NetworkBehaviour
 {
-    [SerializeField]
-    private int width = 21; // 迷路の幅
-    [SerializeField]
-    private int height = 21; // 迷路の高さ
+    public int width = 21; // 迷路の幅
+    public int height = 21; // 迷路の高さ
 
     private const int Wall = 1; // 壁の値
     private const int Path = 0; // 通路の値
@@ -15,6 +13,7 @@ public class GenerateMaze : NetworkBehaviour
     private Vector3 startPosition = new Vector3(1, 0, 1); // 迷路の開始位置
     [SerializeField]
     private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
+    public int[,] mazeData; // 迷路のデータを保持する配列
 
     public void GenerateMazeOnServer(NetworkRunner runner, NetworkPrefabRef wallPrefab)
     {
