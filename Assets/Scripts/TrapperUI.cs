@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class TrapperUI : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class TrapperUI : MonoBehaviour
     private const int width = 21; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
     private const int height = 21;
     private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
+
+    private GameObject[,] tileUIs = new GameObject[width, height];
 
 
     private void GenerateUI()
@@ -33,6 +36,7 @@ public class TrapperUI : MonoBehaviour
                     UIStartPos.y + y * tileSize
                 );
                 rect.anchoredPosition = anchoredPos;
+                tileUIs[x, y] = tile; // UIのタイルを保存
             }
         }
         redDotUI = Instantiate(redDotUI, canvas);
@@ -64,12 +68,13 @@ public class TrapperUI : MonoBehaviour
         Vector3 enemyPos = enemyTransform.position;
 
         // UIの位置を敵の位置に合わせる
-        redDotUI.anchoredPosition = new Vector2(
+        Vector2 anchoredPos = new Vector2(
             UIStartPos.x + enemyPos.x * tileSize,
             UIStartPos.y + enemyPos.z * tileSize
         );
+        redDotUI.anchoredPosition = anchoredPos;
 
-        Debug.Log($"Enemy Position: {enemyPos}, UI Position: {redDotUI.anchoredPosition}");
+        // 敵の位置の周囲2マスの壁と通路ボタンを押せなくする
 
     }
 }
