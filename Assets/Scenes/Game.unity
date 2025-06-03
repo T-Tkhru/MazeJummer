@@ -1043,6 +1043,7 @@ MonoBehaviour:
   wallUI: {fileID: 2807970961836477232, guid: d1b71ddb1171da842847987d3e5a335e, type: 3}
   roadUI: {fileID: 642666866390021736, guid: 37e3a358c37babc4686171453b36b195, type: 3}
   canvas: {fileID: 1600186380}
+  redDotUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
 --- !u!4 &1261597825
 Transform:
   m_ObjectHideFlags: 0
@@ -1439,7 +1440,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 993, y: 565.7}
+  m_AnchoredPosition: {x: 964, y: 193.8}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1649034160
@@ -1577,7 +1578,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 447.51, y: 0}
+  m_AnchoredPosition: {x: 432.75, y: -153.6}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1692021649
@@ -1810,7 +1811,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Create UI
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

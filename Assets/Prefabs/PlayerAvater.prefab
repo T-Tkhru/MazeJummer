@@ -483,7 +483,7 @@ GameObject:
   - component: {fileID: 3571530090003666984}
   m_Layer: 0
   m_Name: PlayerAvater
-  m_TagString: Untagged
+  m_TagString: Avatar
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -581,7 +581,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a759d9223129f541aad766577cdc355, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!114 &3571530090003666984
 MonoBehaviour:
   m_ObjectHideFlags: 0
