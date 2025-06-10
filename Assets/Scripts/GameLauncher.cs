@@ -110,7 +110,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 
     }
-    void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
+    }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
         var data = new NetworkInputData();
