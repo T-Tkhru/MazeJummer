@@ -123,6 +123,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         data.Direction = cameraRotation * inputDirection;
         data.Buttons.Set(NetworkInputButtons.Jump, Input.GetButton("Jump"));
+        data.Look = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         input.Set(data);
     }
