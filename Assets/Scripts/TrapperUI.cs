@@ -10,15 +10,15 @@ public class TrapperUI : MonoBehaviour
     [SerializeField] private RectTransform redDotUI;   // 赤丸UI
 
     private int tileSize;
-    private const int width = 21; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
-    private const int height = 21;
+    private int width; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
+    private int height;
     private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
-
-    private GameObject[,] tileUIs = new GameObject[width, height];
-
-
     private void GenerateUI()
     {
+        GameObject mazeManager = GameObject.Find("MazeManager(Clone)");
+        width = mazeManager.GetComponent<GenerateMaze>().width; // 迷路の幅を取得
+        height = mazeManager.GetComponent<GenerateMaze>().height; // 迷路の高さを取得
+        GameObject[,] tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         for (int y = 0; y < width; y++)
         {
