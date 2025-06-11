@@ -120,7 +120,6 @@ public class TrapperUI : MonoBehaviour
         {
             if (col.CompareTag("Wall"))
             {
-                Debug.Log($"位置 {position} に壁が存在します。");
                 return true;
             }
         }
@@ -150,10 +149,6 @@ public class TrapperUI : MonoBehaviour
                     Button button = tileUI.GetComponent<Button>();
                     if (button != null)
                     {
-                        if (!button.interactable)
-                        {
-                            Debug.Log($"座標({x}, {y})のボタンをアクティブにします。");
-                        }
                         button.interactable = true; // ボタンをアクティブに
                     }
                 }
