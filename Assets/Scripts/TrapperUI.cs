@@ -6,15 +6,19 @@ public class TrapperUI : MonoBehaviour
 {
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
-    [SerializeField] private Transform canvas;
+    private Transform canvas;
     [SerializeField] private RectTransform redDotUI;   // 赤丸UI
+    // private RectTransform redDotUI; // 赤丸UIのインスタンス
 
     private int tileSize;
     private int width; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
     private int height;
     private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
+    private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
+    private Vector2Int lastPlayerPos;
     private void GenerateUI()
     {
+        canvas = GameObject.Find("Canvas").transform; // Canvasを取得
         GameObject mazeManager = GameObject.Find("MazeManager(Clone)");
         if (mazeManager == null)
         {
@@ -23,7 +27,7 @@ public class TrapperUI : MonoBehaviour
         }
         width = mazeManager.GetComponent<GenerateMaze>().width; // 迷路の幅を取得
         height = mazeManager.GetComponent<GenerateMaze>().height; // 迷路の高さを取得
-        GameObject[,] tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
+        tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         for (int y = 0; y < width; y++)
         {
@@ -45,10 +49,16 @@ public class TrapperUI : MonoBehaviour
             }
         }
         redDotUI = Instantiate(redDotUI, canvas);
+        if (redDotUI == null)
+        {
+            Debug.LogError("赤丸UIのPrefabが設定されていません。Inspectorで設定してください。");
+            return;
+        }
         redDotUI.anchoredPosition = new Vector2(
             UIStartPos.x + 1 * tileSize, // 初期位置はスタート地点
             UIStartPos.y + 1 * tileSize
         );
+        Debug.Log("赤丸UIを生成しました。位置: " + redDotUI.anchoredPosition);
         redDotUI.SetAsLastSibling();
     }
 
@@ -69,22 +79,88 @@ public class TrapperUI : MonoBehaviour
 
     void Update()
     {
-        Transform enemyTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
-        if (enemyTransform == null)
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
+        if (playerTransform == null)
         {
             Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
-        Vector3 enemyPos = enemyTransform.position;
+        Vector3 playerPos = playerTransform.position;
+        // Debug.Log($"敵の位置: {playerPos}");
 
         // UIの位置を敵の位置に合わせる
         Vector2 anchoredPos = new Vector2(
-            UIStartPos.x + enemyPos.x * tileSize,
-            UIStartPos.y + enemyPos.z * tileSize
+            UIStartPos.x + playerPos.x * tileSize,
+            UIStartPos.y + playerPos.z * tileSize
         );
+        if (redDotUI == null)
+        {
+            return;
+        }
         redDotUI.anchoredPosition = anchoredPos;
 
-        // 敵の位置の周囲2マスの壁と通路ボタンを押せなくする
+        Vector2Int currentPlayerPos = new Vector2Int(
+            Mathf.RoundToInt(playerPos.x),
+            Mathf.RoundToInt(playerPos.z)
+        );
+        if (currentPlayerPos == lastPlayerPos)
+        {
+            return;
+        }
+        UpdateButtonInteractable(currentPlayerPos);
 
     }
+
+    private void UpdateButtonInteractable(Vector2Int position)
+    {
+        // lastPlayerPosの周囲2マスをアクティブに
+        for (int y = lastPlayerPos.y - 2; y <= lastPlayerPos.y + 2; y++)
+        {
+            for (int x = lastPlayerPos.x - 2; x <= lastPlayerPos.x + 2; x++)
+            {
+                if (x < 0 || x >= width || y < 0 || y >= height)
+                {
+                    continue; // 範囲外はスキップ
+                }
+                GameObject tileUI = tileUIs[x, y];
+                if (tileUI != null)
+                {
+                    Button button = tileUI.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        if (!button.interactable)
+                        {
+                            Debug.Log($"座標({x}, {y})のボタンをアクティブにします。");
+                        }
+                        button.interactable = true; // ボタンをアクティブに
+                    }
+                }
+            }
+        }
+        // 周囲2マスを非アクティブに
+        for (int y = position.y - 2; y <= position.y + 2; y++)
+        {
+            for (int x = position.x - 2; x <= position.x + 2; x++)
+            {
+                if (x < 0 || x >= width || y < 0 || y >= height)
+                {
+                    continue; // 範囲外はスキップ
+                }
+                GameObject tileUI = tileUIs[x, y];
+                if (tileUI != null)
+                {
+                    Button button = tileUI.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        button.interactable = false;
+                    }
+                }
+            }
+        }
+        lastPlayerPos = position; // 最後のプレイヤー位置を更新
+
+    }
+
+
+
 }
