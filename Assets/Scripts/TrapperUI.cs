@@ -16,6 +16,11 @@ public class TrapperUI : MonoBehaviour
     private void GenerateUI()
     {
         GameObject mazeManager = GameObject.Find("MazeManager(Clone)");
+        if (mazeManager == null)
+        {
+            Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
         width = mazeManager.GetComponent<GenerateMaze>().width; // 迷路の幅を取得
         height = mazeManager.GetComponent<GenerateMaze>().height; // 迷路の高さを取得
         GameObject[,] tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
@@ -65,6 +70,11 @@ public class TrapperUI : MonoBehaviour
     void Update()
     {
         Transform enemyTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
+        if (enemyTransform == null)
+        {
+            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
         Vector3 enemyPos = enemyTransform.position;
 
         // UIの位置を敵の位置に合わせる
