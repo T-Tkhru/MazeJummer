@@ -23,6 +23,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunner; // NetworkRunnerのインスタンス、セッション開始時に生成される、ここで定義すればどこでも使える
     [Networked]
     public TickTimer Timer { get; set; } // タイマー
+    [SerializeField]
+    private GameObject trapperUIManager;
 
     private async void Start()
     {
@@ -74,6 +76,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             // viewport rectを設定
             cameraComponent.rect = new Rect(0.7f, 0.7f, 0.3f, 0.3f); // ビューポートのサイズを設定
             Debug.Log("クライアント用のカメラを生成しました");
+            Instantiate(trapperUIManager); // クライアント用のUIを生成
         }
     }
 
