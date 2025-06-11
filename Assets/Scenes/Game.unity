@@ -678,6 +678,7 @@ MonoBehaviour:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
   wallPrefab:
     RawGuidValue: 02f937a46846d0e4b9f5404db88158fe
+  trapperUIManager: {fileID: 6772240706310394743, guid: e7949e944b4f8d849bef2dc85e3c1a95, type: 3}
 --- !u!4 &416937552
 Transform:
   m_ObjectHideFlags: 0
@@ -1006,54 +1007,6 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1261597823
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1261597825}
-  - component: {fileID: 1261597824}
-  m_Layer: 0
-  m_Name: TrapperUIManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1261597824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261597823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7d557a87bc989547bed2f209f3cee20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallUI: {fileID: 2807970961836477232, guid: d1b71ddb1171da842847987d3e5a335e, type: 3}
-  roadUI: {fileID: 642666866390021736, guid: 37e3a358c37babc4686171453b36b195, type: 3}
-  canvas: {fileID: 1600186380}
-  redDotUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
---- !u!4 &1261597825
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261597823}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.12886, y: 27.23162, z: 12.0744}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1625,7 +1578,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1261597824}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TrapperUI, Assembly-CSharp
         m_MethodName: GenerateUI
         m_Mode: 1
@@ -1903,4 +1856,3 @@ SceneRoots:
   - {fileID: 296390128}
   - {fileID: 123514165}
   - {fileID: 1600186380}
-  - {fileID: 1261597825}

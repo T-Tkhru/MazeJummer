@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class TrapperUI : MonoBehaviour
 {
@@ -16,7 +17,52 @@ public class TrapperUI : MonoBehaviour
     private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
     private Vector2Int lastPlayerPos;
-    private void GenerateUI()
+    private bool isGenerated = false; // UIが生成されたかどうかのフラグ
+
+    void Update()
+    {
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
+        if (playerTransform == null)
+        {
+            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
+        if (!isGenerated)
+        {
+            if (!checkSpawnable())
+            {
+                return; // 壁の数が足りない場合は生成しない
+            }
+            StartCoroutine(DelayedGenerateUI());
+            isGenerated = true; // UIが生成されたフラグを立てる
+        }
+        Vector3 playerPos = playerTransform.position;
+        // Debug.Log($"敵の位置: {playerPos}");
+
+        // UIの位置を敵の位置に合わせる
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + playerPos.x * tileSize,
+            UIStartPos.y + playerPos.z * tileSize
+        );
+        if (redDotUI == null)
+        {
+            return;
+        }
+        redDotUI.anchoredPosition = anchoredPos;
+
+        Vector2Int currentPlayerPos = new Vector2Int(
+            Mathf.RoundToInt(playerPos.x),
+            Mathf.RoundToInt(playerPos.z)
+        );
+        if (currentPlayerPos == lastPlayerPos)
+        {
+            return;
+        }
+        UpdateButtonInteractable(currentPlayerPos);
+
+    }
+
+    public void GenerateUI()
     {
         canvas = GameObject.Find("Canvas").transform; // Canvasを取得
         GameObject mazeManager = GameObject.Find("MazeManager(Clone)");
@@ -60,6 +106,9 @@ public class TrapperUI : MonoBehaviour
         );
         Debug.Log("赤丸UIを生成しました。位置: " + redDotUI.anchoredPosition);
         redDotUI.SetAsLastSibling();
+        // 最初のプレイヤー位置を設定
+        lastPlayerPos = new Vector2Int(1, 1); // 初期位置はスタート地点
+        UpdateButtonInteractable(lastPlayerPos);
     }
 
     bool IsWallAtPosition(Vector3 position)
@@ -71,44 +120,17 @@ public class TrapperUI : MonoBehaviour
         {
             if (col.CompareTag("Wall"))
             {
+                Debug.Log($"位置 {position} に壁が存在します。");
                 return true;
             }
         }
         return false;
     }
 
-    void Update()
+    private IEnumerator DelayedGenerateUI()
     {
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
-        if (playerTransform == null)
-        {
-            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
-            return;
-        }
-        Vector3 playerPos = playerTransform.position;
-        // Debug.Log($"敵の位置: {playerPos}");
-
-        // UIの位置を敵の位置に合わせる
-        Vector2 anchoredPos = new Vector2(
-            UIStartPos.x + playerPos.x * tileSize,
-            UIStartPos.y + playerPos.z * tileSize
-        );
-        if (redDotUI == null)
-        {
-            return;
-        }
-        redDotUI.anchoredPosition = anchoredPos;
-
-        Vector2Int currentPlayerPos = new Vector2Int(
-            Mathf.RoundToInt(playerPos.x),
-            Mathf.RoundToInt(playerPos.z)
-        );
-        if (currentPlayerPos == lastPlayerPos)
-        {
-            return;
-        }
-        UpdateButtonInteractable(currentPlayerPos);
-
+        yield return new WaitForSeconds(0.01f);
+        GenerateUI();
     }
 
     private void UpdateButtonInteractable(Vector2Int position)
@@ -161,6 +183,22 @@ public class TrapperUI : MonoBehaviour
 
     }
 
-
+    private bool checkSpawnable()
+    {
+        int leastWalls = (width * height) * 2 - 4; // 最低限必要な壁の数
+        // シーンにある壁の数をカウント
+        int wallCount = GameObject.FindGameObjectsWithTag("Wall").Length;
+        Debug.Log($"現在の壁の数: {wallCount}");
+        if (wallCount < leastWalls)
+        {
+            Debug.LogWarning("壁の数が足りません。生成できません。");
+            return false; // 壁の数が足りない場合は生成しない
+        }
+        else
+        {
+            Debug.Log("壁の数が十分です。生成できます。");
+            return true;
+        }
+    }
 
 }
