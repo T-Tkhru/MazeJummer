@@ -17,6 +17,7 @@ public class TrapperUI : MonoBehaviour
     private int height;
     private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
+    private int[,] mazeData;
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
     private MazeManager mazeManager;
@@ -76,31 +77,31 @@ public class TrapperUI : MonoBehaviour
         width = mazeManager.width; // 迷路の幅を取得
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
+        mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
-        for (int y = 0; y < width; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < height; x++)
+            for (int x = 0; x < width; x++)
             {
+                int px = x;
+                int py = y;
                 Vector3 worldPos = new Vector3(x, 0.5f, y);
-                GameObject tile;
                 if (IsWallAtPosition(worldPos))
                 {
-                    tile = Instantiate(wallUI, canvas);
-                    tile.GetComponent<Button>().onClick.AddListener(OnClickWallButton);
+                    CreateWallUI(px, py);
                 }
                 else
                 {
-                    tile = Instantiate(roadUI, canvas);
-                    tile.GetComponent<Button>().onClick.AddListener(OnClickRoadButton);
+                    CreateRoadUI(px, py);
                 }
-                RectTransform rect = tile.GetComponent<RectTransform>();
+                RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
 
                 Vector2 anchoredPos = new Vector2(
                     UIStartPos.x + x * tileSize,
                     UIStartPos.y + y * tileSize
                 );
                 rect.anchoredPosition = anchoredPos;
-                tileUIs[x, y] = tile; // UIのタイルを保存
+
             }
         }
         redDotUI = Instantiate(redDotUI, canvas);
@@ -205,17 +206,76 @@ public class TrapperUI : MonoBehaviour
         }
     }
 
-    public void OnClickWallButton()
+    public void OnClickWallButton(int x, int y)
     {
-        Debug.Log("Wall Button Clicked!");
-        // ここに壁ボタンがクリックされたときの処理を追加
-        mazeManager.RpcGenerateWall();
+        Debug.Log($"Wall Button Clicked at ({x}, {y})");
     }
 
-    public void OnClickRoadButton()
+    public void OnClickRoadButton(int x, int y)
     {
-        Debug.Log("Road Button Clicked!");
+        Debug.Log($"Road Button Clicked at ({x}, {y})");
         // ここに通路ボタンがクリックされたときの処理を追加
+        Debug.Log($"最後のプレイヤー位置: {lastPlayerPos}");
+        mazeData[x, y] = 1;
+        var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+        if (result.success == "NeedNot")
+        {
+            Debug.Log("すでにパスがあるため、壁を開ける必要はありません。");
+            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+            tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
+            tileUIs[x, y].GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
+            RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
+            Vector2 anchoredPos = new Vector2(
+                UIStartPos.x + x * tileSize,
+                UIStartPos.y + y * tileSize
+            );
+            rect.anchoredPosition = anchoredPos;
+            return;
+        }
+        Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
+        if (result.success == "Cannot")
+        {
+            Debug.LogWarning("壁を開けることができません。");
+            return;
+        }
+        mazeManager.RpcGenerateWall(new Vector3(result.opened.x, 0.5f, result.opened.y), new Vector3(lastPlayerPos.x, 0.5f, lastPlayerPos.y));
+        // UIを更新
+        if (tileUIs[x, y] != null)
+        {
+            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+            CreateWallUI(x, y); // 新しい壁UIを生成
+
+            Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
+            CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+        }
+    }
+
+    private void CreateWallUI(int x, int y)
+    {
+        GameObject wallTile = Instantiate(wallUI, canvas);
+        wallTile.GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
+        RectTransform rect = wallTile.GetComponent<RectTransform>();
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + x * tileSize,
+            UIStartPos.y + y * tileSize
+        );
+        rect.anchoredPosition = anchoredPos;
+        tileUIs[x, y] = wallTile;
+        mazeData[x, y] = 1; // 壁のデータを更新
+    }
+
+    private void CreateRoadUI(int x, int y)
+    {
+        GameObject roadTile = Instantiate(roadUI, canvas);
+        roadTile.GetComponent<Button>().onClick.AddListener(() => OnClickRoadButton(x, y));
+        RectTransform rect = roadTile.GetComponent<RectTransform>();
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + x * tileSize,
+            UIStartPos.y + y * tileSize
+        );
+        rect.anchoredPosition = anchoredPos;
+        tileUIs[x, y] = roadTile;
+        mazeData[x, y] = 0; // 通路のデータを更新
     }
 
 }

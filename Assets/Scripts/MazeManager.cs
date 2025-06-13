@@ -13,7 +13,6 @@ public class MazeManager : NetworkBehaviour
     private Vector3 startPosition = new Vector3(1, 0, 1); // 迷路の開始位置
     [SerializeField]
     private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
-    public int[,] mazeData; // 迷路のデータを保持する配列
 
     public void GenerateMazeOnServer(NetworkRunner runner, NetworkPrefabRef wallPrefab)
     {
@@ -44,9 +43,11 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateWall()
+    public void RpcGenerateWall(Vector3 createPos, Vector3 openPos)
     {
-        Debug.Log("RpcGenerateWallが呼び出されました");
+        Debug.Log($"RpcOpenWallが呼び出されました: createPos={createPos}, openPos={openPos}");
+        // ここで壁を開ける処理を実装
+        // 例えば、createPosにある壁を削除し、openPosに通路を生成するなど
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]

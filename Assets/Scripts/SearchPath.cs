@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Unity.Collections;
+using UnityEngine;
+
+public static class SearchPath
+{
+    public static (String success, (int x, int y) opened) CheckOpenWall(int[,] maze, (int x, int y) start, (int x, int y) goal, (int x, int y) selected)
+    {
+        // 現在地からゴールまでのパスをBFSで探索
+        var path = BFS(maze, start, goal);
+        if (path != null)
+        {
+            return ("NeedNot", (-1, -1)); // すでにパスがある場合は何も開けない
+        }
+        return OpenWall(maze, start, goal, selected);
+
+    }
+    private static (String success, (int x, int y) opened) OpenWall(int[,] maze, (int x, int y) start, (int x, int y) goal, (int x, int y) selected)
+    {
+        for (int y = 0; y < maze.GetLength(1); y++)
+        {
+            for (int x = 0; x < maze.GetLength(0); x++)
+            {
+                if (maze[x, y] != 1) continue;
+                if (selected.x == x && selected.y == y) continue;
+
+                maze[x, y] = 0; // 仮に開ける
+                var testPath = BFS(maze, start, goal);
+                if (testPath != null)
+                {
+                    return ("Open", (x, y));
+                }
+                maze[x, y] = 1; // 戻す
+            }
+        }
+        return ("Cannot", (-1, -1));
+    }
+    public static List<(int x, int y)> BFS(int[,] maze, (int x, int y) start, (int x, int y) goal)
+    {
+        var sw = Stopwatch.StartNew();
+        var queue = new Queue<(int x, int y, List<(int, int)> path)>();
+        var visited = new HashSet<(int, int)>();
+        queue.Enqueue((start.x, start.y, new List<(int, int)>()));
+
+        while (queue.Count > 0)
+        {
+            var (x, y, path) = queue.Dequeue();
+            if (visited.Contains((x, y))) continue;
+            visited.Add((x, y));
+
+            var newPath = new List<(int, int)>(path) { (x, y) };
+            if ((x, y) == goal)
+            {
+                sw.Stop();
+                return newPath;
+            }
+
+            foreach (var (nx, ny) in GetNeighbors(maze, x, y))
+            {
+                if (!visited.Contains((nx, ny)))
+                    queue.Enqueue((nx, ny, newPath));
+            }
+        }
+        sw.Stop();
+        return null;
+    }
+
+    private static IEnumerable<(int x, int y)> GetNeighbors(int[,] maze, int x, int y)
+    {
+        var dirs = new (int dx, int dy)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
+        foreach (var (dx, dy) in dirs)
+        {
+            int nx = x + dx, ny = y + dy;
+            if (nx >= 0 && ny >= 0 && nx < maze.GetLength(0) && ny < maze.GetLength(1) && maze[nx, ny] == 0)
+            {
+                yield return (nx, ny);
+            }
+        }
+    }
+}
