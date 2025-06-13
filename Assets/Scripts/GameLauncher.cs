@@ -97,7 +97,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             Vector3 spawnPosition = new Vector3(1, 5, 1);
             // MazeManagerを生成して、迷路を生成する
             var mazeManagerObject = runner.Spawn(mazeManager, spawnPosition, Quaternion.identity);
-            var maze = mazeManagerObject.GetComponent<GenerateMaze>();
+            var maze = mazeManagerObject.GetComponent<MazeManager>();
             maze.GenerateMazeOnServer(runner, wallPrefab);
             PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
 

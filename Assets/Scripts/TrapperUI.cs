@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class TrapperUI : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class TrapperUI : MonoBehaviour
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
+    private MazeManager mazeManager;
 
     void Update()
     {
@@ -65,14 +67,14 @@ public class TrapperUI : MonoBehaviour
     public void GenerateUI()
     {
         canvas = GameObject.Find("Canvas").transform; // Canvasを取得
-        GameObject mazeManager = GameObject.Find("MazeManager(Clone)");
+        mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
         if (mazeManager == null)
         {
             Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
-        width = mazeManager.GetComponent<GenerateMaze>().width; // 迷路の幅を取得
-        height = mazeManager.GetComponent<GenerateMaze>().height; // 迷路の高さを取得
+        width = mazeManager.width; // 迷路の幅を取得
+        height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         for (int y = 0; y < width; y++)
@@ -80,10 +82,17 @@ public class TrapperUI : MonoBehaviour
             for (int x = 0; x < height; x++)
             {
                 Vector3 worldPos = new Vector3(x, 0.5f, y);
-                // シーンの壁のあるなしで壁か通路かを判断
-                GameObject tile = IsWallAtPosition(worldPos)
-                    ? Instantiate(wallUI, canvas)
-                    : Instantiate(roadUI, canvas);
+                GameObject tile;
+                if (IsWallAtPosition(worldPos))
+                {
+                    tile = Instantiate(wallUI, canvas);
+                    tile.GetComponent<Button>().onClick.AddListener(OnClickWallButton);
+                }
+                else
+                {
+                    tile = Instantiate(roadUI, canvas);
+                    tile.GetComponent<Button>().onClick.AddListener(OnClickRoadButton);
+                }
                 RectTransform rect = tile.GetComponent<RectTransform>();
 
                 Vector2 anchoredPos = new Vector2(
@@ -194,6 +203,19 @@ public class TrapperUI : MonoBehaviour
             Debug.Log("壁の数が十分です。生成できます。");
             return true;
         }
+    }
+
+    public void OnClickWallButton()
+    {
+        Debug.Log("Wall Button Clicked!");
+        // ここに壁ボタンがクリックされたときの処理を追加
+        mazeManager.RpcGenerateWall();
+    }
+
+    public void OnClickRoadButton()
+    {
+        Debug.Log("Road Button Clicked!");
+        // ここに通路ボタンがクリックされたときの処理を追加
     }
 
 }

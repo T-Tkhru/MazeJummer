@@ -2,7 +2,7 @@ using CreateMaze;
 using Fusion;
 using UnityEngine;
 
-public class GenerateMaze : NetworkBehaviour
+public class MazeManager : NetworkBehaviour
 {
     public int width = 21; // 迷路の幅
     public int height = 21; // 迷路の高さ
@@ -41,5 +41,17 @@ public class GenerateMaze : NetworkBehaviour
         goalObject.transform.position = goalPosition;
         goalObject.name = "GoalBall";
         goalObject.GetComponent<Renderer>().material.color = Color.red; // ゴール位置のボールを赤色に設定
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RpcGenerateWall()
+    {
+        Debug.Log("RpcGenerateWallが呼び出されました");
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RpcGenerateTrap()
+    {
+        Debug.Log("RpcGenerateTrapが呼び出されました");
     }
 }

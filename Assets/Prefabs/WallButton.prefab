@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5095591231084894039}
   - component: {fileID: 2659976684755627519}
   - component: {fileID: 7101927629002206500}
+  - component: {fileID: -3690024413380677476}
   m_Layer: 5
   m_Name: WallButton
   m_TagString: Untagged
@@ -120,3 +121,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-3690024413380677476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2807970961836477232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 077c451c4c329124aacbcd15e8918b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
