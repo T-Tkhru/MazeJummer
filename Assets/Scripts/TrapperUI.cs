@@ -21,6 +21,7 @@ public class TrapperUI : MonoBehaviour
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
     private MazeManager mazeManager;
+    private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
     void Update()
     {
@@ -85,7 +86,7 @@ public class TrapperUI : MonoBehaviour
             {
                 int px = x;
                 int py = y;
-                Vector3 worldPos = new Vector3(x, 0.5f, y);
+                Vector3 worldPos = new Vector3(x, wallOffset, y);
                 if (IsWallAtPosition(worldPos))
                 {
                     CreateWallUI(px, py);
@@ -221,6 +222,7 @@ public class TrapperUI : MonoBehaviour
         if (result.success == "NeedNot")
         {
             Debug.Log("すでにパスがあるため、壁を開ける必要はありません。");
+            mazeManager.RpcOpenWall(new Vector3(x, wallOffset, y));
             Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
             tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
             tileUIs[x, y].GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
@@ -238,7 +240,8 @@ public class TrapperUI : MonoBehaviour
             Debug.LogWarning("壁を開けることができません。");
             return;
         }
-        mazeManager.RpcGenerateWall(new Vector3(result.opened.x, 0.5f, result.opened.y), new Vector3(lastPlayerPos.x, 0.5f, lastPlayerPos.y));
+        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+        mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
         // UIを更新
         if (tileUIs[x, y] != null)
         {

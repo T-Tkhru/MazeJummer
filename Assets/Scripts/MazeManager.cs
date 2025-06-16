@@ -15,6 +15,7 @@ public class MazeManager : NetworkBehaviour
     private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
     [SerializeField]
     private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
+    private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -29,7 +30,7 @@ public class MazeManager : NetworkBehaviour
                 if (maze[x, y] == Wall)
                 {
                     // 壁の位置に壁のプレハブを生成
-                    Vector3 position = new Vector3(x, 0.5f, y);
+                    Vector3 position = new Vector3(x, wallOffset, y);
                     var wall = runner.Spawn(wallPrefab, position, Quaternion.identity);
                 }
             }
@@ -45,26 +46,32 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateWall(Vector3 createPos, Vector3 openPos)
+    public void RpcGenerateWall(Vector3 createPos)
     {
-        Debug.Log($"RpcOpenWallが呼び出されました: createPos={createPos}, openPos={openPos}");
-        // createPosに壁を生成し、openPosの壁を削除する処理を実装
         if (Runner.IsServer)
         {
             // サーバー側で壁を生成
-            GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            wall.transform.position = createPos;
-            wall.transform.localScale = new Vector3(1, 2, 1); // 壁のサイズを調整
-            wall.name = "Wall";
-            wall.tag = "Wall"; // 壁にタグを設定
+            var wall = Runner.Spawn(wallPrefab, createPos, Quaternion.identity);
+            Debug.Log($"壁を生成しました: {wall.gameObject.name} at {createPos}");
+        }
+    }
 
-            // openPosの壁を削除
-            Collider[] hitColliders = Physics.OverlapSphere(openPos, 0.5f);
-            foreach (var hitCollider in hitColliders)
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RpcOpenWall(Vector3 openPos)
+    {
+        Debug.Log($"RpcDeleteWallが呼び出されました: position={openPos}");
+        if (Runner.IsServer)
+        {
+            Collider[] colliders = Physics.OverlapBox(openPos, Vector3.one * 0.1f);
+
+            foreach (var col in colliders)
             {
-                if (hitCollider.CompareTag("Wall"))
+                if (col.CompareTag("Wall"))
                 {
-                    Destroy(hitCollider.gameObject);
+                    Debug.Log($"壁を削除します: {col.gameObject.name} at {openPos}");
+                    // 壁を削除
+                    Runner.Despawn(col.GetComponent<NetworkObject>());
+                    Debug.Log($"壁を削除しました: {col.gameObject.name}");
                 }
             }
         }
