@@ -214,15 +214,11 @@ public class TrapperUI : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        Debug.Log($"Road Button Clicked at ({x}, {y})");
-        // ここに通路ボタンがクリックされたときの処理を追加
-        Debug.Log($"最後のプレイヤー位置: {lastPlayerPos}");
         mazeData[x, y] = 1;
         var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
         if (result.success == "NeedNot")
         {
-            Debug.Log("すでにパスがあるため、壁を開ける必要はありません。");
-            mazeManager.RpcOpenWall(new Vector3(x, wallOffset, y));
+            mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
             Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
             tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
             tileUIs[x, y].GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
@@ -238,6 +234,7 @@ public class TrapperUI : MonoBehaviour
         if (result.success == "Cannot")
         {
             Debug.LogWarning("壁を開けることができません。");
+            mazeData[x, y] = 0; // 通路のデータを元に戻す
             return;
         }
         mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
