@@ -23,7 +23,7 @@ public static class SearchPath
         UnityEngine.Debug.Log($"Start: {start}, maze[{start.x}, {start.y}]={maze[start.x, start.y]}");
         if (maze[start.x, start.y] != 0 || maze[goal.x, goal.y] != 0)
         {
-            UnityEngine.Debug.LogError("Start or Goal is not a path.");
+            UnityEngine.Debug.LogError("スタートが通路ではない、またはゴールが通路ではない");
             return ("Cannot", (-1, -1));
         }
         // 全ての(x, y)座標をリスト化し、ランダムにシャッフル
