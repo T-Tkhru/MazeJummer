@@ -677,6 +677,7 @@ MonoBehaviour:
   mazeManager:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
   trapperUIManager: {fileID: 6772240706310394743, guid: e7949e944b4f8d849bef2dc85e3c1a95, type: 3}
+  sessionName: 1111
 --- !u!4 &416937552
 Transform:
   m_ObjectHideFlags: 0
