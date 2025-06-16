@@ -676,8 +676,6 @@ MonoBehaviour:
     RawGuidValue: ac01291317ff2194cb4ff4ebbd52001c
   mazeManager:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
-  wallPrefab:
-    RawGuidValue: 02f937a46846d0e4b9f5404db88158fe
   trapperUIManager: {fileID: 6772240706310394743, guid: e7949e944b4f8d849bef2dc85e3c1a95, type: 3}
 --- !u!4 &416937552
 Transform:

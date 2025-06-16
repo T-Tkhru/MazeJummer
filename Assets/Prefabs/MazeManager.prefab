@@ -49,6 +49,8 @@ MonoBehaviour:
   height: 21
   startPosition: {x: 1, y: 0, z: 1}
   goalPosition: {x: 19, y: 0, z: 19}
+  wallPrefab:
+    RawGuidValue: 02f937a46846d0e4b9f5404db88158fe
 --- !u!114 &7084658060512160853
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -18,8 +18,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkPrefabRef playerAvatarPrefab;
     [SerializeField]
     private NetworkPrefabRef mazeManager;
-    [SerializeField]
-    private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private NetworkRunner networkRunner; // NetworkRunnerのインスタンス、セッション開始時に生成される、ここで定義すればどこでも使える
     [Networked]
     public TickTimer Timer { get; set; } // タイマー
@@ -98,7 +96,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             // MazeManagerを生成して、迷路を生成する
             var mazeManagerObject = runner.Spawn(mazeManager, spawnPosition, Quaternion.identity);
             var maze = mazeManagerObject.GetComponent<MazeManager>();
-            maze.GenerateMazeOnServer(runner, wallPrefab);
+            maze.GenerateMazeOnServer(runner);
             PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
 
             var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
