@@ -36,7 +36,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,
-            SessionName = "MazeGameSession",
+            // SessionName = "MazeGameSession", // セッション名いったん削除
             PlayerCount = 2, // プレイヤー数を2に設定
             Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
         });
