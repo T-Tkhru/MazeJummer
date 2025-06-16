@@ -26,17 +26,15 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private async void Start()
     {
-
-        // NetworkRunnerを生成する
         networkRunner = Instantiate(networkRunnerPrefab);
-        // シーンにあるオブジェクト数を表示
-        // GameLauncherを、NetworkRunnerのコールバック対象に追加する
         networkRunner.AddCallbacks(this);
+        string sessionName = null;
+        sessionName = GetSessionName();
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,
-            // SessionName = "MazeGameSession", // セッション名いったん削除
+            SessionName = sessionName,
             PlayerCount = 2, // プレイヤー数を2に設定
             Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
         });
@@ -44,6 +42,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (result.Ok)
         {
             Debug.Log("成功！");
+            Debug.Log($"セッション: {networkRunner.SessionInfo.Name}");
         }
         else
         {
@@ -78,7 +77,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    private void Update() { }
+    private String GetSessionName()
+    {
+        // PlayerPrefsからセッション名を取得する
+        string sessionName = PlayerPrefs.GetString("SessionName", "");
+        if (string.IsNullOrEmpty(sessionName))
+        {
+            Debug.LogWarning("セッション名が設定されていません。自動マッチングを使用します。");
+            return null;
+        }
+        else
+        {
+            Debug.Log($"セッション名: {sessionName}");
+            return sessionName;
+        }
+    }
 
     void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
