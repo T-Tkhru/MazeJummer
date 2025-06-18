@@ -15,7 +15,7 @@ public class TrapperUI : MonoBehaviour
     private int tileSize;
     private int width; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
     private int height;
-    private Vector2 UIStartPos = new Vector2(20f, 20f); // 左下の開始位置
+    private Vector2 UIStartPos;
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
     private int[,] mazeData;
     private Vector2Int lastPlayerPos;
@@ -80,6 +80,11 @@ public class TrapperUI : MonoBehaviour
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
+        int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
+        UIStartPos = new Vector2(
+            (canvasHeight - width * tileSize) / 2 + tileSize / 2,
+            (canvasHeight - width * tileSize) / 2 + tileSize / 2
+        ); // UIの開始位置を計算
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
