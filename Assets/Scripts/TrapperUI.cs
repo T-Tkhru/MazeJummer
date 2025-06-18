@@ -3,14 +3,18 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 using ExitGames.Client.Photon.StructWrapping;
+using Unity.Cinemachine;
 
 public class TrapperUI : MonoBehaviour
 {
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
-    [SerializeField] private RectTransform redDotUI;   // 赤丸UI
-    // private RectTransform redDotUI; // 赤丸UIのインスタンス
+    [SerializeField] private RectTransform redDotUI;
+    [SerializeField] private Camera subCameraPrefab;
+    [SerializeField] private RenderTexture subCameraRenderTexture;
+    [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
+
 
     private int tileSize;
     private int width; // 迷路のサイズは何かしらの方法でとってこれるようにしたい
@@ -75,6 +79,8 @@ public class TrapperUI : MonoBehaviour
             Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
+
+        GenerateBackGroundPanel(); // 背景パネルを生成
         width = mazeManager.width; // 迷路の幅を取得
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
@@ -125,6 +131,33 @@ public class TrapperUI : MonoBehaviour
         // 最初のプレイヤー位置を設定
         lastPlayerPos = new Vector2Int(1, 1); // 初期位置はスタート地点
         UpdateButtonInteractable(lastPlayerPos);
+
+        // サブカメラ生成とRawImage表示のセットアップ
+        Camera subCam = Instantiate(subCameraPrefab);
+        subCam.targetTexture = subCameraRenderTexture;
+
+        RawImage rawImage = Instantiate(subCameraDisplay, canvas);
+        rawImage.texture = subCameraRenderTexture;
+        rawImage.rectTransform.anchoredPosition = new Vector2(-256, -102);
+        rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
+        var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponent<CinemachineInputAxisController>();
+        avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
+    }
+
+    private void GenerateBackGroundPanel()
+    {
+        GameObject background = new GameObject("BackgroundPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        background.transform.SetParent(canvas, false);
+
+        RectTransform BGrect = background.GetComponent<RectTransform>();
+        BGrect.anchorMin = new Vector2(0, 0);
+        BGrect.anchorMax = new Vector2(1, 1);
+        BGrect.offsetMin = Vector2.zero;
+        BGrect.offsetMax = Vector2.zero;
+
+        // 背景色を黒に設定（透明度も調整可）
+        Image img = background.GetComponent<Image>();
+        img.color = new Color(0, 0, 0, 0.9f); // RGBA（80%透過の黒）
     }
 
     bool IsWallAtPosition(Vector3 position)

@@ -60,21 +60,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 // cinemachineのカメラを無効化する
                 cinemachineCamera.enabled = false;
                 Debug.Log("Cinemachineカメラを無効化しました");
+                var camera = Camera.main;
+                camera.transform.position = new Vector3(13, 25, 13);
+                camera.transform.rotation = Quaternion.Euler(90, 0, 0);
             }
-            else
-            {
-                Debug.LogWarning("Cinemachineカメラが見つかりませんでした");
-            }
-            // クライアント用俯瞰カメラを生成する
-            var cameraObject = new GameObject("Camera");
-            // Cameraコンポーネントを追加
-            var cameraComponent = cameraObject.AddComponent<Camera>();
-            // カメラの位置を設定
-            cameraObject.transform.position = new Vector3(10, 20, 10); // 適当な位置に配置
-            cameraObject.transform.rotation = Quaternion.Euler(90, 0, 0); // 迷路を見下ろす角度に設定
-            // viewport rectを設定
-            cameraComponent.rect = new Rect(0.7f, 0.7f, 0.3f, 0.3f); // ビューポートのサイズを設定
-            Debug.Log("クライアント用のカメラを生成しました");
             Instantiate(trapperUIManager); // クライアント用のUIを生成
         }
     }
