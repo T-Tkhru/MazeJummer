@@ -46,5 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallUI: {fileID: 2807970961836477232, guid: d1b71ddb1171da842847987d3e5a335e, type: 3}
   roadUI: {fileID: 642666866390021736, guid: 37e3a358c37babc4686171453b36b195, type: 3}
-  canvas: {fileID: 0}
   redDotUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
+  subCameraPrefab: {fileID: 7952469759728724233, guid: 2bc93e10c1c71a842a428f4d722ab1d8, type: 3}
+  subCameraRenderTexture: {fileID: 8400000, guid: 87a196622b3929b4a85aecf841672807, type: 2}
+  subCameraDisplay: {fileID: 4818298152244826656, guid: 9f4bb9c5116c84148a037b648fa4d677, type: 3}
