@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3afcfe50c57fffd46b347a25489302c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 25
-  height: 25
+  width: 21
+  height: 21
   startPosition: {x: 1, y: 0, z: 1}
   goalPosition: {x: 19, y: 0, z: 19}
   wallPrefab:

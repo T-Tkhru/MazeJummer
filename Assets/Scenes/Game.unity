@@ -276,7 +276,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -302,8 +302,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.1185946, y: 0.7999996, z: -6.4990845}
+  m_LocalRotation: {x: 0.1665205, y: 0.80346966, z: -0.507025, w: 0.26388082}
+  m_LocalPosition: {x: 26.357216, y: 4.8527455, z: 9.6519165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: 5341717348318486131, guid: 698c697e03846f6459d83db111ff1238, type: 3}
   playerAvatarPrefab:
-    RawGuidValue: 4948daf9f3958e146afa297fcb1a5873
+    RawGuidValue: ac01291317ff2194cb4ff4ebbd52001c
   mazeManager:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
   trapperUIManager: {fileID: 6772240706310394743, guid: e7949e944b4f8d849bef2dc85e3c1a95, type: 3}
