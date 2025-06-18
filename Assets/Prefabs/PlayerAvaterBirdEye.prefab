@@ -139,7 +139,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4403667075823053489}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7009093, y: 0, z: 0, w: 0.71325046}
+  m_LocalRotation: {x: 0.4956187, y: 0.5043432, z: -0.49561673, w: 0.5043453}
   m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -204,7 +204,7 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameLabel: {fileID: 7195670764245965798}
-  cinemachineCamera: {fileID: 0}
+  cinemachineCamera: {fileID: 7188450925864942956}
 --- !u!1 &8799987858292219313
 GameObject:
   m_ObjectHideFlags: 0
