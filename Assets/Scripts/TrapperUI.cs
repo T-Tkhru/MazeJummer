@@ -136,7 +136,7 @@ public class TrapperUI : MonoBehaviour
         Camera subCam = Instantiate(subCameraPrefab);
         subCam.targetTexture = subCameraRenderTexture;
 
-        RawImage rawImage = Instantiate(subCameraDisplay, canvas);
+        RawImage rawImage = GameObject.Find("SubCameraScreen").GetComponent<RawImage>();
         rawImage.texture = subCameraRenderTexture;
         rawImage.rectTransform.anchoredPosition = new Vector2(-256, -102);
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
