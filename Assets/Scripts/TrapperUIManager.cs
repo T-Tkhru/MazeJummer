@@ -1,9 +1,8 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 using System.Collections;
-using ExitGames.Client.Photon.StructWrapping;
 using Unity.Cinemachine;
+using System.Collections.Generic;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -24,6 +23,7 @@ public class TrapperUIManager : MonoBehaviour
     private int height;
     private Vector2 UIStartPos;
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
+    private GameObject[,] trapUIs; // トラップのUIを保存する2D配列
     private int[,] mazeData;
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
@@ -32,6 +32,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private enum BuildMode { None, Wall, Trap1, Trap2, Trap3 }
     private BuildMode currentBuildMode = BuildMode.None;
+    private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
 
     void Update()
     {
@@ -51,7 +52,6 @@ public class TrapperUIManager : MonoBehaviour
             isGenerated = true; // UIが生成されたフラグを立てる
         }
         Vector3 playerPos = playerTransform.position;
-        // Debug.Log($"敵の位置: {playerPos}");
 
         // UIの位置を敵の位置に合わせる
         Vector2 anchoredPos = new Vector2(
@@ -72,7 +72,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             return;
         }
-        UpdateButtonInteractable(currentPlayerPos);
+        UpdateUI(currentPlayerPos);
 
     }
 
@@ -88,6 +88,7 @@ public class TrapperUIManager : MonoBehaviour
         width = mazeManager.width; // 迷路の幅を取得
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
+        trapUIs = new GameObject[width, height]; // トラップのUIを保存する2D配列
         mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
@@ -169,6 +170,12 @@ public class TrapperUIManager : MonoBehaviour
         GenerateUI();
     }
 
+    private void UpdateUI(Vector2Int position)
+    {
+        UpdateButtonInteractable(position);
+        RemoveTrapUI(position);
+    }
+
     private void UpdateButtonInteractable(Vector2Int position)
     {
         // lastPlayerPosの周囲2マスをアクティブに
@@ -213,6 +220,24 @@ public class TrapperUIManager : MonoBehaviour
         }
         lastPlayerPos = position; // 最後のプレイヤー位置を更新
 
+    }
+
+    private void RemoveTrapUI(Vector2Int position)
+    {
+        foreach (var trapPos in trapPositions)
+        {
+            if (trapPos == position)
+            {
+                // トラップのUIを削除
+                if (trapUIs[trapPos.x, trapPos.y] != null)
+                {
+                    Destroy(trapUIs[trapPos.x, trapPos.y]);
+                }
+                trapPositions.Remove(trapPos);
+                Debug.Log($"トラップUIを削除しました: {trapPos}");
+                break;
+            }
+        }
     }
 
     private bool checkSpawnable()
@@ -274,24 +299,15 @@ public class TrapperUIManager : MonoBehaviour
                 break;
             case BuildMode.Trap1:
                 mazeManager.RpcGenerateTrap1(x, y);
-                Instantiate(trapUI1, canvas).anchoredPosition = new Vector2(
-                    UIStartPos.x + x * tileSize,
-                    UIStartPos.y + y * tileSize
-                );
+                CreateTrapUI(x, y, trapUI1);
                 break;
             case BuildMode.Trap2:
                 mazeManager.RpcGenerateTrap2(x, y);
-                Instantiate(trapUI2, canvas).anchoredPosition = new Vector2(
-                    UIStartPos.x + x * tileSize,
-                    UIStartPos.y + y * tileSize
-                );
+                CreateTrapUI(x, y, trapUI2);
                 break;
             case BuildMode.Trap3:
                 mazeManager.RpcGenerateTrap3(x, y);
-                Instantiate(trapUI3, canvas).anchoredPosition = new Vector2(
-                    UIStartPos.x + x * tileSize,
-                    UIStartPos.y + y * tileSize
-                );
+                CreateTrapUI(x, y, trapUI3);
                 break;
             default:
                 Debug.LogWarning("無効なビルドモードです。");
@@ -324,6 +340,19 @@ public class TrapperUIManager : MonoBehaviour
         rect.anchoredPosition = anchoredPos;
         tileUIs[x, y] = roadTile;
         mazeData[x, y] = 0; // 通路のデータを更新
+    }
+
+    private void CreateTrapUI(int x, int y, RectTransform trapUI)
+    {
+        GameObject trapTile = Instantiate(trapUI.gameObject, canvas);
+        RectTransform rect = trapTile.GetComponent<RectTransform>();
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + x * tileSize,
+            UIStartPos.y + y * tileSize
+        );
+        rect.anchoredPosition = anchoredPos;
+        trapUIs[x, y] = trapTile;
+        trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
     }
 
     public void SelectMakeWall()
