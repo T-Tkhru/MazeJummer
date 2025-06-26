@@ -235,6 +235,8 @@ public class TrapperUIManager : MonoBehaviour
                 }
                 trapPositions.Remove(trapPos);
                 Debug.Log($"トラップUIを削除しました: {trapPos}");
+                // タイルのUIを通路に戻す
+                tileUIs[trapPos.x, trapPos.y].GetComponent<Button>().enabled = true;
                 break;
             }
         }
@@ -264,38 +266,7 @@ public class TrapperUIManager : MonoBehaviour
         switch (currentBuildMode)
         {
             case BuildMode.Wall:
-                var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
-                if (result.success == "NeedNot")
-                {
-                    mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-                    Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-                    tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
-                    RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
-                    Vector2 anchoredPos = new Vector2(
-                        UIStartPos.x + x * tileSize,
-                        UIStartPos.y + y * tileSize
-                    );
-                    rect.anchoredPosition = anchoredPos;
-                    return;
-                }
-                Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
-                if (result.success == "Cannot")
-                {
-                    Debug.LogWarning("壁を開けることができません。");
-                    mazeData[x, y] = 0; // 通路のデータを元に戻す
-                    return;
-                }
-                mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-                mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
-                // UIを更新
-                if (tileUIs[x, y] != null)
-                {
-                    Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-                    CreateWallUI(x, y); // 新しい壁UIを生成
-
-                    Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
-                    CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
-                }
+                CreateWall(x, y);
                 break;
             case BuildMode.Trap1:
                 mazeManager.RpcGenerateTrap1(x, y);
@@ -315,6 +286,41 @@ public class TrapperUIManager : MonoBehaviour
         }
     }
 
+    private void CreateWall(int x, int y)
+    {
+        var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+        if (result.success == "NeedNot")
+        {
+            mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+            tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
+            RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
+            Vector2 anchoredPos = new Vector2(
+                UIStartPos.x + x * tileSize,
+                UIStartPos.y + y * tileSize
+            );
+            rect.anchoredPosition = anchoredPos;
+            return;
+        }
+        Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
+        if (result.success == "Cannot")
+        {
+            Debug.LogWarning("壁を開けることができません。");
+            mazeData[x, y] = 0; // 通路のデータを元に戻す
+            return;
+        }
+        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+        mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
+        // UIを更新
+        if (tileUIs[x, y] != null)
+        {
+            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+            CreateWallUI(x, y); // 新しい壁UIを生成
+
+            Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
+            CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+        }
+    }
     private void CreateWallUI(int x, int y)
     {
         GameObject wallTile = Instantiate(wallUI, canvas);
@@ -353,6 +359,7 @@ public class TrapperUIManager : MonoBehaviour
         rect.anchoredPosition = anchoredPos;
         trapUIs[x, y] = trapTile;
         trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
+        tileUIs[x, y].GetComponent<Button>().enabled = false;
     }
 
     public void SelectMakeWall()
