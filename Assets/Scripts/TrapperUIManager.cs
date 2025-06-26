@@ -5,7 +5,7 @@ using System.Collections;
 using ExitGames.Client.Photon.StructWrapping;
 using Unity.Cinemachine;
 
-public class TrapperUI : MonoBehaviour
+public class TrapperUIManager : MonoBehaviour
 {
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
@@ -245,11 +245,6 @@ public class TrapperUI : MonoBehaviour
         }
     }
 
-    public void OnClickWallButton(int x, int y)
-    {
-        Debug.Log($"Wall Button Clicked at ({x}, {y})");
-    }
-
     public void OnClickRoadButton(int x, int y)
     {
         mazeData[x, y] = 1;
@@ -259,7 +254,6 @@ public class TrapperUI : MonoBehaviour
             mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
             Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
             tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
-            tileUIs[x, y].GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
             RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
             Vector2 anchoredPos = new Vector2(
                 UIStartPos.x + x * tileSize,
@@ -291,7 +285,6 @@ public class TrapperUI : MonoBehaviour
     private void CreateWallUI(int x, int y)
     {
         GameObject wallTile = Instantiate(wallUI, canvas);
-        wallTile.GetComponent<Button>().onClick.AddListener(() => OnClickWallButton(x, y));
         RectTransform rect = wallTile.GetComponent<RectTransform>();
         Vector2 anchoredPos = new Vector2(
             UIStartPos.x + x * tileSize,
