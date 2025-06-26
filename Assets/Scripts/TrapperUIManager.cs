@@ -141,7 +141,7 @@ public class TrapperUIManager : MonoBehaviour
         rawImage.texture = subCameraRenderTexture;
         rawImage.rectTransform.anchoredPosition = new Vector2(-256, -102);
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
-        var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponent<CinemachineInputAxisController>();
+        var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
     }
 
