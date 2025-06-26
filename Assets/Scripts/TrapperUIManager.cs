@@ -10,7 +10,10 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
-    [SerializeField] private RectTransform redDotUI;
+    [SerializeField] private RectTransform playerUI;
+    [SerializeField] private RectTransform trapUI1;
+    [SerializeField] private RectTransform trapUI2;
+    [SerializeField] private RectTransform trapUI3;
     [SerializeField] private Camera subCameraPrefab;
     [SerializeField] private RenderTexture subCameraRenderTexture;
     [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
@@ -55,11 +58,11 @@ public class TrapperUIManager : MonoBehaviour
             UIStartPos.x + playerPos.x * tileSize,
             UIStartPos.y + playerPos.z * tileSize
         );
-        if (redDotUI == null)
+        if (playerUI == null)
         {
             return;
         }
-        redDotUI.anchoredPosition = anchoredPos;
+        playerUI.anchoredPosition = anchoredPos;
 
         Vector2Int currentPlayerPos = new Vector2Int(
             Mathf.RoundToInt(playerPos.x),
@@ -117,18 +120,18 @@ public class TrapperUIManager : MonoBehaviour
 
             }
         }
-        redDotUI = Instantiate(redDotUI, canvas);
-        if (redDotUI == null)
+        playerUI = Instantiate(playerUI, canvas);
+        if (playerUI == null)
         {
             Debug.LogError("赤丸UIのPrefabが設定されていません。Inspectorで設定してください。");
             return;
         }
-        redDotUI.anchoredPosition = new Vector2(
+        playerUI.anchoredPosition = new Vector2(
             UIStartPos.x + 1 * tileSize, // 初期位置はスタート地点
             UIStartPos.y + 1 * tileSize
         );
-        Debug.Log("赤丸UIを生成しました。位置: " + redDotUI.anchoredPosition);
-        redDotUI.SetAsLastSibling();
+        Debug.Log("赤丸UIを生成しました。位置: " + playerUI.anchoredPosition);
+        playerUI.SetAsLastSibling();
         // 最初のプレイヤー位置を設定
         lastPlayerPos = new Vector2Int(1, 1); // 初期位置はスタート地点
         UpdateButtonInteractable(lastPlayerPos);
@@ -271,12 +274,24 @@ public class TrapperUIManager : MonoBehaviour
                 break;
             case BuildMode.Trap1:
                 mazeManager.RpcGenerateTrap1(x, y);
+                Instantiate(trapUI1, canvas).anchoredPosition = new Vector2(
+                    UIStartPos.x + x * tileSize,
+                    UIStartPos.y + y * tileSize
+                );
                 break;
             case BuildMode.Trap2:
                 mazeManager.RpcGenerateTrap2(x, y);
+                Instantiate(trapUI2, canvas).anchoredPosition = new Vector2(
+                    UIStartPos.x + x * tileSize,
+                    UIStartPos.y + y * tileSize
+                );
                 break;
             case BuildMode.Trap3:
                 mazeManager.RpcGenerateTrap3(x, y);
+                Instantiate(trapUI3, canvas).anchoredPosition = new Vector2(
+                    UIStartPos.x + x * tileSize,
+                    UIStartPos.y + y * tileSize
+                );
                 break;
             default:
                 Debug.LogWarning("無効なビルドモードです。");
