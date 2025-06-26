@@ -51,6 +51,7 @@ MonoBehaviour:
   goalPosition: {x: 19, y: 0, z: 19}
   wallPrefab:
     RawGuidValue: 02f937a46846d0e4b9f5404db88158fe
+  trap1Prefab: {fileID: 5944782399499760111, guid: 41e033776ed065940a15b329ab085329, type: 3}
 --- !u!114 &7084658060512160853
 MonoBehaviour:
   m_ObjectHideFlags: 0
