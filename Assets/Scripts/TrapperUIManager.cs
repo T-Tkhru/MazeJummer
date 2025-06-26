@@ -27,6 +27,9 @@ public class TrapperUIManager : MonoBehaviour
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
+    private enum BuildMode { None, Wall, Trap1, Trap2, Trap3 }
+    private BuildMode currentBuildMode = BuildMode.None;
+
     void Update()
     {
         Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
@@ -230,37 +233,54 @@ public class TrapperUIManager : MonoBehaviour
     public void OnClickRoadButton(int x, int y)
     {
         mazeData[x, y] = 1;
-        var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
-        if (result.success == "NeedNot")
+        switch (currentBuildMode)
         {
-            mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
-            RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
-            Vector2 anchoredPos = new Vector2(
-                UIStartPos.x + x * tileSize,
-                UIStartPos.y + y * tileSize
-            );
-            rect.anchoredPosition = anchoredPos;
-            return;
-        }
-        Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
-        if (result.success == "Cannot")
-        {
-            Debug.LogWarning("壁を開けることができません。");
-            mazeData[x, y] = 0; // 通路のデータを元に戻す
-            return;
-        }
-        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-        mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
-        // UIを更新
-        if (tileUIs[x, y] != null)
-        {
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            CreateWallUI(x, y); // 新しい壁UIを生成
+            case BuildMode.Wall:
+                var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+                if (result.success == "NeedNot")
+                {
+                    mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+                    Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+                    tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
+                    RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
+                    Vector2 anchoredPos = new Vector2(
+                        UIStartPos.x + x * tileSize,
+                        UIStartPos.y + y * tileSize
+                    );
+                    rect.anchoredPosition = anchoredPos;
+                    return;
+                }
+                Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
+                if (result.success == "Cannot")
+                {
+                    Debug.LogWarning("壁を開けることができません。");
+                    mazeData[x, y] = 0; // 通路のデータを元に戻す
+                    return;
+                }
+                mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+                mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
+                // UIを更新
+                if (tileUIs[x, y] != null)
+                {
+                    Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+                    CreateWallUI(x, y); // 新しい壁UIを生成
 
-            Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
-            CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+                    Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
+                    CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+                }
+                break;
+            case BuildMode.Trap1:
+                mazeManager.RpcGenerateTrap1(x, y);
+                break;
+            case BuildMode.Trap2:
+                mazeManager.RpcGenerateTrap2(x, y);
+                break;
+            case BuildMode.Trap3:
+                mazeManager.RpcGenerateTrap3(x, y);
+                break;
+            default:
+                Debug.LogWarning("無効なビルドモードです。");
+                return;
         }
     }
 
@@ -291,4 +311,32 @@ public class TrapperUIManager : MonoBehaviour
         mazeData[x, y] = 0; // 通路のデータを更新
     }
 
+    public void SelectMakeWall()
+    {
+        // 壁を作るボタンが押されたときの処理
+        Debug.Log("壁を作るボタンが押されました。");
+        currentBuildMode = BuildMode.Wall;
+
+    }
+
+    public void SelectMakeTrap1()
+    {
+        // トラップ1を作るボタンが押されたときの処理
+        Debug.Log("トラップ1を作るボタンが押されました。");
+        currentBuildMode = BuildMode.Trap1;
+    }
+
+    public void SelectMakeTrap2()
+    {
+        // トラップ2を作るボタンが押されたときの処理
+        Debug.Log("トラップ2を作るボタンが押されました。");
+        currentBuildMode = BuildMode.Trap2;
+    }
+
+    public void SelectMakeTrap3()
+    {
+        // トラップ3を作るボタンが押されたときの処理
+        Debug.Log("トラップ3を作るボタンが押されました。");
+        currentBuildMode = BuildMode.Trap3;
+    }
 }

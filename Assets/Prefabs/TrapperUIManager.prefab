@@ -121,9 +121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TimerManager, Assembly-CSharp
-        m_MethodName: StartTimer
+      - m_Target: {fileID: 2230433703917654822}
+        m_TargetAssemblyTypeName: TrapperUIManager, Assembly-CSharp
+        m_MethodName: SelectMakeTrap3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -697,9 +697,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TimerManager, Assembly-CSharp
-        m_MethodName: StartTimer
+      - m_Target: {fileID: 2230433703917654822}
+        m_TargetAssemblyTypeName: TrapperUIManager, Assembly-CSharp
+        m_MethodName: SelectMakeWall
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -968,9 +968,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TimerManager, Assembly-CSharp
-        m_MethodName: StartTimer
+      - m_Target: {fileID: 2230433703917654822}
+        m_TargetAssemblyTypeName: TrapperUIManager, Assembly-CSharp
+        m_MethodName: SelectMakeTrap1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1375,9 +1375,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TimerManager, Assembly-CSharp
-        m_MethodName: StartTimer
+      - m_Target: {fileID: 2230433703917654822}
+        m_TargetAssemblyTypeName: TrapperUIManager, Assembly-CSharp
+        m_MethodName: SelectMakeTrap2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -78,8 +78,20 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap()
+    public void RpcGenerateTrap1(int x, int y)
     {
-        Debug.Log("RpcGenerateTrapが呼び出されました");
+        Debug.Log("RpcGenerateTrap1が呼び出されました");
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RpcGenerateTrap2(int x, int y)
+    {
+        Debug.Log("RpcGenerateTrap2が呼び出されました");
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RpcGenerateTrap3(int x, int y)
+    {
+        Debug.Log("RpcGenerateTrap3が呼び出されました");
     }
 }
