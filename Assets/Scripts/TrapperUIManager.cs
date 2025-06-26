@@ -72,15 +72,13 @@ public class TrapperUIManager : MonoBehaviour
 
     public void GenerateUI()
     {
-        canvas = GameObject.Find("Canvas").transform; // Canvasを取得
+        canvas = GameObject.Find("TrapperUI").transform;
         mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
         if (mazeManager == null)
         {
             Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
-
-        GenerateBackGroundPanel(); // 背景パネルを生成
         width = mazeManager.width; // 迷路の幅を取得
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
@@ -142,22 +140,6 @@ public class TrapperUIManager : MonoBehaviour
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponent<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
-    }
-
-    private void GenerateBackGroundPanel()
-    {
-        GameObject background = new GameObject("BackgroundPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        background.transform.SetParent(canvas, false);
-
-        RectTransform BGrect = background.GetComponent<RectTransform>();
-        BGrect.anchorMin = new Vector2(0, 0);
-        BGrect.anchorMax = new Vector2(1, 1);
-        BGrect.offsetMin = Vector2.zero;
-        BGrect.offsetMax = Vector2.zero;
-
-        // 背景色を黒に設定（透明度も調整可）
-        Image img = background.GetComponent<Image>();
-        img.color = new Color(0, 0, 0, 0.9f); // RGBA（80%透過の黒）
     }
 
     bool IsWallAtPosition(Vector3 position)
