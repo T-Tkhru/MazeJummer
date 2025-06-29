@@ -16,7 +16,7 @@ public class MazeManager : NetworkBehaviour
     [SerializeField]
     private NetworkObject speedDownTrapPrefab;
     [SerializeField]
-    private NetworkObject BlindTrapPrefab;
+    private NetworkObject blindTrapPrefab;
     [SerializeField]
     private NetworkObject trap3Prefab;
 
@@ -101,7 +101,7 @@ public class MazeManager : NetworkBehaviour
         {
             // サーバー側でトラップを生成
             Vector3 trapPosition = new Vector3(x, 0.5f, y);
-            var trap = Runner.Spawn(BlindTrapPrefab, trapPosition, Quaternion.identity);
+            var trap = Runner.Spawn(blindTrapPrefab, trapPosition, Quaternion.identity);
             Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
         }
     }

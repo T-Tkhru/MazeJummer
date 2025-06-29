@@ -47,12 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 25
   height: 25
-  startPosition: {x: 1, y: 0, z: 1}
-  goalPosition: {x: 19, y: 0, z: 19}
   wallPrefab:
     RawGuidValue: 02f937a46846d0e4b9f5404db88158fe
   speedDownTrapPrefab: {fileID: 5944782399499760111, guid: 41e033776ed065940a15b329ab085329, type: 3}
-  BlindTrapPrefab: {fileID: 5944782399499760111, guid: 41e033776ed065940a15b329ab085329, type: 3}
+  blindTrapPrefab: {fileID: 5944782399499760111, guid: 0369178dc57e2d3479f99ad359236de7, type: 3}
   trap3Prefab: {fileID: 5944782399499760111, guid: 1bbf0a59535fc794c83252103e3e83c7, type: 3}
 --- !u!114 &7084658060512160853
 MonoBehaviour:
