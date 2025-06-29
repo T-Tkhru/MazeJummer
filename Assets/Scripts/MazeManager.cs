@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class MazeManager : NetworkBehaviour
 {
-    public int width = 21; // 迷路の幅
-    public int height = 21; // 迷路の高さ
+    public int width = 25; // 迷路の幅
+    public int height = 25; // 迷路の高さ
 
     private const int Wall = 1; // 壁の値
     private const int Path = 0; // 通路の値
-    [SerializeField]
-    private Vector3 startPosition = new Vector3(1, 0, 1); // 迷路の開始位置
-    [SerializeField]
-    private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
+    private Vector3 goalPosition;
     [SerializeField]
     private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
