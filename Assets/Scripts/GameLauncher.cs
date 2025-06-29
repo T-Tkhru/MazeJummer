@@ -23,15 +23,17 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public TickTimer Timer { get; set; } // タイマー
     [SerializeField]
     private GameObject trapperUIManager;
-    // [SerializeField]
-    // private string sessionName; // セッション名デバッグ用、本番では削除する
+    [SerializeField]
+    private GameObject runnerUIManager;
+    [SerializeField]
+    private string sessionName; // セッション名デバッグ用、本番では削除する
 
     private async void Start()
     {
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
-        string sessionName = null;
-        sessionName = GetSessionName();
+        // string sessionName = null;
+        // sessionName = GetSessionName(); //デバッグ用で削除中
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
@@ -65,6 +67,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 camera.transform.rotation = Quaternion.Euler(90, 0, 0);
             }
             Instantiate(trapperUIManager); // クライアント用のUIを生成
+        }
+        else if (networkRunner.IsServer)
+        {
+            Instantiate(runnerUIManager);
         }
     }
 

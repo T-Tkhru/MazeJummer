@@ -1,3 +1,4 @@
+using System.Collections;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,6 +12,9 @@ public class PlayerAvatar : NetworkBehaviour
     private ChangeDetector _changeDetector;
     private NetworkCharacterController characterController;
     private PlayerAvatarView view;
+    private float defaultSpeed;
+    private int speedDownRefCount = 0;
+    private float slowSpeed = 1.25f;
 
     public override void Spawned()
     {
@@ -38,6 +42,7 @@ public class PlayerAvatar : NetworkBehaviour
         {
             Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
         }
+        defaultSpeed = characterController.maxSpeed;
     }
 
     public override void Render()
@@ -80,6 +85,24 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 characterController.Jump();
             }
+        }
+    }
+
+    public void ActivateSpeedDown(float duration)
+    {
+        speedDownRefCount++;
+        StartCoroutine(HandleSpeedDownEffect(duration));
+    }
+
+    private IEnumerator HandleSpeedDownEffect(float duration)
+    {
+        characterController.maxSpeed = slowSpeed;
+        yield return new WaitForSeconds(duration);
+        speedDownRefCount--;
+        if (speedDownRefCount <= 0)
+        {
+            speedDownRefCount = 0;
+            characterController.maxSpeed = defaultSpeed;
         }
     }
 

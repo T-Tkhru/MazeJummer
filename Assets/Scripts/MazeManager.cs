@@ -4,20 +4,21 @@ using UnityEngine;
 
 public class MazeManager : NetworkBehaviour
 {
-    public int width = 21; // 迷路の幅
-    public int height = 21; // 迷路の高さ
+    public int width = 25; // 迷路の幅
+    public int height = 25; // 迷路の高さ
 
     private const int Wall = 1; // 壁の値
     private const int Path = 0; // 通路の値
-    [SerializeField]
-    private Vector3 startPosition = new Vector3(1, 0, 1); // 迷路の開始位置
-    [SerializeField]
-    private Vector3 goalPosition = new Vector3(19, 0, 19); // 迷路の終了位置（ゴール位置）
+    private Vector3 goalPosition;
     [SerializeField]
     private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
     [SerializeField]
-    private NetworkObject trap1Prefab;
+    private NetworkObject speedDownTrapPrefab;
+    [SerializeField]
+    private NetworkObject blindTrapPrefab;
+    [SerializeField]
+    private NetworkObject trap3Prefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -80,22 +81,29 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap1(int x, int y)
+    public void RpcGenerateSpeedDownTrap(int x, int y)
     {
-        Debug.Log("RpcGenerateTrap1が呼び出されました");
+        Debug.Log("RpcGenerateSpeedDownTrapが呼び出されました");
         if (Runner.IsServer)
         {
             // サーバー側でトラップを生成
             Vector3 trapPosition = new Vector3(x, 0.5f, y); // トラップの位置を設定
-            var trap = Runner.Spawn(trap1Prefab, trapPosition, Quaternion.identity);
+            var trap = Runner.Spawn(speedDownTrapPrefab, trapPosition, Quaternion.identity);
             Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
         }
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap2(int x, int y)
+    public void RpcGenerateBlindTrap(int x, int y)
     {
-        Debug.Log("RpcGenerateTrap2が呼び出されました");
+        Debug.Log("RpcGenerateBlindTrapが呼び出されました");
+        if (Runner.IsServer)
+        {
+            // サーバー側でトラップを生成
+            Vector3 trapPosition = new Vector3(x, 0.5f, y);
+            var trap = Runner.Spawn(blindTrapPrefab, trapPosition, Quaternion.identity);
+            Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
+        }
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]

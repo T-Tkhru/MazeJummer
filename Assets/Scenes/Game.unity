@@ -541,6 +541,7 @@ MonoBehaviour:
   mazeManager:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
   trapperUIManager: {fileID: 4749607224998323932, guid: 13786ee5d3b932c42bf9ab633e93311d, type: 3}
+  runnerUIManager: {fileID: 4426806031260053276, guid: 1987902017798b64892d76ac525ed2f0, type: 3}
   sessionName: 1
 --- !u!4 &416937552
 Transform:

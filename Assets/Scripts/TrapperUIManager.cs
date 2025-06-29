@@ -10,12 +10,14 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
     [SerializeField] private RectTransform playerUI;
-    [SerializeField] private RectTransform trapUI1;
-    [SerializeField] private RectTransform trapUI2;
+    [SerializeField] private RectTransform speedDownTrapUI;
+    [SerializeField] private RectTransform blindTrapUI;
     [SerializeField] private RectTransform trapUI3;
     [SerializeField] private Camera subCameraPrefab;
     [SerializeField] private RenderTexture subCameraRenderTexture;
     [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
+    [SerializeField] private GameObject trapperUIPrefab;
+    private Transform trapperUI; // トラッパーUIのPrefab
 
 
     private int tileSize;
@@ -30,7 +32,7 @@ public class TrapperUIManager : MonoBehaviour
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
-    private enum BuildMode { None, Wall, Trap1, Trap2, Trap3 }
+    private enum BuildMode { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
     private BuildMode currentBuildMode = BuildMode.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
 
@@ -78,7 +80,9 @@ public class TrapperUIManager : MonoBehaviour
 
     public void GenerateUI()
     {
-        canvas = GameObject.Find("TrapperUI").transform;
+        canvas = GameObject.Find("Canvas").transform;
+        trapperUI = Instantiate(trapperUIPrefab, canvas).transform;
+        AttachButtonListeners();
         mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
         if (mazeManager == null)
         {
@@ -121,7 +125,7 @@ public class TrapperUIManager : MonoBehaviour
 
             }
         }
-        playerUI = Instantiate(playerUI, canvas);
+        playerUI = Instantiate(playerUI, trapperUI);
         if (playerUI == null)
         {
             Debug.LogError("赤丸UIのPrefabが設定されていません。Inspectorで設定してください。");
@@ -147,6 +151,46 @@ public class TrapperUIManager : MonoBehaviour
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
+    }
+
+    private void AttachButtonListeners()
+    {
+        Button createWallButton = trapperUI.Find("CreateWall").GetComponent<Button>();
+        if (createWallButton != null)
+        {
+            createWallButton.onClick.AddListener(SelectMakeWall);
+        }
+        else
+        {
+            Debug.LogError("CreateWallボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+        }
+        Button createSpeedDownButton = trapperUI.Find("CreateSpeedDownTrap").GetComponent<Button>();
+        if (createSpeedDownButton != null)
+        {
+            createSpeedDownButton.onClick.AddListener(SelectSpeedDownTrap);
+        }
+        else
+        {
+            Debug.LogError("CreateSpeedDownTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+        }
+        Button createBlindTrapButton = trapperUI.Find("CreateBlindTrap").GetComponent<Button>();
+        if (createBlindTrapButton != null)
+        {
+            createBlindTrapButton.onClick.AddListener(SelectMakeBlindTrap);
+        }
+        else
+        {
+            Debug.LogError("CreateBlindTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+        }
+        Button createTrap3Button = trapperUI.Find("CreateTrap3").GetComponent<Button>();
+        if (createTrap3Button != null)
+        {
+            createTrap3Button.onClick.AddListener(SelectMakeTrap3);
+        }
+        else
+        {
+            Debug.LogError("CreateTrap3ボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+        }
     }
 
     bool IsWallAtPosition(Vector3 position)
@@ -262,19 +306,19 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        mazeData[x, y] = 1;
         switch (currentBuildMode)
         {
             case BuildMode.Wall:
+                mazeData[x, y] = 1;
                 CreateWall(x, y);
                 break;
-            case BuildMode.Trap1:
-                mazeManager.RpcGenerateTrap1(x, y);
-                CreateTrapUI(x, y, trapUI1);
+            case BuildMode.SpeedDownTrap:
+                mazeManager.RpcGenerateSpeedDownTrap(x, y);
+                CreateTrapUI(x, y, speedDownTrapUI);
                 break;
-            case BuildMode.Trap2:
-                mazeManager.RpcGenerateTrap2(x, y);
-                CreateTrapUI(x, y, trapUI2);
+            case BuildMode.BlindTrap:
+                mazeManager.RpcGenerateBlindTrap(x, y);
+                CreateTrapUI(x, y, blindTrapUI);
                 break;
             case BuildMode.Trap3:
                 mazeManager.RpcGenerateTrap3(x, y);
@@ -293,7 +337,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
             Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            tileUIs[x, y] = Instantiate(wallUI, canvas); // 新しい通路UIを生成
+            tileUIs[x, y] = Instantiate(wallUI, trapperUI); // 新しい通路UIを生成
             RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
             Vector2 anchoredPos = new Vector2(
                 UIStartPos.x + x * tileSize,
@@ -323,7 +367,7 @@ public class TrapperUIManager : MonoBehaviour
     }
     private void CreateWallUI(int x, int y)
     {
-        GameObject wallTile = Instantiate(wallUI, canvas);
+        GameObject wallTile = Instantiate(wallUI, trapperUI);
         RectTransform rect = wallTile.GetComponent<RectTransform>();
         Vector2 anchoredPos = new Vector2(
             UIStartPos.x + x * tileSize,
@@ -336,7 +380,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void CreateRoadUI(int x, int y)
     {
-        GameObject roadTile = Instantiate(roadUI, canvas);
+        GameObject roadTile = Instantiate(roadUI, trapperUI);
         roadTile.GetComponent<Button>().onClick.AddListener(() => OnClickRoadButton(x, y));
         RectTransform rect = roadTile.GetComponent<RectTransform>();
         Vector2 anchoredPos = new Vector2(
@@ -350,7 +394,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void CreateTrapUI(int x, int y, RectTransform trapUI)
     {
-        GameObject trapTile = Instantiate(trapUI.gameObject, canvas);
+        GameObject trapTile = Instantiate(trapUI.gameObject, trapperUI);
         RectTransform rect = trapTile.GetComponent<RectTransform>();
         Vector2 anchoredPos = new Vector2(
             UIStartPos.x + x * tileSize,
@@ -370,18 +414,16 @@ public class TrapperUIManager : MonoBehaviour
 
     }
 
-    public void SelectMakeTrap1()
+    public void SelectSpeedDownTrap()
     {
-        // トラップ1を作るボタンが押されたときの処理
-        Debug.Log("トラップ1を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Trap1;
+        Debug.Log("スピードダウントラップを作るボタンが押されました。");
+        currentBuildMode = BuildMode.SpeedDownTrap;
     }
 
-    public void SelectMakeTrap2()
+    public void SelectMakeBlindTrap()
     {
-        // トラップ2を作るボタンが押されたときの処理
         Debug.Log("トラップ2を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Trap2;
+        currentBuildMode = BuildMode.BlindTrap;
     }
 
     public void SelectMakeTrap3()
