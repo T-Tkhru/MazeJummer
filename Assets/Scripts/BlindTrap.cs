@@ -19,14 +19,7 @@ public class BlindTrap : Trap
             GameObject blindMask = RunnerUIManager.Instance.blindMask;
             blindMask.SetActive(true);
             RunnerUIManager.Instance.ActivateBlind(10f);
-
-            StartCoroutine(RecoverBlindAfterDelay());
+            Destroy(gameObject);
         }
-    }
-
-    private IEnumerator RecoverBlindAfterDelay()
-    {
-        yield return new WaitForSeconds(trapDuration);
-        Destroy(gameObject);
     }
 }
