@@ -15,7 +15,6 @@ public class RunnerUIManager : MonoBehaviour
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
 
-    private Coroutine currentBlindCoroutine;
 
     private void Awake()
     {
