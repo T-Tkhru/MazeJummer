@@ -24,6 +24,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private GameObject trapperUIManager;
     [SerializeField]
+    private GameObject runnerUIManager;
+    [SerializeField]
     private string sessionName; // セッション名デバッグ用、本番では削除する
 
     private async void Start()
@@ -65,6 +67,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 camera.transform.rotation = Quaternion.Euler(90, 0, 0);
             }
             Instantiate(trapperUIManager); // クライアント用のUIを生成
+        }
+        else if (networkRunner.IsServer)
+        {
+            Instantiate(runnerUIManager);
         }
     }
 

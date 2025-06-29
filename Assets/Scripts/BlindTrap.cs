@@ -6,8 +6,10 @@ public class BlindTrap : Trap
 {
     [SerializeField]
     private float trapDuration = 10f; // トラップの効果時間
+    private GameObject blindMask;
     [SerializeField]
-    private GameObject blindEffectPrefab; // ブラインド効果のプレハブ
+    private GameObject blindMaskPrefab; // BlindMaskのプレハブ
+
     protected override void TriggerEffect(Collider avatar)
     {
         Debug.Log("トラップに引っかかった！");
@@ -15,15 +17,16 @@ public class BlindTrap : Trap
         var controller = avatar.GetComponent<NetworkCharacterController>();
         if (controller != null)
         {
-            GameObject blindEffect = Instantiate(blindEffectPrefab, canvas.transform);
-            StartCoroutine(RecoverBlindAfterDelay(blindEffect));
+            GameObject blindMask = RunnerUIManager.Instance.BlindMask;
+            blindMask.SetActive(true);
+            StartCoroutine(RecoverBlindAfterDelay(blindMask));
         }
     }
 
-    private IEnumerator RecoverBlindAfterDelay(GameObject blindEffect)
+    private IEnumerator RecoverBlindAfterDelay(GameObject blindMask)
     {
         yield return new WaitForSeconds(trapDuration);
-        Destroy(blindEffect); // ブラインド効果を削除
+        blindMask.SetActive(false);
         Destroy(gameObject);
     }
 }
