@@ -17,7 +17,11 @@ public class MazeManager : NetworkBehaviour
     private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
     [SerializeField]
-    private NetworkObject trap1Prefab;
+    private NetworkObject speedDownTrapPrefab;
+    [SerializeField]
+    private NetworkObject BlindTrapPrefab;
+    [SerializeField]
+    private NetworkObject trap3Prefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -87,7 +91,7 @@ public class MazeManager : NetworkBehaviour
         {
             // サーバー側でトラップを生成
             Vector3 trapPosition = new Vector3(x, 0.5f, y); // トラップの位置を設定
-            var trap = Runner.Spawn(trap1Prefab, trapPosition, Quaternion.identity);
+            var trap = Runner.Spawn(speedDownTrapPrefab, trapPosition, Quaternion.identity);
             Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
         }
     }
@@ -96,6 +100,13 @@ public class MazeManager : NetworkBehaviour
     public void RpcGenerateTrap2(int x, int y)
     {
         Debug.Log("RpcGenerateTrap2が呼び出されました");
+        if (Runner.IsServer)
+        {
+            // サーバー側でトラップを生成
+            Vector3 trapPosition = new Vector3(x, 0.5f, y);
+            var trap = Runner.Spawn(BlindTrapPrefab, trapPosition, Quaternion.identity);
+            Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
+        }
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
