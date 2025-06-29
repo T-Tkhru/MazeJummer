@@ -23,15 +23,15 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public TickTimer Timer { get; set; } // タイマー
     [SerializeField]
     private GameObject trapperUIManager;
-    // [SerializeField]
-    // private string sessionName; // セッション名デバッグ用、本番では削除する
+    [SerializeField]
+    private string sessionName; // セッション名デバッグ用、本番では削除する
 
     private async void Start()
     {
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
-        string sessionName = null;
-        sessionName = GetSessionName();
+        // string sessionName = null;
+        // sessionName = GetSessionName(); //デバッグ用で削除中
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
