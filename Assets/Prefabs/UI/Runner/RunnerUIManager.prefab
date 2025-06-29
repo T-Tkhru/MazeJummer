@@ -45,3 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blindMaskPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
+  blindTransitionDuration: 2
+  blindMinRadius: 0.2
+  blindMaxRadius: 0.8
