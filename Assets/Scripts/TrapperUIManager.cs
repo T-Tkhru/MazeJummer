@@ -306,10 +306,10 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        mazeData[x, y] = 1;
         switch (currentBuildMode)
         {
             case BuildMode.Wall:
+                mazeData[x, y] = 1;
                 CreateWall(x, y);
                 break;
             case BuildMode.SpeedDownTrap:
