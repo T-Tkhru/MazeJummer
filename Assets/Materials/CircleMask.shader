@@ -6,18 +6,37 @@ Shader "UI/CircleMask"
         _Center("Center", Vector) = (0.5, 0.5, 0, 0)
         _Radius("Radius", Float) = 0.3
         _Aspect("Aspect", Float) = 1.7777 // 16:9
+
+        [HideInInspector] _Stencil("Stencil ID", Float) = 0
+        [HideInInspector] _StencilComp("Stencil Comparison", Float) = 8
+        [HideInInspector] _StencilOp("Stencil Operation", Float) = 0
+        [HideInInspector] _StencilWriteMask("Stencil Write Mask", Float) = 255
+        [HideInInspector] _StencilReadMask("Stencil Read Mask", Float) = 255
+        [HideInInspector] _ColorMask("Color Mask", Float) = 15
+
     }
 
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" }
         LOD 100
-        Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off
         Cull Off
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
+            Stencil
+            {
+                Ref [_Stencil]
+                Comp [_StencilComp]
+                Pass [_StencilOp]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+            }
+
+            ColorMask [_ColorMask]
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -52,12 +71,12 @@ Shader "UI/CircleMask"
             fixed4 frag(v2f i) : SV_Target
             {
                 float2 uvDiff = i.uv - _Center;
-                uvDiff.x *= _Aspect; // 横方向を補正
+                uvDiff.x *= _Aspect;
                 float dist = length(uvDiff);
 
                 if (dist < _Radius)
                     return fixed4(0,0,0,0); // 穴の中は透明
-                return _Color; // 穴の外は黒
+                return _Color;
             }
             ENDCG
         }

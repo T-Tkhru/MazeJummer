@@ -13,20 +13,20 @@ public class BlindTrap : Trap
     protected override void TriggerEffect(Collider avatar)
     {
         Debug.Log("トラップに引っかかった！");
-        Canvas canvas = FindFirstObjectByType<Canvas>();
         var controller = avatar.GetComponent<NetworkCharacterController>();
         if (controller != null)
         {
-            GameObject blindMask = RunnerUIManager.Instance.BlindMask;
+            GameObject blindMask = RunnerUIManager.Instance.blindMask;
             blindMask.SetActive(true);
-            StartCoroutine(RecoverBlindAfterDelay(blindMask));
+            RunnerUIManager.Instance.ActivateBlind(10f);
+
+            StartCoroutine(RecoverBlindAfterDelay());
         }
     }
 
-    private IEnumerator RecoverBlindAfterDelay(GameObject blindMask)
+    private IEnumerator RecoverBlindAfterDelay()
     {
         yield return new WaitForSeconds(trapDuration);
-        blindMask.SetActive(false);
         Destroy(gameObject);
     }
 }

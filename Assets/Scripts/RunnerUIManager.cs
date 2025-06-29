@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class RunnerUIManager : MonoBehaviour
@@ -6,7 +7,8 @@ public class RunnerUIManager : MonoBehaviour
 
     [SerializeField] private GameObject blindMaskPrefab;
 
-    public GameObject BlindMask { get; private set; }
+    public GameObject blindMask { get; private set; }
+    private int blindRefCount = 0;
 
     private void Awake()
     {
@@ -25,7 +27,25 @@ public class RunnerUIManager : MonoBehaviour
             return;
         }
 
-        BlindMask = Instantiate(blindMaskPrefab, canvas.transform);
-        BlindMask.SetActive(false);
+        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        blindMask.SetActive(false);
+    }
+
+    public void ActivateBlind(float duration)
+    {
+        blindRefCount++;
+        blindMask.SetActive(true);
+        StartCoroutine(HandleBlindEffect(duration));
+    }
+
+    private IEnumerator HandleBlindEffect(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        blindRefCount--;
+        if (blindRefCount <= 0)
+        {
+            blindRefCount = 0;
+            blindMask.SetActive(false);
+        }
     }
 }

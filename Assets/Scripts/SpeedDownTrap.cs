@@ -11,7 +11,6 @@ public class SpeedDownTrap : Trap
     protected override void TriggerEffect(Collider avatar)
     {
         Debug.Log("トラップに引っかかった！");
-        GetComponent<Collider>().enabled = false;
         var controller = avatar.GetComponent<NetworkCharacterController>();
         if (controller != null)
         {
