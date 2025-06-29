@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4749607224998323932
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8991238838716673555}
+  - component: {fileID: 2230433703917654822}
+  m_Layer: 0
+  m_Name: TrapperUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8991238838716673555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4749607224998323932}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.23551, y: 2.35961, z: 10.86477}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2230433703917654822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4749607224998323932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d557a87bc989547bed2f209f3cee20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallUI: {fileID: 2807970961836477232, guid: d1b71ddb1171da842847987d3e5a335e, type: 3}
+  roadUI: {fileID: 642666866390021736, guid: 37e3a358c37babc4686171453b36b195, type: 3}
+  playerUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
+  speedDownTrapUI: {fileID: 5527624290676667426, guid: 0f492268281309441b83255f85baf4f1, type: 3}
+  blindTrapUI: {fileID: 5527624290676667426, guid: f89218f206b04494886717efb7f1e9b6, type: 3}
+  trapUI3: {fileID: 5527624290676667426, guid: 25db775cb7fe7394c82d619981ba2c59, type: 3}
+  subCameraPrefab: {fileID: 7952469759728724233, guid: 2bc93e10c1c71a842a428f4d722ab1d8, type: 3}
+  subCameraRenderTexture: {fileID: 8400000, guid: 87a196622b3929b4a85aecf841672807, type: 2}
+  subCameraDisplay: {fileID: 4818298152244826656, guid: 9f4bb9c5116c84148a037b648fa4d677, type: 3}
+  trapperUIPrefab: {fileID: 2655740839448386392, guid: 596f9cce18bb6294e9c0b4ba47f640f1, type: 3}

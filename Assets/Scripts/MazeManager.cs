@@ -84,9 +84,9 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap1(int x, int y)
+    public void RpcGenerateSpeedDownTrap(int x, int y)
     {
-        Debug.Log("RpcGenerateTrap1が呼び出されました");
+        Debug.Log("RpcGenerateSpeedDownTrapが呼び出されました");
         if (Runner.IsServer)
         {
             // サーバー側でトラップを生成
@@ -97,9 +97,9 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap2(int x, int y)
+    public void RpcGenerateBlindTrap(int x, int y)
     {
-        Debug.Log("RpcGenerateTrap2が呼び出されました");
+        Debug.Log("RpcGenerateBlindTrapが呼び出されました");
         if (Runner.IsServer)
         {
             // サーバー側でトラップを生成
