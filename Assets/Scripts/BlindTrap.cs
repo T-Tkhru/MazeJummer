@@ -18,7 +18,7 @@ public class BlindTrap : Trap
         {
             GameObject blindMask = RunnerUIManager.Instance.blindMask;
             blindMask.SetActive(true);
-            RunnerUIManager.Instance.ActivateBlind(10f);
+            RunnerUIManager.Instance.ActivateBlind(trapDuration);
             Destroy(gameObject);
         }
     }
