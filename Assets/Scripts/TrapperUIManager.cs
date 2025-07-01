@@ -98,7 +98,7 @@ public class TrapperUIManager : MonoBehaviour
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
         UIStartPos = new Vector2(
             (canvasHeight - width * tileSize) / 2 + tileSize / 2,
-            (canvasHeight - width * tileSize) / 2 + tileSize / 2
+            (canvasHeight - height * tileSize) / 2 + tileSize / 2
         ); // UIの開始位置を計算
         for (int y = 0; y < height; y++)
         {
