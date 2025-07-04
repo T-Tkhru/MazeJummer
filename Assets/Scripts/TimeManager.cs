@@ -35,11 +35,10 @@ public class TimeManager : NetworkBehaviour
         }
         else if (IsStopped)
         {
-            seconds = maxTime - remainingTime; // 300秒から残り時間を引く
-            minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
-            Debug.Log($"seconds: {seconds}, minutes: {minutes}");
-            timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}"); // タイマーの表示を更新
-            return;
+            // seconds = maxTime - remainingTime; // 300秒から残り時間を引く
+            // minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
+            // timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}"); // タイマーの表示を更新
+            // return;
         }
         else
         {
@@ -71,6 +70,10 @@ public class TimeManager : NetworkBehaviour
         {
             IsStopped = true; // タイマーが停止中であることを示す
             remainingTime = Timer.RemainingTime(Runner) ?? 0f; // 残り時間を取得
+            seconds = maxTime - remainingTime; // 300秒から残り時間を引く
+            minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
+            timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}"); // タイマーの表示を更新
+            Debug.Log($"seconds: {seconds}, minutes: {minutes}");
         }
     }
 }

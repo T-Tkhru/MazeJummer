@@ -18,6 +18,20 @@ public class GoalCheck : NetworkBehaviour
                 Debug.Log("ゴールしました！");
                 // ゴールに到達したときの処理をここに追加
                 // 例えば、ゲームクリアのUIを表示するなど
+                GameObject timerManager = GameObject.Find("TimerManager");
+                if (timerManager != null)
+                {
+                    TimeManager timer = timerManager.GetComponent<TimeManager>();
+                    if (timer != null)
+                    {
+                        timer.StopTimer();
+                        Debug.Log("タイマーを停止しました。");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("TimerManagerが見つかりません。");
+                }
             }
             else
             {
