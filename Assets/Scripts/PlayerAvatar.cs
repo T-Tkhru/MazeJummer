@@ -15,6 +15,7 @@ public class PlayerAvatar : NetworkBehaviour
     private float defaultSpeed;
     private int speedDownRefCount = 0;
     private float slowSpeed = 1.25f;
+    private int keyCount = 0;
 
     public override void Spawned()
     {
@@ -104,6 +105,13 @@ public class PlayerAvatar : NetworkBehaviour
             speedDownRefCount = 0;
             characterController.maxSpeed = defaultSpeed;
         }
+    }
+
+    public void IncrementKeyCount()
+    {
+        keyCount++;
+        Debug.Log($"鍵を取得しました！現在の鍵の数: {keyCount}");
+        // ここでUIなどに鍵の数を反映する処理を追加できます
     }
 
 }

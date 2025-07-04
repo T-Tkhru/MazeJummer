@@ -12,16 +12,21 @@ public class Key : NetworkBehaviour
         if (other.CompareTag("Avatar"))
         {
             hasTriggered = true;
-            GetKey();
+            GetKey(other);
 
             GetComponent<Collider>().enabled = false;
         }
     }
 
     // 鍵を取得したときの処理
-    private void GetKey()
+    private void GetKey(Collider avatar)
     {
         Debug.Log("鍵を取得しました！");
+        var playerAvatar = avatar.GetComponent<PlayerAvatar>();
+        if (playerAvatar != null)
+        {
+            playerAvatar.IncrementKeyCount();
+        }
         Destroy(gameObject);
     }
 }
