@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class GoalCheck : NetworkBehaviour
 {
@@ -18,19 +19,14 @@ public class GoalCheck : NetworkBehaviour
                 Debug.Log("ゴールしました！");
                 // ゴールに到達したときの処理をここに追加
                 // 例えば、ゲームクリアのUIを表示するなど
-                GameObject timerManager = GameObject.Find("TimerManager");
-                if (timerManager != null)
+                GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+                if (gameManager != null)
                 {
-                    TimeManager timer = timerManager.GetComponent<TimeManager>();
-                    if (timer != null)
-                    {
-                        timer.StopTimer();
-                        Debug.Log("タイマーを停止しました。");
-                    }
+                    gameManager.StopTimer();
                 }
                 else
                 {
-                    Debug.LogWarning("TimerManagerが見つかりません。");
+                    Debug.LogWarning("GameManagerが見つかりません。");
                 }
             }
             else

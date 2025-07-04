@@ -1,22 +1,25 @@
+using System.Collections;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Fusion;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
-public class TimeManager : NetworkBehaviour
+public class GameManager : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI timeLabel;
     [Networked]
     private TickTimer Timer { get; set; }
     [Networked]
-    private NetworkBool IsStarted { get; set; } = false; // タイマーが動作中かどうか
+    private NetworkBool IsTimerStarted { get; set; } = false; // タイマーが動作中かどうか
     [Networked]
     private NetworkBool IsStopped { get; set; } = false; // タイマーが停止中かどうか
     private float maxTime = 300f; // タイマーの最大時間
     private float remainingTime;
     private float seconds;
     private int minutes;
+    private bool isGameStarted = false;
 
     public override void Spawned()
     {
@@ -24,12 +27,25 @@ public class TimeManager : NetworkBehaviour
         if (Runner.IsServer)
         {
             // タイマーを300秒（5分）に設定
-            Timer = TickTimer.CreateFromSeconds(Runner, 300f);
+            Timer = TickTimer.CreateFromSeconds(Runner, maxTime);
+        }
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (Runner.ActivePlayers.Count() == 2)
+        {
+            if (!IsTimerStarted && !isGameStarted) // タイマーが開始されておらず、ゲームが開始されていない場合
+            {
+                isGameStarted = true; // ゲームが開始されたことを示すフラグを立てる
+                Debug.Log("ゲーム開始のカウントダウンを開始します。");
+                StartCoroutine(StartGameCountdown()); // ゲーム開始のカウントダウンを開始
+            }
         }
     }
     public override void Render()
     {
-        if (!IsStarted || IsStopped) // タイマーが開始されていない、または停止中の場合
+        if (!IsTimerStarted || IsStopped) // タイマーが開始されていない、または停止中の場合
         {
             return;
         }
@@ -46,12 +62,12 @@ public class TimeManager : NetworkBehaviour
 
     public void StartTimer()
     {
-        if (Runner.IsServer && !IsStarted) // サーバーであり、タイマーがまだ開始されていない場合
+        if (Runner.IsServer && !IsTimerStarted) // サーバーであり、タイマーがまだ開始されていない場合
         {
-            IsStarted = true; // タイマーを開始
+            IsTimerStarted = true; // タイマーを開始
             Timer = TickTimer.CreateFromSeconds(Runner, maxTime); // タイマーを300秒に設定
         }
-        else if (Runner.IsServer && IsStarted)
+        else if (Runner.IsServer && IsTimerStarted)
         {
             // 再スタート（Tickは動いてるから、一気に時間飛ぶ）
             IsStopped = false; // タイマーが停止中でないことを示す
@@ -69,4 +85,22 @@ public class TimeManager : NetworkBehaviour
             Debug.Log($"seconds: {seconds}, minutes: {minutes}");
         }
     }
+
+    private IEnumerator StartGameCountdown()
+    {
+        if (!Runner.IsServer) yield break;
+
+        yield return new WaitForSeconds(1f); // クライアント側の生成待機時間を確保（あとで修正）
+
+        Debug.Log("Countdown start!");
+
+        for (int i = 3; i > 0; i--)
+        {
+            Debug.Log($"Countdown: {i}");
+            yield return new WaitForSeconds(1f); // 1秒待つ
+        }
+        Debug.Log("Game start!");
+        StartTimer(); // 実際のタイマー開始
+    }
+
 }
