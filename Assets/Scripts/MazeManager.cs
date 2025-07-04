@@ -19,6 +19,8 @@ public class MazeManager : NetworkBehaviour
     private NetworkObject blindTrapPrefab;
     [SerializeField]
     private NetworkObject trap3Prefab;
+    [SerializeField]
+    private NetworkObject keyPrefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -38,6 +40,8 @@ public class MazeManager : NetworkBehaviour
                 }
             }
         }
+        runner.Spawn(keyPrefab, new Vector3(width - 2, wallOffset, 1), Quaternion.identity); // 鍵を生成
+        runner.Spawn(keyPrefab, new Vector3(1, wallOffset, height - 2), Quaternion.identity); // 鍵を生成
 
         // ゴール位置にボールを生成(これはホストでしか表示されない)
         GameObject goalObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
