@@ -29,16 +29,9 @@ public class TimeManager : NetworkBehaviour
     }
     public override void Render()
     {
-        if (!IsStarted)
+        if (!IsStarted || IsStopped) // タイマーが開始されていない、または停止中の場合
         {
-            return; // タイマーが動作中でない、またはサーバーでない場合は何もしない
-        }
-        else if (IsStopped)
-        {
-            // seconds = maxTime - remainingTime; // 300秒から残り時間を引く
-            // minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
-            // timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}"); // タイマーの表示を更新
-            // return;
+            return;
         }
         else
         {
