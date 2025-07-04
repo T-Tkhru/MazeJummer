@@ -1,6 +1,6 @@
 using UnityEngine;
 using Fusion;
-using ExitGames.Client.Photon.StructWrapping;
+using System.Collections;
 
 public class GoalCheck : NetworkBehaviour
 {
@@ -17,8 +17,6 @@ public class GoalCheck : NetworkBehaviour
             if (keyCount >= 2)
             {
                 Debug.Log("ゴールしました！");
-                // ゴールに到達したときの処理をここに追加
-                // 例えば、ゲームクリアのUIを表示するなど
                 GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
                 if (gameManager != null)
                 {
@@ -32,7 +30,13 @@ public class GoalCheck : NetworkBehaviour
             else
             {
                 Debug.Log("鍵が足りません。鍵を2つ集めてください。");
+                StartCoroutine(WaitForGoalReset());
             }
         }
+    }
+    private IEnumerator WaitForGoalReset()
+    {
+        yield return new WaitForSeconds(3f); // 3秒待機してから再度トリガーを有効にする
+        hasTriggered = false;
     }
 }
