@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
+using Fusion;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -151,6 +152,8 @@ public class TrapperUIManager : MonoBehaviour
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
+        GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
     private void AttachButtonListeners()

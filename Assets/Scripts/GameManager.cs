@@ -20,6 +20,8 @@ public class GameManager : NetworkBehaviour
     private float seconds;
     private int minutes;
     private bool isGameStarted = false;
+    [Networked]
+    private NetworkBool IsClientReady { get; set; } = false; // クライアントが準備完了かどうか
 
     public override void Spawned()
     {
@@ -35,7 +37,8 @@ public class GameManager : NetworkBehaviour
     {
         if (Runner.ActivePlayers.Count() == 2)
         {
-            if (!IsTimerStarted && !isGameStarted) // タイマーが開始されておらず、ゲームが開始されていない場合
+            if (!isGameStarted && IsClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
+
             {
                 isGameStarted = true; // ゲームが開始されたことを示すフラグを立てる
                 Debug.Log("ゲーム開始のカウントダウンを開始します。");
@@ -90,8 +93,6 @@ public class GameManager : NetworkBehaviour
     {
         if (!Runner.IsServer) yield break;
 
-        yield return new WaitForSeconds(1f); // クライアント側の生成待機時間を確保（あとで修正）
-
         Debug.Log("Countdown start!");
 
         for (int i = 3; i > 0; i--)
@@ -101,6 +102,17 @@ public class GameManager : NetworkBehaviour
         }
         Debug.Log("Game start!");
         StartTimer(); // 実際のタイマー開始
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_ClientReady()
+    {
+        Debug.Log($"client is ready!");
+
+        if (Runner.IsServer)
+        {
+            IsClientReady = true; // クライアントが準備完了であることを示す
+        }
     }
 
 }
