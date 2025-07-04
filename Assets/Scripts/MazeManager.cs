@@ -21,6 +21,8 @@ public class MazeManager : NetworkBehaviour
     private NetworkObject trap3Prefab;
     [SerializeField]
     private NetworkObject keyPrefab;
+    [SerializeField]
+    private NetworkObject goalPallPrefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -43,13 +45,12 @@ public class MazeManager : NetworkBehaviour
         runner.Spawn(keyPrefab, new Vector3(width - 2, wallOffset, 1), Quaternion.identity); // 鍵を生成
         runner.Spawn(keyPrefab, new Vector3(1, wallOffset, height - 2), Quaternion.identity); // 鍵を生成
 
-        // ゴール位置にボールを生成(これはホストでしか表示されない)
-        GameObject goalObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
         goalPosition.x = width - 2; // ゴール位置のX座標を迷路の幅に合わせる
         goalPosition.z = height - 2; // ゴール位置のZ座標を迷路の高さに合わせる
-        goalObject.transform.position = goalPosition;
-        goalObject.name = "GoalBall";
-        goalObject.GetComponent<Renderer>().material.color = Color.red; // ゴール位置のボールを赤色に設定
+        goalPosition.y = 1.5f; // ゴールのY座標を1.5fに設定
+        var goalPall = runner.Spawn(goalPallPrefab, goalPosition, Quaternion.identity);
+        Debug.Log($"ゴールを生成しました: {goalPall.gameObject.name} at {goalPosition}");
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
