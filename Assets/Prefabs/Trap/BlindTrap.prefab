@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5944782399499760111}
   - component: {fileID: 5873369516544600747}
   - component: {fileID: -6778704123755618928}
+  - component: {fileID: 3937176131833849441}
   m_Layer: 0
   m_Name: BlindTrap
   m_TagString: Untagged
@@ -74,6 +75,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -6778704123755618928}
+  - {fileID: 3937176131833849441}
   ForceRemoteRenderTimeframe: 0
 --- !u!54 &5873369516544600747
 Rigidbody:
@@ -115,4 +117,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trapDuration: 10
-  blindEffectPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
+  blindMaskPrefab: {fileID: 0}
+--- !u!114 &3937176131833849441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6316571137083730140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
