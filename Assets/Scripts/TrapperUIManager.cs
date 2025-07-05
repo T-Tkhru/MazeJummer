@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
+using Fusion;
+using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -35,24 +37,95 @@ public class TrapperUIManager : MonoBehaviour
     private enum BuildMode { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
     private BuildMode currentBuildMode = BuildMode.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
+    private TextMeshProUGUI CountDownText;
+    private Image countDownBackground;
+    private GameManager gameManager;
+    private TextMeshProUGUI timerLabel;
+
+
+    void Start()
+    {
+        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
+        if (CountDownText == null || countDownBackground == null)
+        {
+            Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
+    }
 
     void Update()
     {
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
+        // プレイヤーが存在するか確認
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
         if (playerTransform == null)
         {
             Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
+
+        // UIの初期生成
         if (!isGenerated)
         {
-            if (!checkSpawnable())
-            {
-                return; // 壁の数が足りない場合は生成しない
-            }
+            if (!checkSpawnable()) return; // 壁が足りなければ生成しない
+
+            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             StartCoroutine(DelayedGenerateUI());
-            isGenerated = true; // UIが生成されたフラグを立てる
+            isGenerated = true;
         }
+
+        // カウントダウン表示処理
+        HandleTimerDisplay();
+
+        // ゲーム中のUI更新処理
+        UpdatePlayerUI(playerTransform);
+    }
+
+
+    private void HandleTimerDisplay()
+    {
+        if (gameManager == null) return;
+
+        if (gameManager.IsGameStarted())
+        {
+            CountDownText.gameObject.SetActive(false);
+            countDownBackground.gameObject.SetActive(false);
+            timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
+            if (gameManager.IsGameFinished())
+            {
+                return; // ゲームが終了している場合は何もしない
+            }
+            else
+            {
+                UpdateTimerDisplay(); // タイマーの表示を更新
+            }
+        }
+        else
+        {
+            int countdown = gameManager.GetCountdownSeconds();
+            if (countdown > 0)
+            {
+                CountDownText.text = countdown.ToString();
+                CountDownText.gameObject.SetActive(true);
+                countDownBackground.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    private void UpdateTimerDisplay()
+    {
+        float remaining = gameManager.GetRemainingTime();
+        int seconds = Mathf.FloorToInt(300f - remaining);
+        int minutes = seconds / 60;
+        int secondsOnly = seconds % 60;
+
+        timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+    }
+
+    private void UpdatePlayerUI(Transform playerTransform)
+    {
+        if (playerUI == null) return;
+
         Vector3 playerPos = playerTransform.position;
 
         // UIの位置を敵の位置に合わせる
@@ -60,30 +133,27 @@ public class TrapperUIManager : MonoBehaviour
             UIStartPos.x + playerPos.x * tileSize,
             UIStartPos.y + playerPos.z * tileSize
         );
-        if (playerUI == null)
-        {
-            return;
-        }
         playerUI.anchoredPosition = anchoredPos;
 
         Vector2Int currentPlayerPos = new Vector2Int(
             Mathf.RoundToInt(playerPos.x),
             Mathf.RoundToInt(playerPos.z)
         );
-        if (currentPlayerPos == lastPlayerPos)
-        {
-            return;
-        }
-        UpdateUI(currentPlayerPos);
 
+        if (currentPlayerPos != lastPlayerPos)
+        {
+            UpdateUI(currentPlayerPos);
+        }
     }
+
 
     public void GenerateUI()
     {
         canvas = GameObject.Find("Canvas").transform;
         trapperUI = Instantiate(trapperUIPrefab, canvas).transform;
+        trapperUI.SetAsFirstSibling();
         AttachButtonListeners();
-        mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
+        mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>(); // Start時に登録できないので、ここで取得
         if (mazeManager == null)
         {
             Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
@@ -98,7 +168,7 @@ public class TrapperUIManager : MonoBehaviour
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
         UIStartPos = new Vector2(
             (canvasHeight - width * tileSize) / 2 + tileSize / 2,
-            (canvasHeight - width * tileSize) / 2 + tileSize / 2
+            (canvasHeight - height * tileSize) / 2 + tileSize / 2
         ); // UIの開始位置を計算
         for (int y = 0; y < height; y++)
         {
@@ -151,6 +221,9 @@ public class TrapperUIManager : MonoBehaviour
         rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
+        GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
+        gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
     private void AttachButtonListeners()
@@ -332,39 +405,63 @@ public class TrapperUIManager : MonoBehaviour
 
     private void CreateWall(int x, int y)
     {
-        var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
-        if (result.success == "NeedNot")
+        int[,] tempMazeData = (int[,])mazeData.Clone();
+        var checks = new List<(string success, (int x, int y) opened)>();
+        var result = SearchPath.CheckOpenWall(tempMazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+        if (result.success == "Open")
         {
-            mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            tileUIs[x, y] = Instantiate(wallUI, trapperUI); // 新しい通路UIを生成
-            RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
-            Vector2 anchoredPos = new Vector2(
-                UIStartPos.x + x * tileSize,
-                UIStartPos.y + y * tileSize
-            );
-            rect.anchoredPosition = anchoredPos;
-            return;
+            tempMazeData[result.opened.x, result.opened.y] = 0;
         }
-        Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
-        if (result.success == "Cannot")
+        checks.Add(result);
+        Debug.Log($"壁を開ける結果: {result.success}, 開けた位置: {result.opened}");
+        var keyPositions = GetKeyPositions();
+        foreach (var keyPos in keyPositions)
         {
-            Debug.LogWarning("壁を開けることができません。");
-            mazeData[x, y] = 0; // 通路のデータを元に戻す
-            return;
+            var keyResult = SearchPath.CheckOpenWall(tempMazeData, (lastPlayerPos.x, lastPlayerPos.y), keyPos, (x, y));
+            checks.Add(keyResult);
+            Debug.Log($"鍵の位置: {keyPos}, 結果: {keyResult.success}, 開けた位置: {keyResult.opened}");
+            if (result.success == "Open")
+            {
+                tempMazeData[result.opened.x, result.opened.y] = 0;
+            }
         }
-        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-        mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
-        // UIを更新
-        if (tileUIs[x, y] != null)
-        {
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            CreateWallUI(x, y); // 新しい壁UIを生成
 
-            Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
-            CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+        foreach (var check in checks)
+        {
+            if (check.success == "Cannot")
+            {
+                Debug.LogWarning("壁を開けることができません。");
+                mazeData[x, y] = 0; // 通路のデータを元に戻す
+                return;
+            }
+        }
+
+        // 壁を生成
+        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+        Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+        CreateWallUI(x, y); // 新しい壁UIを生成
+
+        foreach (var check in checks)
+        {
+            if (check.success == "Open")
+            {
+                if (mazeData[check.opened.x, check.opened.y] != 1)
+                {
+                    Debug.LogWarning($"すでに壁ではありません: {check.opened}");
+                    continue;
+                }
+                mazeManager.RpcOpenWall(new Vector3(check.opened.x, wallOffset, check.opened.y));
+                // UIを更新
+                if (tileUIs[check.opened.x, check.opened.y] != null)
+                {
+                    Destroy(tileUIs[check.opened.x, check.opened.y]); // 開けた位置のUIを削除
+                    CreateRoadUI(check.opened.x, check.opened.y); // 新しい通路UIを生成
+                    Debug.Log($"壁を開けて通路にしました: {check.opened}");
+                }
+            }
         }
     }
+
     private void CreateWallUI(int x, int y)
     {
         GameObject wallTile = Instantiate(wallUI, trapperUI);
@@ -431,5 +528,22 @@ public class TrapperUIManager : MonoBehaviour
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("トラップ3を作るボタンが押されました。");
         currentBuildMode = BuildMode.Trap3;
+    }
+
+    private List<(int x, int y)> GetKeyPositions()
+    {
+        // 鍵の位置を取得するメソッド
+        // シーンにある鍵の位置を取得
+        List<(int x, int y)> keyPositions = new List<(int x, int y)>();
+        GameObject[] keys = GameObject.FindGameObjectsWithTag("Key");
+        foreach (var key in keys)
+        {
+            Vector3 pos = key.transform.position;
+            int x = Mathf.RoundToInt(pos.x);
+            int y = Mathf.RoundToInt(pos.z);
+            keyPositions.Add((x, y));
+        }
+        Debug.Log($"鍵の位置数: {keyPositions.Count}");
+        return keyPositions;
     }
 }

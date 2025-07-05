@@ -6,10 +6,6 @@ public class BlindTrap : Trap
 {
     [SerializeField]
     private float trapDuration = 10f; // トラップの効果時間
-    private GameObject blindMask;
-    [SerializeField]
-    private GameObject blindMaskPrefab; // BlindMaskのプレハブ
-
     protected override void TriggerEffect(Collider avatar)
     {
         Debug.Log("トラップに引っかかった！");

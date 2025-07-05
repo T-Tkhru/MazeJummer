@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Fusion.Sockets;
-using Mono.Cecil.Cil;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,8 +31,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
-        // string sessionName = null;
-        // sessionName = GetSessionName(); //デバッグ用で削除中
+        string sessionName = null;
+        sessionName = GetSessionName(); //デバッグ用で削除中
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
@@ -42,6 +41,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             PlayerCount = 2, // プレイヤー数を2に設定
             Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
         });
+        Debug.Log($"セッション開始結果: {result}");
 
         if (result.Ok)
         {

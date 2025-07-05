@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5944782399499760111}
   - component: {fileID: 5873369516544600747}
   - component: {fileID: -7539311758871242508}
+  - component: {fileID: 4986097696078711939}
   m_Layer: 0
   m_Name: Trap3
   m_TagString: Untagged
@@ -74,6 +75,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -7539311758871242508}
+  - {fileID: 4986097696078711939}
   ForceRemoteRenderTimeframe: 0
 --- !u!54 &5873369516544600747
 Rigidbody:
@@ -115,4 +117,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trapDuration: 10
-  slowSpeed: 1.25
+--- !u!114 &4986097696078711939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6316571137083730140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
