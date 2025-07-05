@@ -55,23 +55,36 @@ public class TrapperUIManager : MonoBehaviour
 
     void Update()
     {
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar").transform;
+        // プレイヤーが存在するか確認
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
         if (playerTransform == null)
         {
             Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
+
+        // UIの初期生成
         if (!isGenerated)
         {
-            if (!checkSpawnable())
-            {
-                return; // 壁の数が足りない場合は生成しない
-            }
-            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            if (!checkSpawnable()) return; // 壁が足りなければ生成しない
+
+            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             StartCoroutine(DelayedGenerateUI());
-            isGenerated = true; // UIが生成されたフラグを立てる
+            isGenerated = true;
         }
+
+        // カウントダウン表示処理
+        HandleCountdownDisplay();
+
+        // ゲーム中のUI更新処理
+        UpdatePlayerUI(playerTransform);
+    }
+
+
+    private void HandleCountdownDisplay()
+    {
         if (gameManager == null) return;
+
         if (gameManager.IsGameStarted())
         {
             CountDownText.gameObject.SetActive(false);
@@ -87,29 +100,32 @@ public class TrapperUIManager : MonoBehaviour
                 countDownBackground.gameObject.SetActive(true);
             }
         }
+    }
+
+    private void UpdatePlayerUI(Transform playerTransform)
+    {
+        if (playerUI == null) return;
+
         Vector3 playerPos = playerTransform.position;
+
         // UIの位置を敵の位置に合わせる
         Vector2 anchoredPos = new Vector2(
             UIStartPos.x + playerPos.x * tileSize,
             UIStartPos.y + playerPos.z * tileSize
         );
-        if (playerUI == null)
-        {
-            return;
-        }
         playerUI.anchoredPosition = anchoredPos;
 
         Vector2Int currentPlayerPos = new Vector2Int(
             Mathf.RoundToInt(playerPos.x),
             Mathf.RoundToInt(playerPos.z)
         );
-        if (currentPlayerPos == lastPlayerPos)
-        {
-            return;
-        }
-        UpdateUI(currentPlayerPos);
 
+        if (currentPlayerPos != lastPlayerPos)
+        {
+            UpdateUI(currentPlayerPos);
+        }
     }
+
 
     public void GenerateUI()
     {
@@ -117,7 +133,7 @@ public class TrapperUIManager : MonoBehaviour
         trapperUI = Instantiate(trapperUIPrefab, canvas).transform;
         trapperUI.SetAsFirstSibling();
         AttachButtonListeners();
-        mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
+        mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>(); // Start時に登録できないので、ここで取得
         if (mazeManager == null)
         {
             Debug.LogError("MazeManagerが見つかりません。シーンに配置されていることを確認してください。");
