@@ -1,14 +1,8 @@
-using System.Collections;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Fusion;
-using NUnit.Framework;
-using TMPro;
 using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI timeLabel;
     [Networked]
     private TickTimer Timer { get; set; }
     [Networked]
@@ -57,22 +51,6 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
-    public override void Render()
-    {
-        if (!isGameStarted || isGameFinished) // タイマーが開始されていない、または停止中の場合
-        {
-            return;
-        }
-        else
-        {
-            // 300 - Timerで経過時間を表示する
-            remainingTime = Timer.RemainingTime(Runner) ?? 0f;
-            seconds = maxTime - remainingTime; // 300秒から残り時間を引く
-            minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
-
-            timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}");
-        }
-    }
 
     public void StartTimer()
     {
@@ -95,26 +73,9 @@ public class GameManager : NetworkBehaviour
             remainingTime = Timer.RemainingTime(Runner) ?? 0f; // 残り時間を取得
             seconds = maxTime - remainingTime; // 300秒から残り時間を引く
             minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
-            timeLabel.SetText($"{minutes:D2}:{(int)seconds % 60:D2}"); // タイマーの表示を更新
             Debug.Log($"seconds: {seconds}, minutes: {minutes}");
         }
     }
-
-    private IEnumerator StartGameCountdown()
-    {
-        if (!Runner.IsServer) yield break;
-
-        Debug.Log("Countdown start!");
-
-        for (int i = 3; i > 0; i--)
-        {
-            Debug.Log($"Countdown: {i}");
-            yield return new WaitForSeconds(1f); // 1秒待つ
-        }
-        Debug.Log("Game start!");
-        StartTimer(); // 実際のタイマー開始
-    }
-
     private void StartGameCountdown2()
     {
         if (Runner.IsServer)
