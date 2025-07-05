@@ -4,6 +4,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using Fusion;
+using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -36,6 +37,21 @@ public class TrapperUIManager : MonoBehaviour
     private enum BuildMode { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
     private BuildMode currentBuildMode = BuildMode.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
+    private TextMeshProUGUI CountDownText;
+    private Image countDownBackground;
+    private GameManager gameManager;
+
+
+    void Start()
+    {
+        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
+        if (CountDownText == null || countDownBackground == null)
+        {
+            Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
+    }
 
     void Update()
     {
@@ -51,11 +67,27 @@ public class TrapperUIManager : MonoBehaviour
             {
                 return; // 壁の数が足りない場合は生成しない
             }
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true; // UIが生成されたフラグを立てる
         }
+        if (gameManager == null) return;
+        if (gameManager.IsGameStarted())
+        {
+            CountDownText.gameObject.SetActive(false);
+            countDownBackground.gameObject.SetActive(false);
+        }
+        else
+        {
+            int countdown = gameManager.GetCountdownSeconds();
+            if (countdown > 0)
+            {
+                CountDownText.text = countdown.ToString();
+                CountDownText.gameObject.SetActive(true);
+                countDownBackground.gameObject.SetActive(true);
+            }
+        }
         Vector3 playerPos = playerTransform.position;
-
         // UIの位置を敵の位置に合わせる
         Vector2 anchoredPos = new Vector2(
             UIStartPos.x + playerPos.x * tileSize,
@@ -83,6 +115,7 @@ public class TrapperUIManager : MonoBehaviour
     {
         canvas = GameObject.Find("Canvas").transform;
         trapperUI = Instantiate(trapperUIPrefab, canvas).transform;
+        trapperUI.SetAsFirstSibling();
         AttachButtonListeners();
         mazeManager = GameObject.Find("MazeManager(Clone)").GetComponent<MazeManager>();
         if (mazeManager == null)

@@ -49,10 +49,17 @@ public class RunnerUIManager : MonoBehaviour
         img.material = blindMaskMaterial;
         blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
         blindMask.SetActive(false);
+    }
+    private void Start()
+    {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
         countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
-
+        if (CountDownText == null || countDownBackground == null)
+        {
+            Debug.LogError("CountDownTextまたはCountDownBackgroundが見つかりません。");
+            return;
+        }
     }
 
     private void Update()
