@@ -18,8 +18,8 @@ public class GameManager : NetworkBehaviour
     private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
     [Networked]
     private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
-    private GameObject trapperUIManager;
-    private GameObject runnerUIManager;
+    [SerializeField]
+    private bool isSoloMode = false; // ソロモードかどうか
 
     public override void Spawned()
     {
@@ -33,6 +33,36 @@ public class GameManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (isSoloMode) // ソロモードの場合
+        {
+            SoloModeStart();
+        }
+        else // マルチプレイヤーモードの場合
+        {
+            MultiPlayerModeStart();
+        }
+
+    }
+
+    private void SoloModeStart()
+    {
+        if (!isGameReady) // ゲームが開始されていない場合
+
+        {
+            isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
+            Debug.Log("ゲーム開始のカウントダウンを開始します。");
+            StartGameCountdown(); // ゲーム開始のカウントダウンを開始
+        }
+        if (GameStartTimer.IsRunning && GameStartTimer.Expired(Runner)) // ゲーム開始のカウントダウンが終了した場合
+        {
+            Debug.Log("ゲーム開始のカウントダウンが終了しました。");
+            GameStartTimer = TickTimer.None; // ゲーム開始のカウントダウンタイマーを無効化
+            StartTimer(); // タイマーを開始
+        }
+    }
+
+    private void MultiPlayerModeStart()
+    {
         if (Runner.ActivePlayers.Count() == 2)
         {
             if (!isGameReady && isClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
@@ -40,8 +70,7 @@ public class GameManager : NetworkBehaviour
             {
                 isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
                 Debug.Log("ゲーム開始のカウントダウンを開始します。");
-                // StartCoroutine(StartGameCountdown()); // ゲーム開始のカウントダウンを開始
-                StartGameCountdown2(); // ゲーム開始のカウントダウンを開始
+                StartGameCountdown(); // ゲーム開始のカウントダウンを開始
             }
             if (GameStartTimer.IsRunning && GameStartTimer.Expired(Runner)) // ゲーム開始のカウントダウンが終了した場合
             {
@@ -76,7 +105,7 @@ public class GameManager : NetworkBehaviour
             Debug.Log($"seconds: {seconds}, minutes: {minutes}");
         }
     }
-    private void StartGameCountdown2()
+    private void StartGameCountdown()
     {
         if (Runner.IsServer)
         {
