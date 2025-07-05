@@ -1,4 +1,6 @@
 using System.Collections;
+using Fusion;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +16,9 @@ public class RunnerUIManager : MonoBehaviour
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
+    private TextMeshProUGUI CountDownText;
+    private Image countDownBackground;
+    private GameManager gameManager;
 
 
     private void Awake()
@@ -44,6 +49,30 @@ public class RunnerUIManager : MonoBehaviour
         img.material = blindMaskMaterial;
         blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
         blindMask.SetActive(false);
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
+
+    }
+
+    private void Update()
+    {
+        if (gameManager == null) return;
+        if (gameManager.IsGameStarted())
+        {
+            CountDownText.gameObject.SetActive(false);
+            countDownBackground.gameObject.SetActive(false);
+        }
+        else
+        {
+            int countdown = gameManager.GetCountdownSeconds();
+            if (countdown > 0)
+            {
+                CountDownText.text = countdown.ToString();
+                CountDownText.gameObject.SetActive(true);
+                countDownBackground.gameObject.SetActive(true);
+            }
+        }
     }
 
     public void ActivateBlind(float duration)
