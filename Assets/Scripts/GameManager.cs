@@ -149,5 +149,13 @@ public class GameManager : NetworkBehaviour
     {
         return isGameStarted; // ゲームが開始されているかどうかを返す
     }
+    public bool IsGameFinished()
+    {
+        return isGameFinished; // ゲームが終了したかどうかを返す
+    }
 
+    public float GetRemainingTime()
+    {
+        return Timer.RemainingTime(Runner) ?? 0f;
+    }
 }

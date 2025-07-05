@@ -40,6 +40,7 @@ public class TrapperUIManager : MonoBehaviour
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
+    private TextMeshProUGUI timerLabel;
 
 
     void Start()
@@ -74,14 +75,14 @@ public class TrapperUIManager : MonoBehaviour
         }
 
         // カウントダウン表示処理
-        HandleCountdownDisplay();
+        HandleTimerDisplay();
 
         // ゲーム中のUI更新処理
         UpdatePlayerUI(playerTransform);
     }
 
 
-    private void HandleCountdownDisplay()
+    private void HandleTimerDisplay()
     {
         if (gameManager == null) return;
 
@@ -89,6 +90,15 @@ public class TrapperUIManager : MonoBehaviour
         {
             CountDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
+            timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
+            if (gameManager.IsGameFinished())
+            {
+                return; // ゲームが終了している場合は何もしない
+            }
+            else
+            {
+                UpdateTimerDisplay(); // タイマーの表示を更新
+            }
         }
         else
         {
@@ -100,6 +110,16 @@ public class TrapperUIManager : MonoBehaviour
                 countDownBackground.gameObject.SetActive(true);
             }
         }
+    }
+
+    private void UpdateTimerDisplay()
+    {
+        float remaining = gameManager.GetRemainingTime();
+        int seconds = Mathf.FloorToInt(300f - remaining);
+        int minutes = seconds / 60;
+        int secondsOnly = seconds % 60;
+
+        timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
     }
 
     private void UpdatePlayerUI(Transform playerTransform)
@@ -202,6 +222,7 @@ public class TrapperUIManager : MonoBehaviour
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
         GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
         gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
