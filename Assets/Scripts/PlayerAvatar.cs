@@ -17,6 +17,7 @@ public class PlayerAvatar : NetworkBehaviour
     private float slowSpeed = 1.25f;
     [Networked]
     private int keyCount { get; set; } = 0;
+    private GameManager gameManager;
 
     public override void Spawned()
     {
@@ -45,6 +46,7 @@ public class PlayerAvatar : NetworkBehaviour
             Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
         }
         defaultSpeed = characterController.maxSpeed;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     public override void Render()
@@ -77,6 +79,12 @@ public class PlayerAvatar : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (!gameManager.IsGameStarted() || gameManager.IsGameFinished())
+        {
+            // 操作できないように
+            characterController.Move(Vector3.zero);
+            return;
+        }
         if (GetInput(out NetworkInputData data))
         {
             // 入力方向のベクトルを正規化する
