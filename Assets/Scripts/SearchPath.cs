@@ -8,19 +8,18 @@ public static class SearchPath
 {
     public static (String success, (int x, int y) opened) CheckOpenWall(int[,] maze, (int x, int y) start, (int x, int y) goal, (int x, int y) selected)
     {
+        int[,] mazeCopy = (int[,])maze.Clone();
         // 現在地からゴールまでのパスをBFSで探索
-        var path = BFS(maze, start, goal);
+        var path = BFS(mazeCopy, start, goal);
         if (path != null)
         {
             return ("NeedNot", (-1, -1)); // すでにパスがある場合は何も開けない
         }
-        return OpenWall(maze, start, goal, selected);
+        return OpenWall(mazeCopy, start, goal, selected);
 
     }
     private static (String success, (int x, int y) opened) OpenWall(int[,] maze, (int x, int y) start, (int x, int y) goal, (int x, int y) selected)
     {
-        UnityEngine.Debug.Log($"Start: {start}, maze[{start.x}, {start.y}]={maze[start.x, start.y]}");
-        UnityEngine.Debug.Log($"Goal: {goal}, maze[{goal.x}, {goal.y}]={maze[goal.x, goal.y]}");
         if (maze[start.x, start.y] != 0 || maze[goal.x, goal.y] != 0)
         {
             UnityEngine.Debug.LogError("スタートが通路ではない、またはゴールが通路ではない");

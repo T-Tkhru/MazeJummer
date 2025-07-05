@@ -335,17 +335,25 @@ public class TrapperUIManager : MonoBehaviour
 
     private void CreateWall(int x, int y)
     {
+        int[,] tempMazeData = (int[,])mazeData.Clone();
         var checks = new List<(string success, (int x, int y) opened)>();
-        var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+        var result = SearchPath.CheckOpenWall(tempMazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
+        if (result.success == "Open")
+        {
+            tempMazeData[result.opened.x, result.opened.y] = 0;
+        }
         checks.Add(result);
         Debug.Log($"壁を開ける結果: {result.success}, 開けた位置: {result.opened}");
         var keyPositions = GetKeyPositions();
-        Debug.Log($"鍵の位置数: {keyPositions.Count}");
         foreach (var keyPos in keyPositions)
         {
-            var keyResult = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), keyPos, (x, y));
+            var keyResult = SearchPath.CheckOpenWall(tempMazeData, (lastPlayerPos.x, lastPlayerPos.y), keyPos, (x, y));
             checks.Add(keyResult);
             Debug.Log($"鍵の位置: {keyPos}, 結果: {keyResult.success}, 開けた位置: {keyResult.opened}");
+            if (result.success == "Open")
+            {
+                tempMazeData[result.opened.x, result.opened.y] = 0;
+            }
         }
 
         foreach (var check in checks)
@@ -365,16 +373,20 @@ public class TrapperUIManager : MonoBehaviour
 
         foreach (var check in checks)
         {
-            if (check.success == "Open" && mazeData[check.opened.x, check.opened.y] == 1)
+            if (check.success == "Open")
             {
-                Debug.Log($"壁を開けます！: {check.opened}");
+                if (mazeData[check.opened.x, check.opened.y] != 1)
+                {
+                    Debug.LogWarning($"すでに壁ではありません: {check.opened}");
+                    continue;
+                }
                 mazeManager.RpcOpenWall(new Vector3(check.opened.x, wallOffset, check.opened.y));
                 // UIを更新
                 if (tileUIs[check.opened.x, check.opened.y] != null)
                 {
                     Destroy(tileUIs[check.opened.x, check.opened.y]); // 開けた位置のUIを削除
                     CreateRoadUI(check.opened.x, check.opened.y); // 新しい通路UIを生成
-                    Debug.Log($"壁を開けて通路にしました: {check.opened.x}, {check.opened.y}");
+                    Debug.Log($"壁を開けて通路にしました: {check.opened}");
                 }
             }
         }
