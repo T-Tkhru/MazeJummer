@@ -19,8 +19,8 @@ public static class SearchPath
     }
     private static (String success, (int x, int y) opened) OpenWall(int[,] maze, (int x, int y) start, (int x, int y) goal, (int x, int y) selected)
     {
-        UnityEngine.Debug.Log($"maze size: {maze.GetLength(0)}x{maze.GetLength(1)}");
         UnityEngine.Debug.Log($"Start: {start}, maze[{start.x}, {start.y}]={maze[start.x, start.y]}");
+        UnityEngine.Debug.Log($"Goal: {goal}, maze[{goal.x}, {goal.y}]={maze[goal.x, goal.y]}");
         if (maze[start.x, start.y] != 0 || maze[goal.x, goal.y] != 0)
         {
             UnityEngine.Debug.LogError("スタートが通路ではない、またはゴールが通路ではない");
@@ -35,7 +35,6 @@ public static class SearchPath
                 positions.Add((x, y));
             }
         }
-        UnityEngine.Debug.Log($"positions count: {positions.Count}");
         // シャッフル
         System.Random rng = new System.Random();
         int n = positions.Count;

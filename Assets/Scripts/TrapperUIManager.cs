@@ -335,39 +335,51 @@ public class TrapperUIManager : MonoBehaviour
 
     private void CreateWall(int x, int y)
     {
+        var checks = new List<(string success, (int x, int y) opened)>();
         var result = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), (width - 2, height - 2), (x, y));
-        if (result.success == "NeedNot")
+        checks.Add(result);
+        Debug.Log($"壁を開ける結果: {result.success}, 開けた位置: {result.opened}");
+        var keyPositions = GetKeyPositions();
+        Debug.Log($"鍵の位置数: {keyPositions.Count}");
+        foreach (var keyPos in keyPositions)
         {
-            mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            tileUIs[x, y] = Instantiate(wallUI, trapperUI); // 新しい通路UIを生成
-            RectTransform rect = tileUIs[x, y].GetComponent<RectTransform>();
-            Vector2 anchoredPos = new Vector2(
-                UIStartPos.x + x * tileSize,
-                UIStartPos.y + y * tileSize
-            );
-            rect.anchoredPosition = anchoredPos;
-            return;
+            var keyResult = SearchPath.CheckOpenWall(mazeData, (lastPlayerPos.x, lastPlayerPos.y), keyPos, (x, y));
+            checks.Add(keyResult);
+            Debug.Log($"鍵の位置: {keyPos}, 結果: {keyResult.success}, 開けた位置: {keyResult.opened}");
         }
-        Debug.Log($"OpenWall Result: {result.success}, Opened Position: {result.opened}");
-        if (result.success == "Cannot")
-        {
-            Debug.LogWarning("壁を開けることができません。");
-            mazeData[x, y] = 0; // 通路のデータを元に戻す
-            return;
-        }
-        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
-        mazeManager.RpcOpenWall(new Vector3(result.opened.x, wallOffset, result.opened.y));
-        // UIを更新
-        if (tileUIs[x, y] != null)
-        {
-            Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
-            CreateWallUI(x, y); // 新しい壁UIを生成
 
-            Destroy(tileUIs[result.opened.x, result.opened.y]); // 開けた位置のUIを削除
-            CreateRoadUI(result.opened.x, result.opened.y); // 新しい通路UIを生成
+        foreach (var check in checks)
+        {
+            if (check.success == "Cannot")
+            {
+                Debug.LogWarning("壁を開けることができません。");
+                mazeData[x, y] = 0; // 通路のデータを元に戻す
+                return;
+            }
+        }
+
+        // 壁を生成
+        mazeManager.RpcGenerateWall(new Vector3(x, wallOffset, y));
+        Destroy(tileUIs[x, y]); // クリックされた位置のUIを削除
+        CreateWallUI(x, y); // 新しい壁UIを生成
+
+        foreach (var check in checks)
+        {
+            if (check.success == "Open" && mazeData[check.opened.x, check.opened.y] == 1)
+            {
+                Debug.Log($"壁を開けます！: {check.opened}");
+                mazeManager.RpcOpenWall(new Vector3(check.opened.x, wallOffset, check.opened.y));
+                // UIを更新
+                if (tileUIs[check.opened.x, check.opened.y] != null)
+                {
+                    Destroy(tileUIs[check.opened.x, check.opened.y]); // 開けた位置のUIを削除
+                    CreateRoadUI(check.opened.x, check.opened.y); // 新しい通路UIを生成
+                    Debug.Log($"壁を開けて通路にしました: {check.opened.x}, {check.opened.y}");
+                }
+            }
         }
     }
+
     private void CreateWallUI(int x, int y)
     {
         GameObject wallTile = Instantiate(wallUI, trapperUI);
@@ -434,5 +446,22 @@ public class TrapperUIManager : MonoBehaviour
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("トラップ3を作るボタンが押されました。");
         currentBuildMode = BuildMode.Trap3;
+    }
+
+    private List<(int x, int y)> GetKeyPositions()
+    {
+        // 鍵の位置を取得するメソッド
+        // シーンにある鍵の位置を取得
+        List<(int x, int y)> keyPositions = new List<(int x, int y)>();
+        GameObject[] keys = GameObject.FindGameObjectsWithTag("Key");
+        foreach (var key in keys)
+        {
+            Vector3 pos = key.transform.position;
+            int x = Mathf.RoundToInt(pos.x);
+            int y = Mathf.RoundToInt(pos.z);
+            keyPositions.Add((x, y));
+        }
+        Debug.Log($"鍵の位置数: {keyPositions.Count}");
+        return keyPositions;
     }
 }

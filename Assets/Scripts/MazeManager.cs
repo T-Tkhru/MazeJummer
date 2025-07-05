@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CreateMaze;
 using Fusion;
 using UnityEngine;
@@ -45,7 +46,6 @@ public class MazeManager : NetworkBehaviour
         runner.Spawn(keyPrefab, new Vector3(width - 2, wallOffset, 1), Quaternion.identity); // 鍵を生成
         runner.Spawn(keyPrefab, new Vector3(1, wallOffset, height - 2), Quaternion.identity); // 鍵を生成
 
-
         goalPosition.x = width - 2; // ゴール位置のX座標を迷路の幅に合わせる
         goalPosition.z = height - 2; // ゴール位置のZ座標を迷路の高さに合わせる
         goalPosition.y = 1.5f; // ゴールのY座標を1.5fに設定
@@ -71,6 +71,11 @@ public class MazeManager : NetworkBehaviour
         if (Runner.IsServer)
         {
             Collider[] colliders = Physics.OverlapBox(openPos, Vector3.one * 0.1f);
+            if (colliders.Length == 0)
+            {
+                Debug.LogWarning($"壁が見つかりません: position={openPos}");
+                return;
+            }
 
             foreach (var col in colliders)
             {
@@ -116,4 +121,5 @@ public class MazeManager : NetworkBehaviour
     {
         Debug.Log("RpcGenerateTrap3が呼び出されました");
     }
+
 }
