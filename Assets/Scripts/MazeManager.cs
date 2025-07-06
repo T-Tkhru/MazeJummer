@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CreateMaze;
 using Fusion;
 using UnityEngine;

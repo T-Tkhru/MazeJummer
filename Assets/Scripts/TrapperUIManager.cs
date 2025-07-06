@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
-using Fusion;
 using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
