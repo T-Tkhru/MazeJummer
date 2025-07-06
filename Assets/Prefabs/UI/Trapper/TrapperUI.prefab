@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2706755049038877874}
   - component: {fileID: 7774789883056531272}
   m_Layer: 5
-  m_Name: CreateTrap3
+  m_Name: CreateReverseInputTrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -656,9 +656,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Trap3
-
-'
+  m_text: "\u64CD\u4F5C\u53CD\u8EE2"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}

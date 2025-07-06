@@ -35,7 +35,7 @@ public class TrapperUIManager : MonoBehaviour
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
-    private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
+    private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
     private TrapType currentTrapType = TrapType.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
     private TextMeshProUGUI CountDownText;
@@ -301,14 +301,14 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateBlindTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createTrap3Button = trapperUI.Find("CreateTrap3").GetComponent<Button>();
-        if (createTrap3Button != null)
+        Button createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
+        if (createReverseInputTrapButton != null)
         {
-            createTrap3Button.onClick.AddListener(SelectMakeTrap3);
+            createReverseInputTrapButton.onClick.AddListener(SelectMakeReverseInputTrap);
         }
         else
         {
-            Debug.LogError("CreateTrap3ボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+            Debug.LogError("CreateReverseInputTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
     }
 
@@ -439,8 +439,8 @@ public class TrapperUIManager : MonoBehaviour
                 mazeManager.RpcGenerateBlindTrap(x, y);
                 CreateTrapUI(x, y, blindTrapUI);
                 break;
-            case TrapType.Trap3:
-                mazeManager.RpcGenerateTrap3(x, y);
+            case TrapType.ReverseInputTrap:
+                mazeManager.RpcGenerateReverseInputTrap(x, y);
                 CreateTrapUI(x, y, trapUI3);
                 break;
             default:
@@ -573,11 +573,11 @@ public class TrapperUIManager : MonoBehaviour
         currentTrapType = TrapType.BlindTrap;
     }
 
-    public void SelectMakeTrap3()
+    public void SelectMakeReverseInputTrap()
     {
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("トラップ3を作るボタンが押されました。");
-        currentTrapType = TrapType.Trap3;
+        currentTrapType = TrapType.ReverseInputTrap;
     }
 
     private List<(int x, int y)> GetKeyPositions()

@@ -22,6 +22,8 @@ public class PlayerAvatar : NetworkBehaviour
     private GameManager gameManager;
     [SerializeField]
     private GameObject freeLookCamera;
+    private bool isReverseInput = false;
+    private int reverseInputRefCount = 0;
 
     public override void Spawned()
     {
@@ -87,7 +89,6 @@ public class PlayerAvatar : NetworkBehaviour
         {
             // 操作できないように
             characterController.Move(Vector3.zero);
-            // inputaxiscontrollerを無効化、子要素のシネマシーンにくっついてる
             freeLookCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             return;
         }
@@ -97,7 +98,16 @@ public class PlayerAvatar : NetworkBehaviour
             // 入力方向のベクトルを正規化する
             data.Direction.Normalize();
             // 入力方向を移動方向としてそのまま渡す
-            characterController.Move(data.Direction);
+            if (isReverseInput)
+            {
+                // 入力を反転させる
+                characterController.Move(-data.Direction);
+            }
+            else
+            {
+                // 通常の入力方向で移動
+                characterController.Move(data.Direction);
+            }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {
                 characterController.Jump();
@@ -120,6 +130,23 @@ public class PlayerAvatar : NetworkBehaviour
         {
             speedDownRefCount = 0;
             characterController.maxSpeed = defaultSpeed;
+        }
+    }
+    public void ActivateReverseInput(float duration)
+    {
+        reverseInputRefCount++;
+        StartCoroutine(HandleReverseInputEffect(duration));
+    }
+    private IEnumerator HandleReverseInputEffect(float duration)
+    {
+        // 入力を反転させるための処理を実装
+        isReverseInput = true;
+        yield return new WaitForSeconds(duration);
+        reverseInputRefCount--;
+        if (reverseInputRefCount <= 0)
+        {
+            reverseInputRefCount = 0;
+            isReverseInput = false; // 入力の反転を解除
         }
     }
 

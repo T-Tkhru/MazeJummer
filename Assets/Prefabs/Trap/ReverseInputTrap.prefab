@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 1361078032949974346}
   - component: {fileID: 5944782399499760111}
   - component: {fileID: 5873369516544600747}
-  - component: {fileID: -7539311758871242508}
+  - component: {fileID: 3301147835771649194}
   - component: {fileID: 4986097696078711939}
   m_Layer: 0
-  m_Name: Trap3
+  m_Name: ReverseInputTrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: -7539311758871242508}
+  - {fileID: 3301147835771649194}
   - {fileID: 4986097696078711939}
   ForceRemoteRenderTimeframe: 0
 --- !u!54 &5873369516544600747
@@ -104,7 +104,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-7539311758871242508
+--- !u!114 &3301147835771649194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6316571137083730140}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7fed0189e489ac44b047b954265b4c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 608e213c80430c7488346baf85152e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trapDuration: 10

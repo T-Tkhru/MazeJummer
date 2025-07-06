@@ -19,7 +19,7 @@ public class MazeManager : NetworkBehaviour
     [SerializeField]
     private NetworkObject blindTrapPrefab;
     [SerializeField]
-    private NetworkObject trap3Prefab;
+    private NetworkObject reverseInputTrapPrefab;
     [SerializeField]
     private NetworkObject keyPrefab;
     [SerializeField]
@@ -117,9 +117,16 @@ public class MazeManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RpcGenerateTrap3(int x, int y)
+    public void RpcGenerateReverseInputTrap(int x, int y)
     {
-        Debug.Log("RpcGenerateTrap3が呼び出されました");
+        Debug.Log("RpcGenerateReverseInputTrapが呼び出されました");
+        if (Runner.IsServer)
+        {
+            // サーバー側でトラップを生成
+            Vector3 trapPosition = new Vector3(x, 0.5f, y);
+            var trap = Runner.Spawn(reverseInputTrapPrefab, trapPosition, Quaternion.identity);
+            Debug.Log($"トラップを生成しました: {trap.gameObject.name} at {trapPosition}");
+        }
     }
 
 }
