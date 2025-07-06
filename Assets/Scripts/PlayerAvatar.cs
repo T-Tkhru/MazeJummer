@@ -1,5 +1,7 @@
 using System.Collections;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -18,6 +20,8 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked]
     private int keyCount { get; set; } = 0;
     private GameManager gameManager;
+    [SerializeField]
+    private GameObject freeLookCamera;
 
     public override void Spawned()
     {
@@ -83,8 +87,11 @@ public class PlayerAvatar : NetworkBehaviour
         {
             // 操作できないように
             characterController.Move(Vector3.zero);
+            // inputaxiscontrollerを無効化、子要素のシネマシーンにくっついてる
+            freeLookCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             return;
         }
+        freeLookCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
         if (GetInput(out NetworkInputData data))
         {
             // 入力方向のベクトルを正規化する

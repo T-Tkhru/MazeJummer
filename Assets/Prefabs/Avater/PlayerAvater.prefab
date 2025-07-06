@@ -139,7 +139,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508628122770003621}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5054615, y: 0.000000027945683, z: -0.000000019534019, w: 0.8628492}
+  m_LocalRotation: {x: 0.5054616, y: 0.000000025714913, z: -0.00000001506393, w: 0.8628492}
   m_LocalPosition: {x: 0, y: 7.134915, z: -4.0000005}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -581,6 +581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a759d9223129f541aad766577cdc355, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeLookCamera: {fileID: 1508628122770003621}
 --- !u!114 &3571530090003666984
 MonoBehaviour:
   m_ObjectHideFlags: 0
