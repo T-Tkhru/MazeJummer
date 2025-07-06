@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSoloMode: 0
+  maxTraps: 3
 --- !u!114 &296390127
 MonoBehaviour:
   m_ObjectHideFlags: 0
