@@ -8,6 +8,7 @@ using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
 {
+    public static TrapperUIManager Instance { get; private set; }
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
@@ -44,8 +45,47 @@ public class TrapperUIManager : MonoBehaviour
 
     private Dictionary<TrapType, int> trapUseCounts = new Dictionary<TrapType, int>();
     private int maxTraps;
+    [SerializeField] private GameObject blindMaskPrefab;
+    public GameObject blindMask { get; private set; }
+    private Material blindMaskMaterial;
+    private int blindRefCount = 0;
+    private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
+    private float blindMinRadius = 0.2f;
+    private float blindMaxRadius = 1.2f;
 
 
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        // BlindMask を生成して Canvas に配置
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogError("Canvasがシーンに存在しません");
+            return;
+        }
+
+        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        var img = blindMask.GetComponent<Image>();
+        if (img == null)
+        {
+            Debug.LogError("BlindMaskPrefabにImageコンポーネントがありません");
+            return;
+        }
+        // 指定した位置にblindmaskを配置
+        blindMask.transform.localPosition = new Vector3(481, 270, 0);
+        blindMask.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f); // サイズを調整
+        blindMaskMaterial = Instantiate(img.material);
+        img.material = blindMaskMaterial;
+        blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
+        blindMask.SetActive(false);
+    }
     void Start()
     {
         CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
@@ -225,8 +265,6 @@ public class TrapperUIManager : MonoBehaviour
 
         RawImage rawImage = GameObject.Find("SubCameraScreen").GetComponent<RawImage>();
         rawImage.texture = subCameraRenderTexture;
-        rawImage.rectTransform.anchoredPosition = new Vector2(-256, -102);
-        rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
         GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -572,5 +610,43 @@ public class TrapperUIManager : MonoBehaviour
                 button.interactable = false; // ボタンを無効化
             }
         }
+    }
+
+    public void ActivateBlind(float duration)
+    {
+        blindRefCount++;
+        blindMask.SetActive(true);
+        StartCoroutine(HandleBlindEffect(duration));
+    }
+
+    private IEnumerator HandleBlindEffect(float duration)
+    {
+        if (blindRefCount == 1)
+        {
+            yield return StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
+        }
+        yield return new WaitForSeconds(duration);
+        blindRefCount--;
+        if (blindRefCount <= 0)
+        {
+            blindRefCount = 0;
+            yield return StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+            blindMask.SetActive(false);
+        }
+    }
+
+
+    private IEnumerator AnimateRadius(float from, float to, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float value = Mathf.Lerp(from, to, t);
+            blindMaskMaterial.SetFloat("_Radius", value);
+            yield return null;
+        }
+        blindMaskMaterial.SetFloat("_Radius", to);
     }
 }
