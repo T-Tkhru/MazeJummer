@@ -10,19 +10,13 @@ public class MazeManager : NetworkBehaviour
     private const int Wall = 1; // 壁の値
     private const int Path = 0; // 通路の値
     private Vector3 goalPosition;
-    [SerializeField]
-    private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
+    [SerializeField] private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
-    [SerializeField]
-    private NetworkObject speedDownTrapPrefab;
-    [SerializeField]
-    private NetworkObject blindTrapPrefab;
-    [SerializeField]
-    private NetworkObject reverseInputTrapPrefab;
-    [SerializeField]
-    private NetworkObject keyPrefab;
-    [SerializeField]
-    private NetworkObject goalPallPrefab;
+    [SerializeField] private NetworkObject speedDownTrapPrefab;
+    [SerializeField] private NetworkObject blindTrapPrefab;
+    [SerializeField] private NetworkObject reverseInputTrapPrefab;
+    [SerializeField] private NetworkObject keyPrefab;
+    [SerializeField] private NetworkObject goalPallPrefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {

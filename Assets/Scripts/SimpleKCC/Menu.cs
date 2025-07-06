@@ -10,12 +10,9 @@ namespace Example
 	/// </summary>
 	public sealed class Menu : NetworkBehaviour
 	{
-		[SerializeField]
-		private bool             _showGUI;
-		[SerializeField]
-		private GUISkin          _skin;
-		[SerializeField]
-		private FrameRateUpdater _frameRateUpdater;
+		[SerializeField] private bool _showGUI;
+		[SerializeField] private GUISkin _skin;
+		[SerializeField] private FrameRateUpdater _frameRateUpdater;
 
 		private GUIStyle _defaultStyle;
 		private GUIStyle _activeStyle;
@@ -66,7 +63,7 @@ namespace Example
 			if (Runner == null || Runner.IsRunning == false)
 				return;
 
-			float verticalSpace   = 5.0f;
+			float verticalSpace = 5.0f;
 			float horizontalSpace = 5.0f;
 
 			GUILayout.BeginVertical();
@@ -76,7 +73,7 @@ namespace Example
 
 			GUILayout.Button($"{Mathf.RoundToInt(1.0f / Runner.DeltaTime)}Hz", _defaultStyle);
 
-			string   frameRate      = Application.targetFrameRate == 0 ? "Unlimited" : Application.targetFrameRate.ToString();
+			string frameRate = Application.targetFrameRate == 0 ? "Unlimited" : Application.targetFrameRate.ToString();
 			GUIStyle frameRateStyle = Application.targetFrameRate == 0 ? _defaultStyle : _activeStyle;
 
 			if (GUILayout.Button($"[F5] FPS ({frameRate} / {_frameRateUpdater.SmoothFrameRate})", frameRateStyle) == true)
@@ -128,14 +125,14 @@ namespace Example
 				}
 
 				_activeStyle = new GUIStyle(_defaultStyle);
-				_activeStyle.normal.textColor  = Color.green;
+				_activeStyle.normal.textColor = Color.green;
 				_activeStyle.focused.textColor = Color.green;
-				_activeStyle.hover.textColor   = Color.green;
+				_activeStyle.hover.textColor = Color.green;
 
 				_inactiveStyle = new GUIStyle(_defaultStyle);
-				_inactiveStyle.normal.textColor  = Color.red;
+				_inactiveStyle.normal.textColor = Color.red;
 				_inactiveStyle.focused.textColor = Color.red;
-				_inactiveStyle.hover.textColor   = Color.red;
+				_inactiveStyle.hover.textColor = Color.red;
 			}
 		}
 
@@ -151,9 +148,9 @@ namespace Example
 
 		private void ToggleFullScreen()
 		{
-			Resolution maxResolution            = default;
-			int        maxResolutionSize        = default;
-			int        maxResolutionRefreshRate = default;
+			Resolution maxResolution = default;
+			int maxResolutionSize = default;
+			int maxResolutionRefreshRate = default;
 
 			Resolution[] resolutions = Screen.resolutions;
 			foreach (Resolution resolution in resolutions)
@@ -163,23 +160,23 @@ namespace Example
 				{
 					if (GetRefreshRate(resolution) >= maxResolutionRefreshRate)
 					{
-						maxResolutionSize        = resolutionSize;
+						maxResolutionSize = resolutionSize;
 						maxResolutionRefreshRate = GetRefreshRate(resolution);
-						maxResolution            = resolution;
+						maxResolution = resolution;
 					}
 				}
 			}
 
 			switch (Screen.fullScreenMode)
 			{
-				case FullScreenMode.ExclusiveFullScreen: { SetResolution(maxResolution.width / 2, maxResolution.height / 2, FullScreenMode.Windowed,            maxResolution); break;}
-				case FullScreenMode.FullScreenWindow:    { SetResolution(maxResolution.width,     maxResolution.height,     FullScreenMode.ExclusiveFullScreen, maxResolution); break;}
-				case FullScreenMode.MaximizedWindow:     { SetResolution(maxResolution.width,     maxResolution.height,     FullScreenMode.FullScreenWindow,    maxResolution); break;}
-				case FullScreenMode.Windowed:            { SetResolution(maxResolution.width,     maxResolution.height,     FullScreenMode.MaximizedWindow,     maxResolution); break;}
+				case FullScreenMode.ExclusiveFullScreen: { SetResolution(maxResolution.width / 2, maxResolution.height / 2, FullScreenMode.Windowed, maxResolution); break; }
+				case FullScreenMode.FullScreenWindow: { SetResolution(maxResolution.width, maxResolution.height, FullScreenMode.ExclusiveFullScreen, maxResolution); break; }
+				case FullScreenMode.MaximizedWindow: { SetResolution(maxResolution.width, maxResolution.height, FullScreenMode.FullScreenWindow, maxResolution); break; }
+				case FullScreenMode.Windowed: { SetResolution(maxResolution.width, maxResolution.height, FullScreenMode.MaximizedWindow, maxResolution); break; }
 				default:
-				{
-					throw new NotImplementedException(Screen.fullScreenMode.ToString());
-				}
+					{
+						throw new NotImplementedException(Screen.fullScreenMode.ToString());
+					}
 			}
 		}
 
@@ -203,28 +200,28 @@ namespace Example
 		private void Disconnect()
 		{
 			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible   = true;
+			Cursor.visible = true;
 
-			#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
 			GameObject.FindFirstObjectByType<FusionBootstrap>().ShutdownAll();
-			#else
+#else
 			GameObject.FindObjectOfType<FusionBootstrap>().ShutdownAll();
-			#endif
+#endif
 		}
 
 		private bool GetNumberDown(int offset)
 		{
 			switch (offset)
 			{
-				case 0 : { return Keyboard.current.numpad1Key.wasPressedThisFrame == true || Keyboard.current.digit1Key.wasPressedThisFrame == true; }
-				case 1 : { return Keyboard.current.numpad2Key.wasPressedThisFrame == true || Keyboard.current.digit2Key.wasPressedThisFrame == true; }
-				case 2 : { return Keyboard.current.numpad3Key.wasPressedThisFrame == true || Keyboard.current.digit3Key.wasPressedThisFrame == true; }
-				case 3 : { return Keyboard.current.numpad4Key.wasPressedThisFrame == true || Keyboard.current.digit4Key.wasPressedThisFrame == true; }
-				case 4 : { return Keyboard.current.numpad5Key.wasPressedThisFrame == true || Keyboard.current.digit5Key.wasPressedThisFrame == true; }
-				case 5 : { return Keyboard.current.numpad6Key.wasPressedThisFrame == true || Keyboard.current.digit6Key.wasPressedThisFrame == true; }
-				case 6 : { return Keyboard.current.numpad7Key.wasPressedThisFrame == true || Keyboard.current.digit7Key.wasPressedThisFrame == true; }
-				case 7 : { return Keyboard.current.numpad8Key.wasPressedThisFrame == true || Keyboard.current.digit8Key.wasPressedThisFrame == true; }
-				case 8 : { return Keyboard.current.numpad9Key.wasPressedThisFrame == true || Keyboard.current.digit9Key.wasPressedThisFrame == true; }
+				case 0: { return Keyboard.current.numpad1Key.wasPressedThisFrame == true || Keyboard.current.digit1Key.wasPressedThisFrame == true; }
+				case 1: { return Keyboard.current.numpad2Key.wasPressedThisFrame == true || Keyboard.current.digit2Key.wasPressedThisFrame == true; }
+				case 2: { return Keyboard.current.numpad3Key.wasPressedThisFrame == true || Keyboard.current.digit3Key.wasPressedThisFrame == true; }
+				case 3: { return Keyboard.current.numpad4Key.wasPressedThisFrame == true || Keyboard.current.digit4Key.wasPressedThisFrame == true; }
+				case 4: { return Keyboard.current.numpad5Key.wasPressedThisFrame == true || Keyboard.current.digit5Key.wasPressedThisFrame == true; }
+				case 5: { return Keyboard.current.numpad6Key.wasPressedThisFrame == true || Keyboard.current.digit6Key.wasPressedThisFrame == true; }
+				case 6: { return Keyboard.current.numpad7Key.wasPressedThisFrame == true || Keyboard.current.digit7Key.wasPressedThisFrame == true; }
+				case 7: { return Keyboard.current.numpad8Key.wasPressedThisFrame == true || Keyboard.current.digit8Key.wasPressedThisFrame == true; }
+				case 8: { return Keyboard.current.numpad9Key.wasPressedThisFrame == true || Keyboard.current.digit9Key.wasPressedThisFrame == true; }
 			}
 
 			return false;
@@ -232,20 +229,20 @@ namespace Example
 
 		private static void SetResolution(int width, int height, FullScreenMode fullscreenMode, Resolution resolution)
 		{
-			#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
 			Screen.SetResolution(width, height, fullscreenMode, resolution.refreshRateRatio);
-			#else
+#else
 			Screen.SetResolution(width, height, fullscreenMode, resolution.refreshRate);
-			#endif
+#endif
 		}
 
 		private static int GetRefreshRate(Resolution resolution)
 		{
-			#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
 			return (int)System.Math.Round(resolution.refreshRateRatio.value);
-			#else
+#else
 			return resolution.refreshRate;
-			#endif
+#endif
 		}
 	}
 }

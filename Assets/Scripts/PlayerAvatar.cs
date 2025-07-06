@@ -7,19 +7,16 @@ using UnityEngine;
 public class PlayerAvatar : NetworkBehaviour
 {
     // プレイヤー名のネットワークプロパティを定義する
-    [Networked]
-    private NetworkString<_16> NickName { get; set; }
+    [Networked] private NetworkString<_16> NickName { get; set; }
     private ChangeDetector _changeDetector;
     private NetworkCharacterController characterController;
     private PlayerAvatarView view;
     private float defaultSpeed;
     private int speedDownRefCount = 0;
     private float slowSpeed = 1.25f;
-    [Networked]
-    private int keyCount { get; set; } = 0;
+    [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
-    [SerializeField]
-    private GameObject freeLookCamera;
+    [SerializeField] private GameObject freeLookCamera;
     private bool isReverseInput = false;
     private int reverseInputRefCount = 0;
 

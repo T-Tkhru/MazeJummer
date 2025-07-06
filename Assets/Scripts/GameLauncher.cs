@@ -11,22 +11,14 @@ using UnityEngine.SceneManagement;
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 // プレハブをインスペクターから設定できるようにする
 {
-    [SerializeField]
-    private NetworkRunner networkRunnerPrefab; // NetworkRunnerのプレハブ、これを生成してセッション開始、必須。
-
-    [SerializeField]
-    private NetworkPrefabRef playerAvatarPrefab;
-    [SerializeField]
-    private NetworkPrefabRef mazeManager;
+    [SerializeField] private NetworkRunner networkRunnerPrefab; // NetworkRunnerのプレハブ、これを生成してセッション開始、必須。
+    [SerializeField] private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField] private NetworkPrefabRef mazeManager;
     private NetworkRunner networkRunner; // NetworkRunnerのインスタンス、セッション開始時に生成される、ここで定義すればどこでも使える
-    [Networked]
-    public TickTimer Timer { get; set; } // タイマー
-    [SerializeField]
-    private GameObject trapperUIManager;
-    [SerializeField]
-    private GameObject runnerUIManager;
-    [SerializeField]
-    private string sessionName; // セッション名デバッグ用、本番では削除する
+    [Networked] public TickTimer Timer { get; set; } // タイマー
+    [SerializeField] private GameObject trapperUIManager;
+    [SerializeField] private GameObject runnerUIManager;
+    [SerializeField] private string sessionName; // セッション名デバッグ用、本番では削除する
 
     private async void Start()
     {

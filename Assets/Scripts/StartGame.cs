@@ -4,8 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class StartGame : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_InputField sessionNameInputField;
+    [SerializeField] private TMP_InputField sessionNameInputField;
 
     public void JoinGameAuto()
     {

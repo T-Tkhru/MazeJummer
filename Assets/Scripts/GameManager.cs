@@ -3,25 +3,18 @@ using Fusion;
 using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
-    [Networked]
-    private TickTimer Timer { get; set; }
-    [Networked]
-    private NetworkBool isGameStarted { get; set; } = false; // ゲームが開始されているかどうか
-    [Networked]
-    private NetworkBool isGameFinished { get; set; } = false; // ゲームが終了したかどうか
+    [Networked] private TickTimer Timer { get; set; }
+    [Networked] private NetworkBool isGameStarted { get; set; } = false; // ゲームが開始されているかどうか
+    [Networked] private NetworkBool isGameFinished { get; set; } = false; // ゲームが終了したかどうか
     private float maxTime = 300f; // タイマーの最大時間
     private float remainingTime;
     private float seconds;
     private int minutes;
     private NetworkBool isGameReady { get; set; } = false; // ゲームが開始されているかどうか
-    [Networked]
-    private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
-    [Networked]
-    private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
-    [SerializeField]
-    private bool isSoloMode = false; // ソロモードかどうか
-    [SerializeField]
-    private int maxTraps = 3; // 最大トラップ数
+    [Networked] private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
+    [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
+    [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
+    [SerializeField] private int maxTraps = 3; // 最大トラップ数
 
     public override void Spawned()
     {
