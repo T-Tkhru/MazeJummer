@@ -34,13 +34,15 @@ public class TrapperUIManager : MonoBehaviour
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
-    private enum BuildMode { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
-    private BuildMode currentBuildMode = BuildMode.None;
+    private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
+    private TrapType currentTrapType = TrapType.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
     private TextMeshProUGUI timerLabel;
+
+    private Dictionary<TrapType, int> trapUseCounts = new Dictionary<TrapType, int>();
 
 
     void Start()
@@ -51,6 +53,10 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
             return;
+        }
+        foreach (TrapType type in System.Enum.GetValues(typeof(TrapType)))
+        {
+            trapUseCounts[type] = 0;
         }
     }
 
@@ -379,21 +385,21 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        switch (currentBuildMode)
+        switch (currentTrapType)
         {
-            case BuildMode.Wall:
+            case TrapType.Wall:
                 mazeData[x, y] = 1;
                 CreateWall(x, y);
                 break;
-            case BuildMode.SpeedDownTrap:
+            case TrapType.SpeedDownTrap:
                 mazeManager.RpcGenerateSpeedDownTrap(x, y);
                 CreateTrapUI(x, y, speedDownTrapUI);
                 break;
-            case BuildMode.BlindTrap:
+            case TrapType.BlindTrap:
                 mazeManager.RpcGenerateBlindTrap(x, y);
                 CreateTrapUI(x, y, blindTrapUI);
                 break;
-            case BuildMode.Trap3:
+            case TrapType.Trap3:
                 mazeManager.RpcGenerateTrap3(x, y);
                 CreateTrapUI(x, y, trapUI3);
                 break;
@@ -461,6 +467,7 @@ public class TrapperUIManager : MonoBehaviour
             }
         }
         UpdateButtonInteractable(lastPlayerPos); // ボタンのインタラクションを更新
+        UseTrap(currentTrapType); // トラップの使用回数をカウント
 
     }
 
@@ -503,33 +510,34 @@ public class TrapperUIManager : MonoBehaviour
         trapUIs[x, y] = trapTile;
         trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
         tileUIs[x, y].GetComponent<Button>().enabled = false;
+        UseTrap(currentTrapType); // トラップの使用回数をカウント
     }
 
     public void SelectMakeWall()
     {
         // 壁を作るボタンが押されたときの処理
         Debug.Log("壁を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Wall;
+        currentTrapType = TrapType.Wall;
 
     }
 
     public void SelectSpeedDownTrap()
     {
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
-        currentBuildMode = BuildMode.SpeedDownTrap;
+        currentTrapType = TrapType.SpeedDownTrap;
     }
 
     public void SelectMakeBlindTrap()
     {
         Debug.Log("トラップ2を作るボタンが押されました。");
-        currentBuildMode = BuildMode.BlindTrap;
+        currentTrapType = TrapType.BlindTrap;
     }
 
     public void SelectMakeTrap3()
     {
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("トラップ3を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Trap3;
+        currentTrapType = TrapType.Trap3;
     }
 
     private List<(int x, int y)> GetKeyPositions()
@@ -547,5 +555,11 @@ public class TrapperUIManager : MonoBehaviour
         }
         Debug.Log($"鍵の位置数: {keyPositions.Count}");
         return keyPositions;
+    }
+
+    private void UseTrap(TrapType type)
+    {
+        trapUseCounts[type]++;
+        Debug.Log($"{type} trap used: {trapUseCounts[type]} times");
     }
 }
