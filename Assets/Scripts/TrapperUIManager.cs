@@ -8,6 +8,7 @@ using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
 {
+    public static TrapperUIManager Instance { get; private set; }
     [SerializeField] private GameObject wallUI;
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
@@ -34,15 +35,57 @@ public class TrapperUIManager : MonoBehaviour
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
 
-    private enum BuildMode { None, Wall, SpeedDownTrap, BlindTrap, Trap3 }
-    private BuildMode currentBuildMode = BuildMode.None;
+    private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
+    private TrapType currentTrapType = TrapType.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
     private TextMeshProUGUI timerLabel;
 
+    private Dictionary<TrapType, int> trapUseCounts = new Dictionary<TrapType, int>();
+    private int maxTraps;
+    [SerializeField] private GameObject blindMaskPrefab;
+    public GameObject blindMask { get; private set; }
+    private Material blindMaskMaterial;
+    private int blindRefCount = 0;
+    private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
+    private float blindMinRadius = 0.2f;
+    private float blindMaxRadius = 1.2f;
 
+
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        // BlindMask を生成して Canvas に配置
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogError("Canvasがシーンに存在しません");
+            return;
+        }
+
+        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        var img = blindMask.GetComponent<Image>();
+        if (img == null)
+        {
+            Debug.LogError("BlindMaskPrefabにImageコンポーネントがありません");
+            return;
+        }
+        // 指定した位置にblindmaskを配置
+        blindMask.transform.localPosition = new Vector3(481, 270, 0);
+        blindMask.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f); // サイズを調整
+        blindMaskMaterial = Instantiate(img.material);
+        img.material = blindMaskMaterial;
+        blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
+        blindMask.SetActive(false);
+    }
     void Start()
     {
         CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
@@ -51,6 +94,10 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
             return;
+        }
+        foreach (TrapType type in System.Enum.GetValues(typeof(TrapType)))
+        {
+            trapUseCounts[type] = 0;
         }
     }
 
@@ -70,6 +117,7 @@ public class TrapperUIManager : MonoBehaviour
             if (!checkSpawnable()) return; // 壁が足りなければ生成しない
 
             gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
+            maxTraps = gameManager.GetMaxTraps(); // 最大トラップ数を取得
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
         }
@@ -217,8 +265,6 @@ public class TrapperUIManager : MonoBehaviour
 
         RawImage rawImage = GameObject.Find("SubCameraScreen").GetComponent<RawImage>();
         rawImage.texture = subCameraRenderTexture;
-        rawImage.rectTransform.anchoredPosition = new Vector2(-256, -102);
-        rawImage.rectTransform.sizeDelta = new Vector2(512, 512);
         var avatarController = GameObject.FindGameObjectWithTag("Avatar").GetComponentInChildren<CinemachineInputAxisController>();
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
         GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -255,14 +301,14 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateBlindTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createTrap3Button = trapperUI.Find("CreateTrap3").GetComponent<Button>();
-        if (createTrap3Button != null)
+        Button createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
+        if (createReverseInputTrapButton != null)
         {
-            createTrap3Button.onClick.AddListener(SelectMakeTrap3);
+            createReverseInputTrapButton.onClick.AddListener(SelectMakeReverseInputTrap);
         }
         else
         {
-            Debug.LogError("CreateTrap3ボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
+            Debug.LogError("CreateReverseInputTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
     }
 
@@ -379,22 +425,22 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        switch (currentBuildMode)
+        switch (currentTrapType)
         {
-            case BuildMode.Wall:
+            case TrapType.Wall:
                 mazeData[x, y] = 1;
                 CreateWall(x, y);
                 break;
-            case BuildMode.SpeedDownTrap:
+            case TrapType.SpeedDownTrap:
                 mazeManager.RpcGenerateSpeedDownTrap(x, y);
                 CreateTrapUI(x, y, speedDownTrapUI);
                 break;
-            case BuildMode.BlindTrap:
+            case TrapType.BlindTrap:
                 mazeManager.RpcGenerateBlindTrap(x, y);
                 CreateTrapUI(x, y, blindTrapUI);
                 break;
-            case BuildMode.Trap3:
-                mazeManager.RpcGenerateTrap3(x, y);
+            case TrapType.ReverseInputTrap:
+                mazeManager.RpcGenerateReverseInputTrap(x, y);
                 CreateTrapUI(x, y, trapUI3);
                 break;
             default:
@@ -460,6 +506,9 @@ public class TrapperUIManager : MonoBehaviour
                 }
             }
         }
+        UpdateButtonInteractable(lastPlayerPos); // ボタンのインタラクションを更新
+        UseTrap(currentTrapType); // トラップの使用回数をカウント
+
     }
 
     private void CreateWallUI(int x, int y)
@@ -501,33 +550,34 @@ public class TrapperUIManager : MonoBehaviour
         trapUIs[x, y] = trapTile;
         trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
         tileUIs[x, y].GetComponent<Button>().enabled = false;
+        UseTrap(currentTrapType); // トラップの使用回数をカウント
     }
 
     public void SelectMakeWall()
     {
         // 壁を作るボタンが押されたときの処理
         Debug.Log("壁を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Wall;
+        currentTrapType = TrapType.Wall;
 
     }
 
     public void SelectSpeedDownTrap()
     {
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
-        currentBuildMode = BuildMode.SpeedDownTrap;
+        currentTrapType = TrapType.SpeedDownTrap;
     }
 
     public void SelectMakeBlindTrap()
     {
         Debug.Log("トラップ2を作るボタンが押されました。");
-        currentBuildMode = BuildMode.BlindTrap;
+        currentTrapType = TrapType.BlindTrap;
     }
 
-    public void SelectMakeTrap3()
+    public void SelectMakeReverseInputTrap()
     {
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("トラップ3を作るボタンが押されました。");
-        currentBuildMode = BuildMode.Trap3;
+        currentTrapType = TrapType.ReverseInputTrap;
     }
 
     private List<(int x, int y)> GetKeyPositions()
@@ -545,5 +595,58 @@ public class TrapperUIManager : MonoBehaviour
         }
         Debug.Log($"鍵の位置数: {keyPositions.Count}");
         return keyPositions;
+    }
+
+    private void UseTrap(TrapType type)
+    {
+        trapUseCounts[type]++;
+        Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
+        if (trapUseCounts[type] >= maxTraps)
+        {
+            Debug.Log($"{type} トラップの使用回数が最大に達しました。");
+            Button button = trapperUI.Find($"Create{type}").GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false; // ボタンを無効化
+            }
+        }
+    }
+
+    public void ActivateBlind(float duration)
+    {
+        blindRefCount++;
+        blindMask.SetActive(true);
+        StartCoroutine(HandleBlindEffect(duration));
+    }
+
+    private IEnumerator HandleBlindEffect(float duration)
+    {
+        if (blindRefCount == 1)
+        {
+            yield return StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
+        }
+        yield return new WaitForSeconds(duration);
+        blindRefCount--;
+        if (blindRefCount <= 0)
+        {
+            blindRefCount = 0;
+            yield return StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+            blindMask.SetActive(false);
+        }
+    }
+
+
+    private IEnumerator AnimateRadius(float from, float to, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float value = Mathf.Lerp(from, to, t);
+            blindMaskMaterial.SetFloat("_Radius", value);
+            yield return null;
+        }
+        blindMaskMaterial.SetFloat("_Radius", to);
     }
 }

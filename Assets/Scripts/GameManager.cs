@@ -20,6 +20,8 @@ public class GameManager : NetworkBehaviour
     private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
     [SerializeField]
     private bool isSoloMode = false; // ソロモードかどうか
+    [SerializeField]
+    private int maxTraps = 3; // 最大トラップ数
 
     public override void Spawned()
     {
@@ -147,5 +149,10 @@ public class GameManager : NetworkBehaviour
     public float GetRemainingTime()
     {
         return Timer.RemainingTime(Runner) ?? 0f;
+    }
+
+    public int GetMaxTraps()
+    {
+        return maxTraps; // 最大トラップ数を返す
     }
 }
