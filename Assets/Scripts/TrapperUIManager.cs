@@ -563,5 +563,14 @@ public class TrapperUIManager : MonoBehaviour
     {
         trapUseCounts[type]++;
         Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
+        if (trapUseCounts[type] >= maxTraps)
+        {
+            Debug.Log($"{type} トラップの使用回数が最大に達しました。");
+            Button button = trapperUI.Find($"Create{type}").GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false; // ボタンを無効化
+            }
+        }
     }
 }
