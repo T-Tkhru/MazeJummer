@@ -460,6 +460,8 @@ public class TrapperUIManager : MonoBehaviour
                 }
             }
         }
+        UpdateButtonInteractable(lastPlayerPos); // ボタンのインタラクションを更新
+
     }
 
     private void CreateWallUI(int x, int y)
