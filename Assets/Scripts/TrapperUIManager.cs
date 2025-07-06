@@ -43,6 +43,7 @@ public class TrapperUIManager : MonoBehaviour
     private TextMeshProUGUI timerLabel;
 
     private Dictionary<TrapType, int> trapUseCounts = new Dictionary<TrapType, int>();
+    private int maxTraps;
 
 
     void Start()
@@ -76,6 +77,7 @@ public class TrapperUIManager : MonoBehaviour
             if (!checkSpawnable()) return; // 壁が足りなければ生成しない
 
             gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
+            maxTraps = gameManager.GetMaxTraps(); // 最大トラップ数を取得
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
         }
@@ -560,6 +562,6 @@ public class TrapperUIManager : MonoBehaviour
     private void UseTrap(TrapType type)
     {
         trapUseCounts[type]++;
-        Debug.Log($"{type} trap used: {trapUseCounts[type]} times");
+        Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
     }
 }
