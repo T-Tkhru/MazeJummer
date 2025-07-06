@@ -198,10 +198,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SpeedDown
+  m_text: "\u901F\u5EA6\u4F4E\u4E0B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+  m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -660,8 +660,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+  m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1060,10 +1060,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Wall
+  m_text: "\u58C1\u751F\u6210"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+  m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1196,12 +1196,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Blind
-
-'
+  m_text: "\u76EE\u96A0\u3057"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+  m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1277,6 +1275,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3716309849409354294}
     m_Modifications:
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6910995905859404418, guid: 4001f8059856beb449f869dd95669d10, type: 3}
       propertyPath: m_Name
       value: TimerLabel
@@ -1307,7 +1317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7006905792711906831, guid: 4001f8059856beb449f869dd95669d10, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 200
+      value: 220
       objectReference: {fileID: 0}
     - target: {fileID: 7006905792711906831, guid: 4001f8059856beb449f869dd95669d10, type: 3}
       propertyPath: m_SizeDelta.y

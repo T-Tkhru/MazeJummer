@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Fusion.Sockets;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 // プレハブをインスペクターから設定できるようにする
@@ -48,11 +51,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("成功！");
             Debug.Log($"セッション: {networkRunner.SessionInfo.Name}");
         }
-        else
+        else if (result.ShutdownReason == ShutdownReason.GameIsFull)
         {
-            Debug.Log("失敗！");
+            Debug.Log("セッションが満員です。");
+            TextMeshProUGUI countDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+            countDownText.text = "このIDはすでに別のルームで使用されています。";
+            StartCoroutine(WaitAndLoadStartScene(3f)); // 3秒後にスタートシーンに戻る
         }
-
         if (networkRunner.IsClient)
         {
             // cinemachineのカメラを無効化する
@@ -72,6 +77,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             Instantiate(runnerUIManager);
         }
+    }
+
+    private IEnumerator WaitAndLoadStartScene(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        SceneManager.LoadScene("Start");
     }
 
     private String GetSessionName()
