@@ -14,7 +14,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private RectTransform playerUI;
     [SerializeField] private RectTransform speedDownTrapUI;
     [SerializeField] private RectTransform blindTrapUI;
-    [SerializeField] private RectTransform trapUI3;
+    [SerializeField] private RectTransform reverseInputTrapUI;
     [SerializeField] private Camera subCameraPrefab;
     [SerializeField] private RenderTexture subCameraRenderTexture;
     [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
@@ -440,10 +440,10 @@ public class TrapperUIManager : MonoBehaviour
                 break;
             case TrapType.ReverseInputTrap:
                 mazeManager.RpcGenerateReverseInputTrap(x, y);
-                CreateTrapUI(x, y, trapUI3);
+                CreateTrapUI(x, y, reverseInputTrapUI);
                 break;
             default:
-                Debug.LogWarning("無効なビルドモードです。");
+                Debug.LogWarning("トラップの種類が選択されていません。");
                 return;
         }
     }
@@ -568,14 +568,14 @@ public class TrapperUIManager : MonoBehaviour
 
     public void SelectMakeBlindTrap()
     {
-        Debug.Log("トラップ2を作るボタンが押されました。");
+        Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
     }
 
     public void SelectMakeReverseInputTrap()
     {
         // トラップ3を作るボタンが押されたときの処理
-        Debug.Log("トラップ3を作るボタンが押されました。");
+        Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
     }
 
@@ -598,6 +598,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void UseTrap(TrapType type)
     {
+        currentTrapType = TrapType.None; // トラップを使用した後はNoneに戻す
         trapUseCounts[type]++;
         Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
         if (trapUseCounts[type] >= maxTraps)
