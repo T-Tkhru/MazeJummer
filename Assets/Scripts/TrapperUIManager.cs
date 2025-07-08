@@ -78,7 +78,7 @@ public class TrapperUIManager : MonoBehaviour
             return;
         }
         // 指定した位置にblindmaskを配置
-        blindMask.transform.localPosition = new Vector3(481, 270, 0);
+        blindMask.transform.localPosition = new Vector3(480, 270, 0);
         blindMask.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f); // サイズを調整
         blindMaskMaterial = Instantiate(img.material);
         img.material = blindMaskMaterial;
