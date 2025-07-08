@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7923229707929370128}
   - component: {fileID: 5382241180582988230}
   m_Layer: 5
-  m_Name: TrapPositionUI3
+  m_Name: ReverseInputTrapUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

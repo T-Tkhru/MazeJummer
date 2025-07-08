@@ -49,7 +49,7 @@ MonoBehaviour:
   playerUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
   speedDownTrapUI: {fileID: 5527624290676667426, guid: 0f492268281309441b83255f85baf4f1, type: 3}
   blindTrapUI: {fileID: 5527624290676667426, guid: f89218f206b04494886717efb7f1e9b6, type: 3}
-  trapUI3: {fileID: 5527624290676667426, guid: 25db775cb7fe7394c82d619981ba2c59, type: 3}
+  reverseInputTrapUI: {fileID: 5527624290676667426, guid: 25db775cb7fe7394c82d619981ba2c59, type: 3}
   subCameraPrefab: {fileID: 7952469759728724233, guid: 2bc93e10c1c71a842a428f4d722ab1d8, type: 3}
   subCameraRenderTexture: {fileID: 8400000, guid: 87a196622b3929b4a85aecf841672807, type: 2}
   subCameraDisplay: {fileID: 4818298152244826656, guid: 9f4bb9c5116c84148a037b648fa4d677, type: 3}
