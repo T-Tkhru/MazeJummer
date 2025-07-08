@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Loading...
+  m_text: "\u30DE\u30C3\u30C1\u30F3\u30B0\u5F85\u6A5F\u4E2D\u2026"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
   m_sharedMaterial: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
