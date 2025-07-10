@@ -16,6 +16,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
     [SerializeField] private int maxTraps = 3; // 最大トラップ数
     [SerializeField] private GameObject resultUI;
+    [Networked] private NetworkBool isRunnerWin { get; set; } = false; // ランナーが勝利したかどうか
 
     public override void Spawned()
     {
@@ -99,6 +100,14 @@ public class GameManager : NetworkBehaviour
             seconds = maxTime - remainingTime; // 300秒から残り時間を引く
             minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
             Debug.Log($"seconds: {seconds}, minutes: {minutes}");
+            if (Timer.IsRunning)
+            {
+                isRunnerWin = true;
+            }
+            else
+            {
+                isRunnerWin = false;
+            }
             OpenResultUI();
         }
     }
