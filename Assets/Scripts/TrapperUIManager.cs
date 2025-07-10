@@ -29,7 +29,8 @@ public class TrapperUIManager : MonoBehaviour
     private Vector2 UIStartPos;
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
     private GameObject[,] trapUIs; // トラップのUIを保存する2D配列
-    private GameObject[,] keyUIs; // キーのUIを保存する2D配列
+    private Dictionary<Vector2Int, GameObject> keyUIMap = new();
+
     private int[,] mazeData;
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
@@ -226,7 +227,6 @@ public class TrapperUIManager : MonoBehaviour
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         trapUIs = new GameObject[width, height]; // トラップのUIを保存する2D配列
-        keyUIs = new GameObject[width, height]; // キーのUIを保存する2D配列
         mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
@@ -359,7 +359,6 @@ public class TrapperUIManager : MonoBehaviour
     {
         UpdateButtonInteractable(position);
         RemoveTrapUI(position);
-        RemoveKeyUI(position);
     }
 
     private void UpdateButtonInteractable(Vector2Int position)
@@ -427,27 +426,6 @@ public class TrapperUIManager : MonoBehaviour
             }
         }
     }
-
-    private void RemoveKeyUI(Vector2Int position)
-    {
-        foreach (var keyPos in keyPositions)
-        {
-            if (keyPos == position)
-            {
-                // トラップのUIを削除
-                if (keyUIs[keyPos.x, keyPos.y] != null)
-                {
-                    Destroy(keyUIs[keyPos.x, keyPos.y]);
-                }
-                trapPositions.Remove(keyPos);
-                Debug.Log($"トラップUIを削除しました: {keyPos}");
-                // タイルのUIを通路に戻す
-                tileUIs[keyPos.x, keyPos.y].GetComponent<Button>().enabled = true;
-                break;
-            }
-        }
-    }
-
     private bool checkSpawnable()
     {
         int leastWalls = (width * height) * 2 - 4; // 最低限必要な壁の数
@@ -605,8 +583,7 @@ public class TrapperUIManager : MonoBehaviour
             UIStartPos.y + y * tileSize
         );
         rect.anchoredPosition = anchoredPos;
-        keyUIs[x, y] = keyUItile; // キーのUIを保存
-        keyPositions.Add(new Vector2Int(x, y)); // キーの位置を保存
+        keyUIMap[new Vector2Int(x, y)] = keyUItile; // キーのUIをマップに保存
         tileUIs[x, y].GetComponent<Button>().enabled = false;
     }
 
@@ -749,6 +726,15 @@ public class TrapperUIManager : MonoBehaviour
         else
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
+        }
+    }
+
+    public void RemoveKey(Vector2Int position)
+    {
+        if (keyUIMap.TryGetValue(position, out var ui))
+        {
+            Destroy(ui);
+            keyUIMap.Remove(position);
         }
     }
 }
