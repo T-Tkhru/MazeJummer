@@ -24,6 +24,7 @@ public class RunnerUIManager : MonoBehaviour
     private Transform canvas; // Canvasの参照
     [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
     private Transform runnerUI; // RunnerUIのインスタンス
+    private Image[] keyIcons; // 鍵の画像を格納する配列
 
 
     private void Awake()
@@ -59,6 +60,20 @@ public class RunnerUIManager : MonoBehaviour
         img.material = blindMaskMaterial;
         blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
         blindMask.SetActive(false);
+
+        keyIcons = GameObject.Find("KeyIcons").GetComponentsInChildren<Image>();
+        if (keyIcons == null || keyIcons.Length == 0)
+        {
+            Debug.LogError("KeyImageの子オブジェクトが見つかりません。");
+        }
+        else
+        {
+            foreach (var keyIcon in keyIcons)
+            {
+                keyIcon.gameObject.SetActive(false); // 初期状態では非表示
+                Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
+            }
+        }
 
     }
     private void Start()
@@ -196,6 +211,14 @@ public class RunnerUIManager : MonoBehaviour
         else
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
+        }
+    }
+
+    public void UpdateKeyDisplay(int keyCount)
+    {
+        for (int i = 0; i < keyIcons.Length; i++)
+        {
+            keyIcons[i].gameObject.SetActive(i < keyCount);
         }
     }
 

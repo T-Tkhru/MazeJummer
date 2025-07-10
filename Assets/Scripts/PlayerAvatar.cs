@@ -149,7 +149,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         keyCount++;
         Debug.Log($"鍵を取得しました！現在の鍵の数: {keyCount}");
-        // ここでUIなどに鍵の数を反映する処理を追加できます
+        RunnerUIManager.Instance?.UpdateKeyDisplay(keyCount);
     }
 
     public int GetKeyCount()
