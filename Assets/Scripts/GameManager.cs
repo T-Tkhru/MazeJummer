@@ -10,7 +10,7 @@ public class GameManager : NetworkBehaviour
     private float remainingTime;
     private float seconds;
     private int minutes;
-    private NetworkBool isGameReady { get; set; } = false; // ゲームが開始されているかどうか
+    private NetworkBool isCountDownTriggered { get; set; } = false;
     [Networked] private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
     [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
     [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
@@ -41,10 +41,10 @@ public class GameManager : NetworkBehaviour
 
     private void SoloModeStart()
     {
-        if (!isGameReady) // ゲームが開始されていない場合
+        if (!isCountDownTriggered) // ゲームが開始されていない場合
 
         {
-            isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
+            isCountDownTriggered = true; // ゲームが開始されたことを示すフラグを立てる
             Debug.Log("ゲーム開始のカウントダウンを開始します。");
             StartGameCountdown(); // ゲーム開始のカウントダウンを開始
         }
@@ -60,10 +60,10 @@ public class GameManager : NetworkBehaviour
     {
         if (Runner.ActivePlayers.Count() == 2)
         {
-            if (!isGameReady && isClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
+            if (!isCountDownTriggered && isClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
 
             {
-                isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
+                isCountDownTriggered = true; // ゲームが開始されたことを示すフラグを立てる
                 Debug.Log("ゲーム開始のカウントダウンを開始します。");
                 StartGameCountdown(); // ゲーム開始のカウントダウンを開始
             }
