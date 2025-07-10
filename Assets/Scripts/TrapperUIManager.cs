@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
-using Fusion;
 using TMPro;
 
 public class TrapperUIManager : MonoBehaviour
@@ -15,11 +14,12 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private RectTransform playerUI;
     [SerializeField] private RectTransform speedDownTrapUI;
     [SerializeField] private RectTransform blindTrapUI;
-    [SerializeField] private RectTransform trapUI3;
+    [SerializeField] private RectTransform reverseInputTrapUI;
     [SerializeField] private Camera subCameraPrefab;
     [SerializeField] private RenderTexture subCameraRenderTexture;
     [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
     [SerializeField] private GameObject trapperUIPrefab;
+    [SerializeField] private RectTransform keyUI; // キーのUIのPrefab
     private Transform trapperUI; // トラッパーUIのPrefab
 
 
@@ -28,16 +28,18 @@ public class TrapperUIManager : MonoBehaviour
     private int height;
     private Vector2 UIStartPos;
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
-    private GameObject[,] trapUIs; // トラップのUIを保存する2D配列
+    private Dictionary<Vector2Int, GameObject> TrapUIMap = new();
+    private Dictionary<Vector2Int, GameObject> keyUIMap = new();
+
     private int[,] mazeData;
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
     private MazeManager mazeManager;
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
+    private int clickBlockRadius = 2; // クリック可能なブロックの半径
 
     private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
     private TrapType currentTrapType = TrapType.None;
-    private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
@@ -53,6 +55,9 @@ public class TrapperUIManager : MonoBehaviour
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
 
+    private bool isResultUIOpen = false;
+    [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
+
 
 
     private void Awake()
@@ -64,14 +69,14 @@ public class TrapperUIManager : MonoBehaviour
         }
         Instance = this;
         // BlindMask を生成して Canvas に配置
-        Canvas canvas = FindFirstObjectByType<Canvas>();
+        canvas = FindFirstObjectByType<Canvas>().transform;
         if (canvas == null)
         {
             Debug.LogError("Canvasがシーンに存在しません");
             return;
         }
 
-        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        blindMask = Instantiate(blindMaskPrefab, canvas);
         var img = blindMask.GetComponent<Image>();
         if (img == null)
         {
@@ -79,7 +84,7 @@ public class TrapperUIManager : MonoBehaviour
             return;
         }
         // 指定した位置にblindmaskを配置
-        blindMask.transform.localPosition = new Vector3(481, 270, 0);
+        blindMask.transform.localPosition = new Vector3(480, 270, 0);
         blindMask.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f); // サイズを調整
         blindMaskMaterial = Instantiate(img.material);
         img.material = blindMaskMaterial;
@@ -103,11 +108,10 @@ public class TrapperUIManager : MonoBehaviour
 
     void Update()
     {
-        // プレイヤーが存在するか確認
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
-        if (playerTransform == null)
+        if (isResultUIOpen) { return; }
+        if (gameManager == null)
         {
-            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             return;
         }
 
@@ -115,18 +119,24 @@ public class TrapperUIManager : MonoBehaviour
         if (!isGenerated)
         {
             if (!checkSpawnable()) return; // 壁が足りなければ生成しない
-
-            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             maxTraps = gameManager.GetMaxTraps(); // 最大トラップ数を取得
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
         }
 
+        if (gameManager.IsGameFinished() && !isResultUIOpen)
+        {
+            isResultUIOpen = true; // 結果UIが開いている状態にする
+            OpenResultUI(gameManager.IsRunnerWin());
+            return;
+        }
+
+
         // カウントダウン表示処理
         HandleTimerDisplay();
 
         // ゲーム中のUI更新処理
-        UpdatePlayerUI(playerTransform);
+        UpdatePlayerUI();
     }
 
 
@@ -170,8 +180,14 @@ public class TrapperUIManager : MonoBehaviour
         timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
     }
 
-    private void UpdatePlayerUI(Transform playerTransform)
+    private void UpdatePlayerUI()
     {
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
+        if (playerTransform == null)
+        {
+            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
         if (playerUI == null) return;
 
         Vector3 playerPos = playerTransform.position;
@@ -190,14 +206,13 @@ public class TrapperUIManager : MonoBehaviour
 
         if (currentPlayerPos != lastPlayerPos)
         {
-            UpdateUI(currentPlayerPos);
+            UpdateButtonInteractable(currentPlayerPos); // ボタンのインタラクションを更新
         }
     }
 
 
     public void GenerateUI()
     {
-        canvas = GameObject.Find("Canvas").transform;
         trapperUI = Instantiate(trapperUIPrefab, canvas).transform;
         trapperUI.SetAsFirstSibling();
         AttachButtonListeners();
@@ -210,7 +225,6 @@ public class TrapperUIManager : MonoBehaviour
         width = mazeManager.width; // 迷路の幅を取得
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
-        trapUIs = new GameObject[width, height]; // トラップのUIを保存する2D配列
         mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
@@ -269,6 +283,12 @@ public class TrapperUIManager : MonoBehaviour
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
         GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
+
+        var keyPositions = GetKeyPositions();
+        foreach (var pos in keyPositions)
+        {
+            CreateKeyUI(pos.x, pos.y);
+        }
         gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
@@ -333,18 +353,13 @@ public class TrapperUIManager : MonoBehaviour
         GenerateUI();
     }
 
-    private void UpdateUI(Vector2Int position)
-    {
-        UpdateButtonInteractable(position);
-        RemoveTrapUI(position);
-    }
 
     private void UpdateButtonInteractable(Vector2Int position)
     {
         // lastPlayerPosの周囲2マスをアクティブに
-        for (int y = lastPlayerPos.y - 2; y <= lastPlayerPos.y + 2; y++)
+        for (int y = lastPlayerPos.y - clickBlockRadius; y <= lastPlayerPos.y + clickBlockRadius; y++)
         {
-            for (int x = lastPlayerPos.x - 2; x <= lastPlayerPos.x + 2; x++)
+            for (int x = lastPlayerPos.x - clickBlockRadius; x <= lastPlayerPos.x + clickBlockRadius; x++)
             {
                 if (x < 0 || x >= width || y < 0 || y >= height)
                 {
@@ -362,9 +377,9 @@ public class TrapperUIManager : MonoBehaviour
             }
         }
         // 周囲2マスを非アクティブに
-        for (int y = position.y - 2; y <= position.y + 2; y++)
+        for (int y = position.y - clickBlockRadius; y <= position.y + clickBlockRadius; y++)
         {
-            for (int x = position.x - 2; x <= position.x + 2; x++)
+            for (int x = position.x - clickBlockRadius; x <= position.x + clickBlockRadius; x++)
             {
                 if (x < 0 || x >= width || y < 0 || y >= height)
                 {
@@ -383,26 +398,6 @@ public class TrapperUIManager : MonoBehaviour
         }
         lastPlayerPos = position; // 最後のプレイヤー位置を更新
 
-    }
-
-    private void RemoveTrapUI(Vector2Int position)
-    {
-        foreach (var trapPos in trapPositions)
-        {
-            if (trapPos == position)
-            {
-                // トラップのUIを削除
-                if (trapUIs[trapPos.x, trapPos.y] != null)
-                {
-                    Destroy(trapUIs[trapPos.x, trapPos.y]);
-                }
-                trapPositions.Remove(trapPos);
-                Debug.Log($"トラップUIを削除しました: {trapPos}");
-                // タイルのUIを通路に戻す
-                tileUIs[trapPos.x, trapPos.y].GetComponent<Button>().enabled = true;
-                break;
-            }
-        }
     }
 
     private bool checkSpawnable()
@@ -441,10 +436,10 @@ public class TrapperUIManager : MonoBehaviour
                 break;
             case TrapType.ReverseInputTrap:
                 mazeManager.RpcGenerateReverseInputTrap(x, y);
-                CreateTrapUI(x, y, trapUI3);
+                CreateTrapUI(x, y, reverseInputTrapUI);
                 break;
             default:
-                Debug.LogWarning("無効なビルドモードです。");
+                Debug.LogWarning("トラップの種類が選択されていません。");
                 return;
         }
     }
@@ -547,10 +542,22 @@ public class TrapperUIManager : MonoBehaviour
             UIStartPos.y + y * tileSize
         );
         rect.anchoredPosition = anchoredPos;
-        trapUIs[x, y] = trapTile;
-        trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
+        TrapUIMap[new Vector2Int(x, y)] = trapTile; // トラップのUIをマップに保存
         tileUIs[x, y].GetComponent<Button>().enabled = false;
         UseTrap(currentTrapType); // トラップの使用回数をカウント
+    }
+
+    private void CreateKeyUI(int x, int y)
+    {
+        GameObject keyUItile = Instantiate(keyUI.gameObject, trapperUI);
+        RectTransform rect = keyUItile.GetComponent<RectTransform>();
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + x * tileSize,
+            UIStartPos.y + y * tileSize
+        );
+        rect.anchoredPosition = anchoredPos;
+        keyUIMap[new Vector2Int(x, y)] = keyUItile; // キーのUIをマップに保存
+        tileUIs[x, y].GetComponent<Button>().enabled = false;
     }
 
     public void SelectMakeWall()
@@ -569,14 +576,14 @@ public class TrapperUIManager : MonoBehaviour
 
     public void SelectMakeBlindTrap()
     {
-        Debug.Log("トラップ2を作るボタンが押されました。");
+        Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
     }
 
     public void SelectMakeReverseInputTrap()
     {
         // トラップ3を作るボタンが押されたときの処理
-        Debug.Log("トラップ3を作るボタンが押されました。");
+        Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
     }
 
@@ -599,6 +606,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void UseTrap(TrapType type)
     {
+        currentTrapType = TrapType.None; // トラップを使用した後はNoneに戻す
         trapUseCounts[type]++;
         Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
         if (trapUseCounts[type] >= maxTraps)
@@ -648,5 +656,69 @@ public class TrapperUIManager : MonoBehaviour
             yield return null;
         }
         blindMaskMaterial.SetFloat("_Radius", to);
+    }
+
+    private void OpenResultUI(bool isRunnerWin)
+    {
+        var resultUI = Instantiate(resultUIPrefab, canvas);
+        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        if (winLoseTextTransform != null)
+        {
+            TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
+            if (winLoseText != null)
+            {
+                winLoseText.text = isRunnerWin ? "あなたの負けです…" : "あなたの勝ちです！";
+            }
+            else
+            {
+                Debug.LogError("WinLoseTextのTextMeshProUGUIコンポーネントが見つかりません");
+            }
+        }
+        else
+        {
+            Debug.LogError("WinLoseTextが見つかりません");
+        }
+
+        Transform timerTextTransform = resultUI.transform.Find("TimerText");
+        if (timerTextTransform != null)
+        {
+            TextMeshProUGUI timerText = timerTextTransform.GetComponent<TextMeshProUGUI>();
+            if (timerText != null)
+            {
+                float remainingTime = gameManager.GetRemainingTime();
+                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int minutes = seconds / 60;
+                int secondsOnly = seconds % 60;
+                timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";
+            }
+            else
+            {
+                Debug.LogError("TimerTextオブジェクトにTextMeshProUGUIコンポーネントが見つかりません。");
+            }
+        }
+        else
+        {
+            Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
+        }
+    }
+
+    public void RemoveKey(Vector2Int position)
+    {
+        if (keyUIMap.TryGetValue(position, out var ui))
+        {
+            Destroy(ui);
+            keyUIMap.Remove(position);
+            tileUIs[position.x, position.y].GetComponent<Button>().enabled = true; // タイルのボタンを再度有効化
+        }
+    }
+
+    public void RemoveTrap(Vector2Int position)
+    {
+        if (TrapUIMap.TryGetValue(position, out var ui))
+        {
+            Destroy(ui);
+            TrapUIMap.Remove(position);
+            tileUIs[position.x, position.y].GetComponent<Button>().enabled = true; // タイルのボタンを再度有効化
+        }
     }
 }

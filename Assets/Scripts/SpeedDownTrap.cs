@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class SpeedDownTrap : Trap
 {
-    [SerializeField]
-    private float trapDuration = 10f; // トラップの効果時間
+    [SerializeField] private float trapDuration = 10f; // トラップの効果時間
     protected override void TriggerEffect(Collider avatar)
     {
         Debug.Log("トラップに引っかかった！");
@@ -12,7 +11,7 @@ public class SpeedDownTrap : Trap
         {
             playerAvatar.ActivateSpeedDown(trapDuration);
             Debug.Log("プレイヤーの速度をダウンさせました。");
-            Destroy(gameObject);
+            Runner.Despawn(Object);
         }
     }
 }

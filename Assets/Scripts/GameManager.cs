@@ -3,25 +3,20 @@ using Fusion;
 using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
-    [Networked]
-    private TickTimer Timer { get; set; }
-    [Networked]
-    private NetworkBool isGameStarted { get; set; } = false; // ゲームが開始されているかどうか
-    [Networked]
-    private NetworkBool isGameFinished { get; set; } = false; // ゲームが終了したかどうか
+    [Networked] private TickTimer Timer { get; set; }
+    [Networked] private NetworkBool isGameStarted { get; set; } = false; // ゲームが開始されているかどうか
+    [Networked] private NetworkBool isGameFinished { get; set; } = false; // ゲームが終了したかどうか
     private float maxTime = 300f; // タイマーの最大時間
     private float remainingTime;
     private float seconds;
     private int minutes;
-    private NetworkBool isGameReady { get; set; } = false; // ゲームが開始されているかどうか
-    [Networked]
-    private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
-    [Networked]
-    private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
-    [SerializeField]
-    private bool isSoloMode = false; // ソロモードかどうか
-    [SerializeField]
-    private int maxTraps = 3; // 最大トラップ数
+    private NetworkBool isCountDownTriggered { get; set; } = false;
+    [Networked] private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
+    [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
+    [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
+    [SerializeField] private int maxTraps = 3; // 最大トラップ数
+    [SerializeField] private GameObject resultUI;
+    [Networked] private NetworkBool isRunnerWin { get; set; } = false; // ランナーが勝利したかどうか
 
     public override void Spawned()
     {
@@ -48,10 +43,10 @@ public class GameManager : NetworkBehaviour
 
     private void SoloModeStart()
     {
-        if (!isGameReady) // ゲームが開始されていない場合
+        if (!isCountDownTriggered) // ゲームが開始されていない場合
 
         {
-            isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
+            isCountDownTriggered = true; // ゲームが開始されたことを示すフラグを立てる
             Debug.Log("ゲーム開始のカウントダウンを開始します。");
             StartGameCountdown(); // ゲーム開始のカウントダウンを開始
         }
@@ -67,10 +62,10 @@ public class GameManager : NetworkBehaviour
     {
         if (Runner.ActivePlayers.Count() == 2)
         {
-            if (!isGameReady && isClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
+            if (!isCountDownTriggered && isClientReady) // ゲームが開始されていない、かつクライアントが準備完了の場合
 
             {
-                isGameReady = true; // ゲームが開始されたことを示すフラグを立てる
+                isCountDownTriggered = true; // ゲームが開始されたことを示すフラグを立てる
                 Debug.Log("ゲーム開始のカウントダウンを開始します。");
                 StartGameCountdown(); // ゲーム開始のカウントダウンを開始
             }
@@ -105,6 +100,14 @@ public class GameManager : NetworkBehaviour
             seconds = maxTime - remainingTime; // 300秒から残り時間を引く
             minutes = Mathf.FloorToInt(seconds / 60); // 分を計算
             Debug.Log($"seconds: {seconds}, minutes: {minutes}");
+            if (Timer.IsRunning)
+            {
+                isRunnerWin = true;
+            }
+            else
+            {
+                isRunnerWin = false;
+            }
         }
     }
     private void StartGameCountdown()
@@ -155,4 +158,9 @@ public class GameManager : NetworkBehaviour
     {
         return maxTraps; // 最大トラップ数を返す
     }
+    public bool IsRunnerWin()
+    {
+        return isRunnerWin; // ランナーが勝利したかどうかを返す
+    }
+
 }

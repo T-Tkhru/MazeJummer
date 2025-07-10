@@ -1,27 +1,22 @@
 using System.Collections;
-using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Networking;
 
 
 public class PlayerAvatar : NetworkBehaviour
 {
     // プレイヤー名のネットワークプロパティを定義する
-    [Networked]
-    private NetworkString<_16> NickName { get; set; }
+    [Networked] private NetworkString<_16> NickName { get; set; }
     private ChangeDetector _changeDetector;
     private NetworkCharacterController characterController;
     private PlayerAvatarView view;
     private float defaultSpeed;
     private int speedDownRefCount = 0;
     private float slowSpeed = 1.25f;
-    [Networked]
-    private int keyCount { get; set; } = 0;
+    [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
-    [SerializeField]
-    private GameObject freeLookCamera;
+    [SerializeField] private GameObject freeLookCamera;
     private bool isReverseInput = false;
     private int reverseInputRefCount = 0;
 
@@ -154,7 +149,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         keyCount++;
         Debug.Log($"鍵を取得しました！現在の鍵の数: {keyCount}");
-        // ここでUIなどに鍵の数を反映する処理を追加できます
+        RunnerUIManager.Instance?.UpdateKeyDisplay(keyCount);
     }
 
     public int GetKeyCount()

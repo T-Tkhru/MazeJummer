@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4426806031260053276
+--- !u!1 &8012713299214258031
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,42 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3898378962362317743}
-  - component: {fileID: 603872446355522144}
+  - component: {fileID: 7148927342004182492}
+  - component: {fileID: 104728488615962871}
   m_Layer: 0
-  m_Name: RunnerUIManager
+  m_Name: SceneTransitionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3898378962362317743
+--- !u!4 &7148927342004182492
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4426806031260053276}
+  m_GameObject: {fileID: 8012713299214258031}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 506, y: 284.5, z: 0}
+  m_LocalPosition: {x: 2.42855, y: -1.97244, z: 3.05429}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &603872446355522144
+--- !u!114 &104728488615962871
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4426806031260053276}
+  m_GameObject: {fileID: 8012713299214258031}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a8c7fac7a11f04591d0abd8b6bb21e, type: 3}
+  m_Script: {fileID: 11500000, guid: 857a0b910b5806a4da0613a15365b265, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blindMaskPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
-  resultUIPrefab: {fileID: 469194680219122916, guid: c2714524772c6e141bd88f09d1504e5e, type: 3}
-  runnerUIPrefab: {fileID: 2655740839448386392, guid: 3f212657b484ff144a8a2b2b641219d7, type: 3}
+  sessionNameInputField: {fileID: 0}

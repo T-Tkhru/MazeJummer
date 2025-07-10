@@ -27,6 +27,21 @@ public class Key : NetworkBehaviour
         {
             playerAvatar.IncrementKeyCount();
         }
-        Destroy(gameObject);
+        Runner.Despawn(Object);
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        // 回転させる
+        transform.Rotate(Vector3.up, 100 * Runner.DeltaTime, Space.World);
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        if (TrapperUIManager.Instance != null)
+        {
+            Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+            TrapperUIManager.Instance.RemoveKey(gridPos);
+        }
     }
 }

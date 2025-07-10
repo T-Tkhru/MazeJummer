@@ -1,5 +1,4 @@
 using System.Collections;
-using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,8 +18,13 @@ public class RunnerUIManager : MonoBehaviour
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
-    [SerializeField] private TextMeshProUGUI timerLabelPrefab; // タイマー表示用のTextMeshProUGUIコンポーネント
     private TextMeshProUGUI timerLabel; // タイマー表示用のTextMeshProUGUIコンポーネント
+    private bool isResultUIOpen = false; // 結果UIが開いているかどうか
+    [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
+    private Transform canvas; // Canvasの参照
+    [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
+    private Transform runnerUI; // RunnerUIのインスタンス
+    private Image[] keyIcons; // 鍵の画像を格納する配列
 
 
     private void Awake()
@@ -32,15 +36,20 @@ public class RunnerUIManager : MonoBehaviour
         }
         Instance = this;
 
+        canvas = FindFirstObjectByType<Canvas>().transform;
+        runnerUI = Instantiate(runnerUIPrefab, canvas).transform;
+        timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
+        timerLabel.text = "00:00"; // 初期値
+        timerLabel.gameObject.SetActive(false); // 初期状態では非表示
+
         // BlindMask を生成して Canvas に配置
-        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             Debug.LogError("Canvasがシーンに存在しません");
             return;
         }
 
-        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        blindMask = Instantiate(blindMaskPrefab, canvas);
         var img = blindMask.GetComponent<Image>();
         if (img == null)
         {
@@ -51,16 +60,19 @@ public class RunnerUIManager : MonoBehaviour
         img.material = blindMaskMaterial;
         blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
         blindMask.SetActive(false);
-        // タイマー表示用のTextMeshProUGUIコンポーネントを生成
-        if (timerLabelPrefab != null)
+
+        keyIcons = GameObject.Find("KeyIcons").GetComponentsInChildren<Image>();
+        if (keyIcons == null || keyIcons.Length == 0)
         {
-            timerLabel = Instantiate(timerLabelPrefab, canvas.transform);
-            timerLabel.text = "00:00"; // 初期値
-            timerLabel.gameObject.SetActive(false); // 初期状態では非表示
+            Debug.LogError("KeyImageの子オブジェクトが見つかりません。");
         }
         else
         {
-            Debug.LogError("timerLabelPrefabが設定されていません。");
+            foreach (var keyIcon in keyIcons)
+            {
+                keyIcon.gameObject.SetActive(false); // 初期状態では非表示
+                Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
+            }
         }
 
     }
@@ -86,7 +98,12 @@ public class RunnerUIManager : MonoBehaviour
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
-                return; // ゲームが終了している場合は何もしない
+                if (!isResultUIOpen)
+                {
+                    isResultUIOpen = true; // 結果UIが開いている状態にする
+                    OpenResultUI(gameManager.IsRunnerWin());
+                }
+                return;
             }
             else
             {
@@ -151,6 +168,58 @@ public class RunnerUIManager : MonoBehaviour
             yield return null;
         }
         blindMaskMaterial.SetFloat("_Radius", to);
+    }
+
+    private void OpenResultUI(bool isRunnerWin)
+    {
+        var resultUI = Instantiate(resultUIPrefab, canvas);
+        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        if (winLoseTextTransform != null)
+        {
+            TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
+            if (winLoseText != null)
+            {
+                winLoseText.text = isRunnerWin ? "あなたの勝ちです！" : "あなたの負けです…";
+            }
+            else
+            {
+                Debug.LogError("WinLoseTextオブジェクトにTextMeshProUGUIコンポーネントが見つかりません。");
+            }
+        }
+        else
+        {
+            Debug.LogError("ResultUI内にWinLoseTextという名前のオブジェクトが見つかりません。");
+        }
+
+        Transform timerTextTransform = resultUI.transform.Find("TimerText");
+        if (timerTextTransform != null)
+        {
+            TextMeshProUGUI timerText = timerTextTransform.GetComponent<TextMeshProUGUI>();
+            if (timerText != null)
+            {
+                float remainingTime = gameManager.GetRemainingTime();
+                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int minutes = seconds / 60;
+                int secondsOnly = seconds % 60;
+                timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";
+            }
+            else
+            {
+                Debug.LogError("TimerTextオブジェクトにTextMeshProUGUIコンポーネントが見つかりません。");
+            }
+        }
+        else
+        {
+            Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
+        }
+    }
+
+    public void UpdateKeyDisplay(int keyCount)
+    {
+        for (int i = 0; i < keyIcons.Length; i++)
+        {
+            keyIcons[i].gameObject.SetActive(i < keyCount);
+        }
     }
 
 }

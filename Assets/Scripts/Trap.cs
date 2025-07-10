@@ -21,4 +21,13 @@ public abstract class Trap : NetworkBehaviour
 
     // 継承先で具体的な効果を実装
     protected abstract void TriggerEffect(Collider avatar);
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        if (TrapperUIManager.Instance != null)
+        {
+            Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+            TrapperUIManager.Instance.RemoveTrap(gridPos);
+        }
+    }
 }

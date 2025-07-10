@@ -10,23 +10,22 @@ namespace Example
 	[DefaultExecutionOrder(-5)]
 	public sealed class Player : NetworkBehaviour
 	{
-		public SimpleKCC   KCC;
+		public SimpleKCC KCC;
 		public PlayerInput Input;
-		public Transform   CameraPivot;
-		public Transform   CameraHandle;
+		public Transform CameraPivot;
+		public Transform CameraHandle;
 
 		[Header("Movement")]
-		public float MoveSpeed          = 10.0f;
-		public float JumpImpulse        = 10.0f;
-		public float UpGravity          = -25.0f;
-		public float DownGravity        = -40.0f;
+		public float MoveSpeed = 10.0f;
+		public float JumpImpulse = 10.0f;
+		public float UpGravity = -25.0f;
+		public float DownGravity = -40.0f;
 		public float GroundAcceleration = 55.0f;
 		public float GroundDeceleration = 25.0f;
-		public float AirAcceleration    = 25.0f;
-		public float AirDeceleration    = 1.3f;
+		public float AirAcceleration = 25.0f;
+		public float AirDeceleration = 1.3f;
 
-		[Networked]
-		private Vector3 _moveVelocity { get; set; }
+		[Networked] private Vector3 _moveVelocity { get; set; }
 
 		public override void FixedUpdateNetwork()
 		{
@@ -35,7 +34,7 @@ namespace Example
 
 			// Set default world space input direction and jump impulse.
 			Vector3 inputDirection = KCC.TransformRotation * new Vector3(Input.CurrentInput.MoveDirection.x, 0.0f, Input.CurrentInput.MoveDirection.y);
-			float   jumpImpulse    = default;
+			float jumpImpulse = default;
 
 			// Comparing current input to previous input - this prevents glitches when input is lost.
 			if (Input.CurrentInput.Actions.WasPressed(Input.PreviousInput.Actions, GameplayInput.JUMP_BUTTON) == true)

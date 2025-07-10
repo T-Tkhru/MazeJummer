@@ -11,28 +11,28 @@ namespace Example
 	[DefaultExecutionOrder(-10)]
 	public sealed class PlayerInput : NetworkBehaviour, IBeforeUpdate, IBeforeTick
 	{
-		public GameplayInput CurrentInput  => _currentInput;
+		public GameplayInput CurrentInput => _currentInput;
 		public GameplayInput PreviousInput => _previousInput;
 
-		[SerializeField][Tooltip("Mouse delta multiplier.")]
+		[SerializeField]
+		[Tooltip("Mouse delta multiplier.")]
 		private Vector2 _lookSensitivity = Vector2.one;
 
 		// We need to store current input to compare against previous input (to track actions activation/deactivation). It is also used if the input for current tick is not available.
 		// This is not needed on proxies and will be replicated to input authority only.
-		[Networked]
-		private GameplayInput _currentInput { get; set; }
+		[Networked] private GameplayInput _currentInput { get; set; }
 
-		private GameplayInput      _previousInput;
-		private GameplayInput      _accumulatedInput;
-		private bool               _resetAccumulatedInput;
+		private GameplayInput _previousInput;
+		private GameplayInput _accumulatedInput;
+		private bool _resetAccumulatedInput;
 		private Vector2Accumulator _lookRotationAccumulator = new Vector2Accumulator(0.02f, true);
 
 		public override void Spawned()
 		{
 			// Reset to default state.
-			_currentInput          = default;
-			_previousInput         = default;
-			_accumulatedInput      = default;
+			_currentInput = default;
+			_previousInput = default;
+			_accumulatedInput = default;
 			_resetAccumulatedInput = default;
 
 			if (Object.HasInputAuthority == true)
@@ -45,7 +45,7 @@ namespace Example
 				{
 					// Hide cursor
 					Cursor.lockState = CursorLockMode.Locked;
-					Cursor.visible   = false;
+					Cursor.visible = false;
 				}
 			}
 
@@ -105,9 +105,9 @@ namespace Example
 			{
 				Vector2 moveDirection = Vector2.zero;
 
-				if (keyboard.wKey.isPressed == true) { moveDirection += Vector2.up;    }
-				if (keyboard.sKey.isPressed == true) { moveDirection += Vector2.down;  }
-				if (keyboard.aKey.isPressed == true) { moveDirection += Vector2.left;  }
+				if (keyboard.wKey.isPressed == true) { moveDirection += Vector2.up; }
+				if (keyboard.sKey.isPressed == true) { moveDirection += Vector2.down; }
+				if (keyboard.aKey.isPressed == true) { moveDirection += Vector2.left; }
 				if (keyboard.dKey.isPressed == true) { moveDirection += Vector2.right; }
 
 				_accumulatedInput.MoveDirection = moveDirection.normalized;
