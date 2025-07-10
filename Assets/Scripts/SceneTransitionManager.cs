@@ -1,3 +1,4 @@
+using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,6 +46,12 @@ public class SceneTransitionManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         Debug.Log("メインメニューに戻ります");
+        var networkRunner = FindFirstObjectByType<NetworkRunner>();
+        if (networkRunner != null)
+        {
+            networkRunner.Shutdown();
+            Destroy(networkRunner.gameObject);
+        }
         SceneManager.LoadScene("Start");
     }
 }
