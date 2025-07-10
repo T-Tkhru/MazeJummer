@@ -20,6 +20,7 @@ public class RunnerUIManager : MonoBehaviour
     private GameManager gameManager;
     [SerializeField] private TextMeshProUGUI timerLabelPrefab; // タイマー表示用のTextMeshProUGUIコンポーネント
     private TextMeshProUGUI timerLabel; // タイマー表示用のTextMeshProUGUIコンポーネント
+    private bool isResultUIOpen = false; // 結果UIが開いているかどうか
 
 
     private void Awake()
@@ -85,7 +86,12 @@ public class RunnerUIManager : MonoBehaviour
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
-                return; // ゲームが終了している場合は何もしない
+                if (!isResultUIOpen)
+                {
+                    isResultUIOpen = true; // 結果UIが開いている状態にする
+                    OpenResultUI(gameManager.IsRunnerWin());
+                }
+                return;
             }
             else
             {
@@ -150,6 +156,35 @@ public class RunnerUIManager : MonoBehaviour
             yield return null;
         }
         blindMaskMaterial.SetFloat("_Radius", to);
+    }
+
+    private void OpenResultUI(bool isRunnerWin)
+    {
+        var resultUI = GameObject.Find("ResultUI");
+        if (resultUI == null)
+        {
+            Debug.LogError("Result UIが見つかりません");
+            return;
+        }
+
+        resultUI.SetActive(true);
+        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        if (winLoseTextTransform != null)
+        {
+            TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
+            if (winLoseText != null)
+            {
+                winLoseText.text = isRunnerWin ? "あなたの勝ちです！" : "あなたの負けです…";
+            }
+            else
+            {
+                Debug.LogError("WinLoseTextオブジェクトにTextMeshProUGUIコンポーネントが見つかりません。");
+            }
+        }
+        else
+        {
+            Debug.LogError("ResultUI内にWinLoseTextという名前のオブジェクトが見つかりません。");
+        }
     }
 
 }

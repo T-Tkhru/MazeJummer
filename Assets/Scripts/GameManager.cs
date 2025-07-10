@@ -159,6 +159,10 @@ public class GameManager : NetworkBehaviour
     {
         return maxTraps; // 最大トラップ数を返す
     }
+    public bool IsRunnerWin()
+    {
+        return isRunnerWin; // ランナーが勝利したかどうかを返す
+    }
 
     private void OpenResultUI()
     {

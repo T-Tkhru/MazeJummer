@@ -52,6 +52,8 @@ public class TrapperUIManager : MonoBehaviour
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
 
+    private bool isResultUIOpen = false;
+
 
 
     private void Awake()
@@ -102,6 +104,7 @@ public class TrapperUIManager : MonoBehaviour
 
     void Update()
     {
+        // if (gameManager == null) { return; }
         // プレイヤーが存在するか確認
         Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
         if (playerTransform == null)
@@ -120,6 +123,14 @@ public class TrapperUIManager : MonoBehaviour
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
         }
+
+        if (gameManager.IsGameFinished() && !isResultUIOpen)
+        {
+            isResultUIOpen = true; // 結果UIが開いている状態にする
+            OpenResultUI(gameManager.IsRunnerWin());
+            return;
+        }
+
 
         // カウントダウン表示処理
         HandleTimerDisplay();
@@ -648,5 +659,34 @@ public class TrapperUIManager : MonoBehaviour
             yield return null;
         }
         blindMaskMaterial.SetFloat("_Radius", to);
+    }
+
+    private void OpenResultUI(bool isRunnerWin)
+    {
+        var resultUI = GameObject.Find("ResultUI");
+        if (resultUI == null)
+        {
+            Debug.LogError("Result UIが見つかりません");
+            return;
+        }
+
+        resultUI.SetActive(true);
+        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        if (winLoseTextTransform != null)
+        {
+            TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
+            if (winLoseText != null)
+            {
+                winLoseText.text = isRunnerWin ? "あなたの負けです…" : "あなたの勝ちです！";
+            }
+            else
+            {
+                Debug.LogError("WinLoseTextのTextMeshProUGUIコンポーネントが見つかりません");
+            }
+        }
+        else
+        {
+            Debug.LogError("WinLoseTextが見つかりません");
+        }
     }
 }
