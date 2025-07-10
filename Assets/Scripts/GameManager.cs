@@ -108,7 +108,6 @@ public class GameManager : NetworkBehaviour
             {
                 isRunnerWin = false;
             }
-            OpenResultUI();
         }
     }
     private void StartGameCountdown()
@@ -164,19 +163,4 @@ public class GameManager : NetworkBehaviour
         return isRunnerWin; // ランナーが勝利したかどうかを返す
     }
 
-    private void OpenResultUI()
-    {
-        // 結果UIを開く処理を実装
-        Debug.Log("結果UIを開きます。");
-        // ここにUIを開くコードを追加する
-        // ボタンを表示させる
-        RPC_ShowResultUI(); // 各クライアントに結果UIを開くRPCを送信
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_ShowResultUI()
-    {
-        Debug.Log("結果UIを開きます（各クライアント）");
-        resultUI.SetActive(true);
-    }
 }

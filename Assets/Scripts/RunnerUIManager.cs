@@ -21,6 +21,8 @@ public class RunnerUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerLabelPrefab; // タイマー表示用のTextMeshProUGUIコンポーネント
     private TextMeshProUGUI timerLabel; // タイマー表示用のTextMeshProUGUIコンポーネント
     private bool isResultUIOpen = false; // 結果UIが開いているかどうか
+    [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
+    private Transform canvas; // Canvasの参照
 
 
     private void Awake()
@@ -33,14 +35,14 @@ public class RunnerUIManager : MonoBehaviour
         Instance = this;
 
         // BlindMask を生成して Canvas に配置
-        Canvas canvas = FindFirstObjectByType<Canvas>();
+        canvas = FindFirstObjectByType<Canvas>().transform;
         if (canvas == null)
         {
             Debug.LogError("Canvasがシーンに存在しません");
             return;
         }
 
-        blindMask = Instantiate(blindMaskPrefab, canvas.transform);
+        blindMask = Instantiate(blindMaskPrefab, canvas);
         var img = blindMask.GetComponent<Image>();
         if (img == null)
         {
@@ -54,7 +56,7 @@ public class RunnerUIManager : MonoBehaviour
         // タイマー表示用のTextMeshProUGUIコンポーネントを生成
         if (timerLabelPrefab != null)
         {
-            timerLabel = Instantiate(timerLabelPrefab, canvas.transform);
+            timerLabel = Instantiate(timerLabelPrefab, canvas);
             timerLabel.text = "00:00"; // 初期値
             timerLabel.gameObject.SetActive(false); // 初期状態では非表示
         }
@@ -160,14 +162,7 @@ public class RunnerUIManager : MonoBehaviour
 
     private void OpenResultUI(bool isRunnerWin)
     {
-        var resultUI = GameObject.Find("ResultUI");
-        if (resultUI == null)
-        {
-            Debug.LogError("Result UIが見つかりません");
-            return;
-        }
-
-        resultUI.SetActive(true);
+        var resultUI = Instantiate(resultUIPrefab, canvas);
         Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
         if (winLoseTextTransform != null)
         {
@@ -184,6 +179,28 @@ public class RunnerUIManager : MonoBehaviour
         else
         {
             Debug.LogError("ResultUI内にWinLoseTextという名前のオブジェクトが見つかりません。");
+        }
+
+        Transform timerTextTransform = resultUI.transform.Find("TimerText");
+        if (timerTextTransform != null)
+        {
+            TextMeshProUGUI timerText = timerTextTransform.GetComponent<TextMeshProUGUI>();
+            if (timerText != null)
+            {
+                float remainingTime = gameManager.GetRemainingTime();
+                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int minutes = seconds / 60;
+                int secondsOnly = seconds % 60;
+                timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";
+            }
+            else
+            {
+                Debug.LogError("TimerTextオブジェクトにTextMeshProUGUIコンポーネントが見つかりません。");
+            }
+        }
+        else
+        {
+            Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
     }
 

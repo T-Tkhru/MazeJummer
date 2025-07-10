@@ -55,3 +55,4 @@ MonoBehaviour:
   subCameraDisplay: {fileID: 4818298152244826656, guid: 9f4bb9c5116c84148a037b648fa4d677, type: 3}
   trapperUIPrefab: {fileID: 2655740839448386392, guid: 596f9cce18bb6294e9c0b4ba47f640f1, type: 3}
   blindMaskPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
+  resultUIPrefab: {fileID: 469194680219122916, guid: c2714524772c6e141bd88f09d1504e5e, type: 3}
