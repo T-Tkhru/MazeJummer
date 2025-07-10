@@ -11,7 +11,7 @@ public class ReverseInputTrap : Trap
         {
             playerAvatar.ActivateReverseInput(trapDuration);
             Debug.Log("プレイヤーの速度をダウンさせました。");
-            Destroy(gameObject);
+            Runner.Despawn(Object);
         }
     }
 }

@@ -11,7 +11,7 @@ public class SpeedDownTrap : Trap
         {
             playerAvatar.ActivateSpeedDown(trapDuration);
             Debug.Log("プレイヤーの速度をダウンさせました。");
-            Destroy(gameObject);
+            Runner.Despawn(Object);
         }
     }
 }

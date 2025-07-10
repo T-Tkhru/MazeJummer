@@ -27,7 +27,7 @@ public class Key : NetworkBehaviour
         {
             playerAvatar.IncrementKeyCount();
         }
-        Destroy(gameObject);
+        Runner.Despawn(Object);
     }
 
     public override void FixedUpdateNetwork()
