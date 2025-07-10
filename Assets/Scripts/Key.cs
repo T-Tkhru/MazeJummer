@@ -29,4 +29,10 @@ public class Key : NetworkBehaviour
         }
         Destroy(gameObject);
     }
+
+    public override void FixedUpdateNetwork()
+    {
+        // 回転させる
+        transform.Rotate(Vector3.up, 100 * Runner.DeltaTime, Space.World);
+    }
 }
