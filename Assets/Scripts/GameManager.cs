@@ -15,7 +15,7 @@ public class GameManager : NetworkBehaviour
     [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
     [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
     [SerializeField] private int maxTraps = 3; // 最大トラップ数
-    [SerializeField] private GameObject returnButton;
+    [SerializeField] private GameObject resultUI;
 
     public override void Spawned()
     {
@@ -164,6 +164,6 @@ public class GameManager : NetworkBehaviour
     private void RPC_ShowResultUI()
     {
         Debug.Log("結果UIを開きます（各クライアント）");
-        returnButton.SetActive(true);
+        resultUI.SetActive(true);
     }
 }

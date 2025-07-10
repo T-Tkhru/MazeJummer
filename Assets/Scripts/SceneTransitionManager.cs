@@ -2,9 +2,24 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartGame : MonoBehaviour
+public class SceneTransitionManager : MonoBehaviour
 {
     [SerializeField] private TMP_InputField sessionNameInputField;
+
+    public static SceneTransitionManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // シーン間で保持
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void JoinGameAuto()
     {
@@ -25,6 +40,12 @@ public class StartGame : MonoBehaviour
         Debug.Log($"ID指定でゲーム開始: {inputID}");
         PlayerPrefs.SetString("SessionName", inputID); // 後でScene側で読み取る
         SceneManager.LoadScene("Game");
+    }
+
+    public void ReturnToMainMenu()
+    {
+        Debug.Log("メインメニューに戻ります");
+        SceneManager.LoadScene("Start");
     }
 }
 

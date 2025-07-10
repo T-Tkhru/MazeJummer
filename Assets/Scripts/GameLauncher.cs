@@ -19,9 +19,15 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameObject trapperUIManager;
     [SerializeField] private GameObject runnerUIManager;
     [SerializeField] private string sessionName; // セッション名デバッグ用、本番では削除する
+    [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
 
     private async void Start()
     {
+        if (SceneTransitionManager.Instance == null)
+        {
+            Instantiate(sceneTransitionManagerPrefab);
+            Debug.Log("SceneTransitionManager を自動生成しました");
+        }
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
         string sessionName = null;

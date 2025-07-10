@@ -201,19 +201,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 126592109}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 857183348}
-        m_TargetAssemblyTypeName: StartGame, Assembly-CSharp
-        m_MethodName: JoinGameAuto
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &126592109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -823,7 +811,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &857183347
+--- !u!1 &922944234
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -831,38 +819,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 857183349}
-  - component: {fileID: 857183348}
+  - component: {fileID: 922944236}
+  - component: {fileID: 922944235}
   m_Layer: 0
-  m_Name: StartGame
+  m_Name: TitleUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &857183348
+--- !u!114 &922944235
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857183347}
+  m_GameObject: {fileID: 922944234}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 857a0b910b5806a4da0613a15365b265, type: 3}
+  m_Script: {fileID: 11500000, guid: 02ae8872fef8cb148880625f2a61d26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sessionNameInputField: {fileID: 744453808}
---- !u!4 &857183349
+  startGameAutoButton: {fileID: 126592108}
+  startGameWithIDButton: {fileID: 1308403016}
+--- !u!4 &922944236
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857183347}
+  m_GameObject: {fileID: 922944234}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.42855, y: -1.97244, z: 3.05429}
+  m_LocalPosition: {x: 537.16394, y: 400.30093, z: 48.61105}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1087,19 +1076,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1308403017}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 857183348}
-        m_TargetAssemblyTypeName: StartGame, Assembly-CSharp
-        m_MethodName: JoinGameWithID
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1308403017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1666,6 +1643,67 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &7028877451579467430
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 104728488615962871, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: sessionNameInputField
+      value: 
+      objectReference: {fileID: 744453808}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.42855
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.97244
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.05429
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8012713299214258031, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_Name
+      value: SceneTransitionManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1674,4 +1712,5 @@ SceneRoots:
   - {fileID: 203844589}
   - {fileID: 1914913206}
   - {fileID: 1340894660}
-  - {fileID: 857183349}
+  - {fileID: 7028877451579467430}
+  - {fileID: 922944236}
