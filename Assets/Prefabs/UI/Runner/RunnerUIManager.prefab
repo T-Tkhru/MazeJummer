@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blindMaskPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
-  timerLabelPrefab: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
   resultUIPrefab: {fileID: 469194680219122916, guid: c2714524772c6e141bd88f09d1504e5e, type: 3}
+  runnerUIPrefab: {fileID: 2655740839448386392, guid: 3f212657b484ff144a8a2b2b641219d7, type: 3}

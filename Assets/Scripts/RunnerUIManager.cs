@@ -18,11 +18,12 @@ public class RunnerUIManager : MonoBehaviour
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
-    [SerializeField] private TextMeshProUGUI timerLabelPrefab; // タイマー表示用のTextMeshProUGUIコンポーネント
     private TextMeshProUGUI timerLabel; // タイマー表示用のTextMeshProUGUIコンポーネント
     private bool isResultUIOpen = false; // 結果UIが開いているかどうか
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
     private Transform canvas; // Canvasの参照
+    [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
+    private Transform runnerUI; // RunnerUIのインスタンス
 
 
     private void Awake()
@@ -34,8 +35,13 @@ public class RunnerUIManager : MonoBehaviour
         }
         Instance = this;
 
-        // BlindMask を生成して Canvas に配置
         canvas = FindFirstObjectByType<Canvas>().transform;
+        runnerUI = Instantiate(runnerUIPrefab, canvas).transform;
+        timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
+        timerLabel.text = "00:00"; // 初期値
+        timerLabel.gameObject.SetActive(false); // 初期状態では非表示
+
+        // BlindMask を生成して Canvas に配置
         if (canvas == null)
         {
             Debug.LogError("Canvasがシーンに存在しません");
@@ -53,17 +59,6 @@ public class RunnerUIManager : MonoBehaviour
         img.material = blindMaskMaterial;
         blindMaskMaterial.SetFloat("_Radius", blindMaxRadius);
         blindMask.SetActive(false);
-        // タイマー表示用のTextMeshProUGUIコンポーネントを生成
-        if (timerLabelPrefab != null)
-        {
-            timerLabel = Instantiate(timerLabelPrefab, canvas);
-            timerLabel.text = "00:00"; // 初期値
-            timerLabel.gameObject.SetActive(false); // 初期状態では非表示
-        }
-        else
-        {
-            Debug.LogError("timerLabelPrefabが設定されていません。");
-        }
 
     }
     private void Start()
