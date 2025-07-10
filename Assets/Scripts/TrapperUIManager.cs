@@ -19,6 +19,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private RenderTexture subCameraRenderTexture;
     [SerializeField] private RawImage subCameraDisplay; // サブカメラの表示用RawImage
     [SerializeField] private GameObject trapperUIPrefab;
+    [SerializeField] private RectTransform keyUI; // キーのUIのPrefab
     private Transform trapperUI; // トラッパーUIのPrefab
 
 
@@ -28,6 +29,7 @@ public class TrapperUIManager : MonoBehaviour
     private Vector2 UIStartPos;
     private GameObject[,] tileUIs; // UIのタイルを保存する2D配列
     private GameObject[,] trapUIs; // トラップのUIを保存する2D配列
+    private GameObject[,] keyUIs; // キーのUIを保存する2D配列
     private int[,] mazeData;
     private Vector2Int lastPlayerPos;
     private bool isGenerated = false; // UIが生成されたかどうかのフラグ
@@ -37,6 +39,7 @@ public class TrapperUIManager : MonoBehaviour
     private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
     private TrapType currentTrapType = TrapType.None;
     private HashSet<Vector2Int> trapPositions = new HashSet<Vector2Int>();
+    private HashSet<Vector2Int> keyPositions = new HashSet<Vector2Int>();
     private TextMeshProUGUI CountDownText;
     private Image countDownBackground;
     private GameManager gameManager;
@@ -223,6 +226,7 @@ public class TrapperUIManager : MonoBehaviour
         height = mazeManager.height; // 迷路の高さを取得
         tileUIs = new GameObject[width, height]; // UIのタイルを保存する2D配列
         trapUIs = new GameObject[width, height]; // トラップのUIを保存する2D配列
+        keyUIs = new GameObject[width, height]; // キーのUIを保存する2D配列
         mazeData = new int[width, height]; // 迷路のデータを保存する2D配列
         tileSize = (int)wallUI.GetComponent<RectTransform>().sizeDelta.x; // UIのタイルサイズを取得
         int canvasHeight = (int)canvas.GetComponent<RectTransform>().sizeDelta.y;
@@ -281,6 +285,12 @@ public class TrapperUIManager : MonoBehaviour
         avatarController.enabled = false; // サブカメラの表示用にCinemachineInputAxisControllerを無効化
         GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
+
+        var keyPositions = GetKeyPositions();
+        foreach (var pos in keyPositions)
+        {
+            CreateKeyUI(pos.x, pos.y);
+        }
         gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
@@ -349,6 +359,7 @@ public class TrapperUIManager : MonoBehaviour
     {
         UpdateButtonInteractable(position);
         RemoveTrapUI(position);
+        RemoveKeyUI(position);
     }
 
     private void UpdateButtonInteractable(Vector2Int position)
@@ -412,6 +423,26 @@ public class TrapperUIManager : MonoBehaviour
                 Debug.Log($"トラップUIを削除しました: {trapPos}");
                 // タイルのUIを通路に戻す
                 tileUIs[trapPos.x, trapPos.y].GetComponent<Button>().enabled = true;
+                break;
+            }
+        }
+    }
+
+    private void RemoveKeyUI(Vector2Int position)
+    {
+        foreach (var keyPos in keyPositions)
+        {
+            if (keyPos == position)
+            {
+                // トラップのUIを削除
+                if (keyUIs[keyPos.x, keyPos.y] != null)
+                {
+                    Destroy(keyUIs[keyPos.x, keyPos.y]);
+                }
+                trapPositions.Remove(keyPos);
+                Debug.Log($"トラップUIを削除しました: {keyPos}");
+                // タイルのUIを通路に戻す
+                tileUIs[keyPos.x, keyPos.y].GetComponent<Button>().enabled = true;
                 break;
             }
         }
@@ -563,6 +594,20 @@ public class TrapperUIManager : MonoBehaviour
         trapPositions.Add(new Vector2Int(x, y)); // トラップの位置を保存
         tileUIs[x, y].GetComponent<Button>().enabled = false;
         UseTrap(currentTrapType); // トラップの使用回数をカウント
+    }
+
+    private void CreateKeyUI(int x, int y)
+    {
+        GameObject keyUItile = Instantiate(keyUI.gameObject, trapperUI);
+        RectTransform rect = keyUItile.GetComponent<RectTransform>();
+        Vector2 anchoredPos = new Vector2(
+            UIStartPos.x + x * tileSize,
+            UIStartPos.y + y * tileSize
+        );
+        rect.anchoredPosition = anchoredPos;
+        keyUIs[x, y] = keyUItile; // キーのUIを保存
+        keyPositions.Add(new Vector2Int(x, y)); // キーの位置を保存
+        tileUIs[x, y].GetComponent<Button>().enabled = false;
     }
 
     public void SelectMakeWall()
