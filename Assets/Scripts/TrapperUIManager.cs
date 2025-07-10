@@ -104,12 +104,10 @@ public class TrapperUIManager : MonoBehaviour
 
     void Update()
     {
-        // if (gameManager == null) { return; }
-        // プレイヤーが存在するか確認
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
-        if (playerTransform == null)
+        if (isResultUIOpen) { return; }
+        if (gameManager == null)
         {
-            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             return;
         }
 
@@ -117,8 +115,6 @@ public class TrapperUIManager : MonoBehaviour
         if (!isGenerated)
         {
             if (!checkSpawnable()) return; // 壁が足りなければ生成しない
-
-            gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
             maxTraps = gameManager.GetMaxTraps(); // 最大トラップ数を取得
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
@@ -136,7 +132,7 @@ public class TrapperUIManager : MonoBehaviour
         HandleTimerDisplay();
 
         // ゲーム中のUI更新処理
-        UpdatePlayerUI(playerTransform);
+        UpdatePlayerUI();
     }
 
 
@@ -180,8 +176,14 @@ public class TrapperUIManager : MonoBehaviour
         timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
     }
 
-    private void UpdatePlayerUI(Transform playerTransform)
+    private void UpdatePlayerUI()
     {
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
+        if (playerTransform == null)
+        {
+            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
+            return;
+        }
         if (playerUI == null) return;
 
         Vector3 playerPos = playerTransform.position;
