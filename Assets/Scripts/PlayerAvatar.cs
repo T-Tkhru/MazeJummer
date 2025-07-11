@@ -97,20 +97,11 @@ public class PlayerAvatar : NetworkBehaviour
             // 入力方向のベクトルを正規化する
             data.Direction.Normalize();
             Vector3 move = data.Direction;
-            if (isReverseInput)
-            {
-                // 入力を反転させる
-                characterController.Move(-move);
-            }
-            else
-            {
-                // 通常の入力方向で移動
-                characterController.Move(move);
-            }
+            characterController.Move(isReverseInput ? -move : move);
             if (animator != null)
             {
-                bool isMoving = move.sqrMagnitude > 0.01f;
-                animator.Play(isMoving ? "Run" : "Idle"); // Idleがなければ走りっぱなしでもOK
+                float speed = move.magnitude; // 0〜1
+                animator.SetFloat("Speed", speed);
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {
