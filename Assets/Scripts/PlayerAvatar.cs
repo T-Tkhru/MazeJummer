@@ -13,7 +13,6 @@ public class PlayerAvatar : NetworkBehaviour
     private PlayerAvatarView view;
     private float defaultSpeed;
     private int speedDownRefCount = 0;
-    private float slowSpeed = 1.25f;
     [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
     [SerializeField] private GameObject freeLookCamera;
@@ -118,7 +117,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     private IEnumerator HandleSpeedDownEffect(float duration)
     {
-        characterController.maxSpeed = slowSpeed;
+        characterController.maxSpeed = defaultSpeed / 2; // 速度を半分にする
         yield return new WaitForSeconds(duration);
         speedDownRefCount--;
         if (speedDownRefCount <= 0)
