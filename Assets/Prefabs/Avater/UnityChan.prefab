@@ -5594,7 +5594,7 @@ Animator:
   m_GameObject: {fileID: 100268}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 29032ffe50eebbd41b9e5c4017762813, type: 3}
-  m_Controller: {fileID: 9100000, guid: 7b8db3e2f0141a94ca06a5f0dcaa7b9c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3d19e8dfbb0ae9b44a6826ed632f2478, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -5811,7 +5811,7 @@ CharacterController:
   m_Radius: 0.3
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &7294635404451124168
@@ -5829,8 +5829,8 @@ MonoBehaviour:
   _stateAuthorityChangeErrorCorrectionDelta: 0
   gravity: -20
   jumpImpulse: 8
-  acceleration: 10
-  braking: 10
+  acceleration: 100
+  braking: 100
   maxSpeed: 2
   rotationSpeed: 15
 --- !u!114 &568946006949336136

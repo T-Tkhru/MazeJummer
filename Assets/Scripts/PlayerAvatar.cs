@@ -19,6 +19,8 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isReverseInput = false;
     private int reverseInputRefCount = 0;
 
+    private Animator animator;
+
     public override void Spawned()
     {
         // ネットワークキャラクターコントローラーを取得
@@ -47,6 +49,9 @@ public class PlayerAvatar : NetworkBehaviour
         }
         defaultSpeed = characterController.maxSpeed;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        animator = GetComponentInChildren<Animator>();
+
     }
 
     public override void Render()
@@ -91,16 +96,21 @@ public class PlayerAvatar : NetworkBehaviour
         {
             // 入力方向のベクトルを正規化する
             data.Direction.Normalize();
-            // 入力方向を移動方向としてそのまま渡す
+            Vector3 move = data.Direction;
             if (isReverseInput)
             {
                 // 入力を反転させる
-                characterController.Move(-data.Direction);
+                characterController.Move(-move);
             }
             else
             {
                 // 通常の入力方向で移動
-                characterController.Move(data.Direction);
+                characterController.Move(move);
+            }
+            if (animator != null)
+            {
+                bool isMoving = move.sqrMagnitude > 0.01f;
+                animator.Play(isMoving ? "Run" : "Idle"); // Idleがなければ走りっぱなしでもOK
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {

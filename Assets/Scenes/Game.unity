@@ -273,8 +273,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.50546163, y: 0.000000025714916, z: -0.000000015063936, w: 0.8628491}
-  m_LocalPosition: {x: 1.0230806, y: 3.5674577, z: 0.7117741}
+  m_LocalRotation: {x: 0.48241368, y: 0.00000018024501, z: -0.00000009926742, w: 0.87594354}
+  m_LocalPosition: {x: -2.2530823, y: 3.1620164, z: -0.98239255}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: 5341717348318486131, guid: 698c697e03846f6459d83db111ff1238, type: 3}
   playerAvatarPrefab:
-    RawGuidValue: ac01291317ff2194cb4ff4ebbd52001c
+    RawGuidValue: be5f30ee1ca0d3a4fb280dde3bbbe46f
   mazeManager:
     RawGuidValue: 701b3173d5a2669429656743b1eec61f
   trapperUIManager: {fileID: 4749607224998323932, guid: 13786ee5d3b932c42bf9ab633e93311d, type: 3}
