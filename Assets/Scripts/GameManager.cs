@@ -6,7 +6,7 @@ public class GameManager : NetworkBehaviour
     [Networked] private TickTimer Timer { get; set; }
     [Networked] private NetworkBool isGameStarted { get; set; } = false; // ゲームが開始されているかどうか
     [Networked] private NetworkBool isGameFinished { get; set; } = false; // ゲームが終了したかどうか
-    private int timeLimit = 180; // 制限時間（秒）
+    [SerializeField] private int timeLimit = 180; // 制限時間（秒）
     private NetworkBool isCountDownTriggered { get; set; } = false;
     [Networked] private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
     [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
