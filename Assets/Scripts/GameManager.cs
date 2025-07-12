@@ -1,4 +1,5 @@
 using System.Linq;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using UnityEngine;
 public class GameManager : NetworkBehaviour
@@ -12,7 +13,6 @@ public class GameManager : NetworkBehaviour
     [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
     [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
     [SerializeField] private int maxTraps = 3; // 最大トラップ数
-    [SerializeField] private GameObject resultUI;
     [Networked] private NetworkBool isRunnerWin { get; set; } = false; // ランナーが勝利したかどうか
 
     public override void Spawned()
@@ -90,6 +90,11 @@ public class GameManager : NetworkBehaviour
     }
     public void FinishGame()
     {
+        var playerAvatar = GameObject.FindWithTag("Avatar").GetComponent<PlayerAvatar>();
+        if (playerAvatar != null)
+        {
+            playerAvatar.ResetSpeed(); // プレイヤーの速度をリセット
+        }
         if (Runner.IsServer && !isGameFinished)
         {
             isGameFinished = true; // ゲームが終了したことを示す
@@ -101,6 +106,7 @@ public class GameManager : NetworkBehaviour
             {
                 isRunnerWin = true;
             }
+            // Runner.Shutdown(); // ゲームを終了する
         }
     }
     private void StartGameCountdown()

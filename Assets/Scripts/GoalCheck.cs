@@ -17,7 +17,6 @@ public class GoalCheck : NetworkBehaviour
             if (keyCount >= 2)
             {
                 Debug.Log("ゴールしました！");
-                other.GetComponent<PlayerAvatar>().ResetSpeed();
                 GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
                 if (gameManager != null)
                 {
