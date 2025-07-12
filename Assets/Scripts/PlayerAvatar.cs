@@ -20,7 +20,7 @@ public class PlayerAvatar : NetworkBehaviour
     private int reverseInputRefCount = 0;
 
     private Animator animator;
-    [Networked] private float AnimSpeed { get; set; }
+    [Networked] private float speed { get; set; }
 
 
     public override void Spawned()
@@ -59,7 +59,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         if (animator != null)
         {
-            animator.SetFloat("Speed", AnimSpeed);
+            animator.SetFloat("Speed", speed);
         }
     }
 
@@ -84,7 +84,7 @@ public class PlayerAvatar : NetworkBehaviour
             if (animator != null)
             {
                 float speed = move.magnitude; // 0〜1
-                AnimSpeed = speed; // アニメーションの速度を設定
+                speed = speed; // アニメーションの速度を設定
                 animator.SetFloat("Speed", speed);
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
@@ -139,6 +139,11 @@ public class PlayerAvatar : NetworkBehaviour
     public int GetKeyCount()
     {
         return keyCount;
+    }
+
+    public void ResetSpeed()
+    {
+        speed = 0; // アニメーションの速度をリセット
     }
 
 }
