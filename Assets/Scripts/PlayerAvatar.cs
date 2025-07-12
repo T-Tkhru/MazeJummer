@@ -32,17 +32,11 @@ public class PlayerAvatar : NetworkBehaviour
         // NickName がすでにセットされている可能性があるので、即反映
         view = GetComponent<PlayerAvatarView>();
 
-        if (!string.IsNullOrEmpty(NickName.Value))
-        {
-            view.SetNickName(NickName.Value);
-        }
-
         // 自分自身のアバターにカメラを追従させる
         if (Object.HasInputAuthority)
         {
             Debug.Log("自分のアバターが生成されました。カメラを設定します。");
             // RPCでプレイヤー名を設定する処理をホストに実行してもらう
-            Rpc_SetNickName(PlayerData.NickName);
             view.SetCameraTarget();
         }
         else
@@ -67,30 +61,8 @@ public class PlayerAvatar : NetworkBehaviour
         {
             animator.SetFloat("Speed", AnimSpeed);
         }
-        foreach (var change in _changeDetector.DetectChanges(this, out var previous, out var current))
-        {
-            switch (change)
-            {
-                case nameof(NickName):
-                    var reader = GetPropertyReader<NetworkString<_16>>(nameof(NickName));
-                    var (_, newName) = reader.Read(previous, current);
-                    OnNickNameChanged(newName);
-                    break;
-            }
-        }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void Rpc_SetNickName(string nickName)
-    {
-        NickName = nickName;
-    }
-
-    // ネットワークプロパティ（NickName）が更新された時に呼ばれるコールバック
-    private void OnNickNameChanged(NetworkString<_16> name)
-    {
-        view.SetNickName(name.Value);
-    }
 
 
     public override void FixedUpdateNetwork()
