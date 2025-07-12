@@ -98,6 +98,7 @@ public class RunnerUIManager : MonoBehaviour
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
+                timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
                 if (!isResultUIOpen)
                 {
                     isResultUIOpen = true; // 結果UIが開いている状態にする
@@ -125,7 +126,13 @@ public class RunnerUIManager : MonoBehaviour
     private void UpdateTimerDisplay()
     {
         float remaining = gameManager.GetRemainingTime();
-        int seconds = Mathf.FloorToInt(300f - remaining);
+        if (remaining <= 0)
+        {
+            timerLabel.text = "00:00";
+            return;
+        }
+
+        int seconds = Mathf.CeilToInt(remaining);
         int minutes = seconds / 60;
         int secondsOnly = seconds % 60;
 
@@ -198,7 +205,8 @@ public class RunnerUIManager : MonoBehaviour
             if (timerText != null)
             {
                 float remainingTime = gameManager.GetRemainingTime();
-                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int timeLimit = gameManager.GetTimeLimit();
+                int seconds = Mathf.FloorToInt(timeLimit - remainingTime);
                 int minutes = seconds / 60;
                 int secondsOnly = seconds % 60;
                 timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";

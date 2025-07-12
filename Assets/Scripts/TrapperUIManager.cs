@@ -4,6 +4,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using TMPro;
+using NUnit.Framework;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -173,7 +174,13 @@ public class TrapperUIManager : MonoBehaviour
     private void UpdateTimerDisplay()
     {
         float remaining = gameManager.GetRemainingTime();
-        int seconds = Mathf.FloorToInt(300f - remaining);
+        if (remaining <= 0)
+        {
+            timerLabel.text = "00:00";
+            return;
+        }
+
+        int seconds = Mathf.CeilToInt(remaining);
         int minutes = seconds / 60;
         int secondsOnly = seconds % 60;
 
@@ -686,7 +693,8 @@ public class TrapperUIManager : MonoBehaviour
             if (timerText != null)
             {
                 float remainingTime = gameManager.GetRemainingTime();
-                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int timeLimit = gameManager.GetTimeLimit();
+                int seconds = Mathf.FloorToInt(timeLimit - remainingTime);
                 int minutes = seconds / 60;
                 int secondsOnly = seconds % 60;
                 timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";

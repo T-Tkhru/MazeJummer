@@ -20,7 +20,7 @@ public class GoalCheck : NetworkBehaviour
                 GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
                 if (gameManager != null)
                 {
-                    gameManager.StopTimer();
+                    gameManager.FinishGame();
                 }
                 else
                 {
