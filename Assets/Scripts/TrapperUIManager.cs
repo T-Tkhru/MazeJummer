@@ -41,7 +41,8 @@ public class TrapperUIManager : MonoBehaviour
 
     private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
     private TrapType currentTrapType = TrapType.None;
-    private TextMeshProUGUI CountDownText;
+    private TextMeshProUGUI countDownText;
+    private TextMeshProUGUI roleText;
     private Image countDownBackground;
     private GameManager gameManager;
     private TextMeshProUGUI timerLabel;
@@ -94,9 +95,10 @@ public class TrapperUIManager : MonoBehaviour
     }
     void Start()
     {
-        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
         countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
-        if (CountDownText == null || countDownBackground == null)
+        roleText = GameObject.Find("RoleText").GetComponent<TextMeshProUGUI>();
+        if (countDownText == null || countDownBackground == null)
         {
             Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
             return;
@@ -147,8 +149,9 @@ public class TrapperUIManager : MonoBehaviour
 
         if (gameManager.IsGameStarted())
         {
-            CountDownText.gameObject.SetActive(false);
+            countDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
+            roleText.gameObject.SetActive(false); // 役割表示を無効化
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
@@ -162,11 +165,17 @@ public class TrapperUIManager : MonoBehaviour
         else
         {
             int countdown = gameManager.GetCountdownSeconds();
-            if (countdown > 0)
+            if (countdown > 3)
             {
-                CountDownText.text = countdown.ToString();
-                CountDownText.gameObject.SetActive(true);
+                countDownText.text = "マッチングしました!\nまもなくゲームを開始します!";
+                countDownText.gameObject.SetActive(true);
                 countDownBackground.gameObject.SetActive(true);
+                roleText.text = "あなたはトラッパーです";
+
+            }
+            else if (countdown > 0)
+            {
+                countDownText.text = countdown.ToString();
             }
         }
     }

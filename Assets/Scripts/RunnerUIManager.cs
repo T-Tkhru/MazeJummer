@@ -15,7 +15,8 @@ public class RunnerUIManager : MonoBehaviour
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
-    private TextMeshProUGUI CountDownText;
+    private TextMeshProUGUI countDownText;
+    private TextMeshProUGUI roleText;
     private Image countDownBackground;
     private GameManager gameManager;
     private TextMeshProUGUI timerLabel; // タイマー表示用のTextMeshProUGUIコンポーネント
@@ -79,9 +80,10 @@ public class RunnerUIManager : MonoBehaviour
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
         countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
-        if (CountDownText == null || countDownBackground == null)
+        roleText = GameObject.Find("RoleText").GetComponent<TextMeshProUGUI>();
+        if (countDownText == null || countDownBackground == null)
         {
             Debug.LogError("CountDownTextまたはCountDownBackgroundが見つかりません。");
             return;
@@ -93,8 +95,9 @@ public class RunnerUIManager : MonoBehaviour
         if (gameManager == null) return;
         if (gameManager.IsGameStarted())
         {
-            CountDownText.gameObject.SetActive(false);
+            countDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
+            roleText.gameObject.SetActive(false);
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
@@ -114,11 +117,17 @@ public class RunnerUIManager : MonoBehaviour
         else
         {
             int countdown = gameManager.GetCountdownSeconds();
-            if (countdown > 0)
+            if (countdown > 3)
             {
-                CountDownText.text = countdown.ToString();
-                CountDownText.gameObject.SetActive(true);
+                countDownText.text = "マッチングしました!\nまもなくゲームを開始します!";
+                countDownText.gameObject.SetActive(true);
                 countDownBackground.gameObject.SetActive(true);
+                roleText.text = "あなたはランナーです";
+
+            }
+            else if (countdown > 0)
+            {
+                countDownText.text = countdown.ToString();
             }
         }
     }

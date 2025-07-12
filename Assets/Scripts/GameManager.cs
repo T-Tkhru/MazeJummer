@@ -85,7 +85,7 @@ public class GameManager : NetworkBehaviour
         if (Runner.IsServer && !isGameStarted) // サーバーであり、タイマーがまだ開始されていない場合
         {
             isGameStarted = true; // タイマーを開始
-            Timer = TickTimer.CreateFromSeconds(Runner, timeLimit); // タイマーを300秒に設定
+            Timer = TickTimer.CreateFromSeconds(Runner, timeLimit);
         }
     }
     public void FinishGame()
@@ -108,7 +108,7 @@ public class GameManager : NetworkBehaviour
         if (Runner.IsServer)
         {
             Debug.Log("Game start countdown initiated.");
-            GameStartTimer = TickTimer.CreateFromSeconds(Runner, 3f); // 3秒のカウントダウンタイマーを設定
+            GameStartTimer = TickTimer.CreateFromSeconds(Runner, 5f);
         }
     }
 
