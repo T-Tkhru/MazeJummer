@@ -23,7 +23,6 @@ public class RunnerUIManager : MonoBehaviour
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
     private Transform canvas; // Canvasの参照
     [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
-    private Transform runnerUI; // RunnerUIのインスタンス
     private Image[] keyIcons; // 鍵の画像を格納する配列
 
 
@@ -37,7 +36,7 @@ public class RunnerUIManager : MonoBehaviour
         Instance = this;
 
         canvas = FindFirstObjectByType<Canvas>().transform;
-        runnerUI = Instantiate(runnerUIPrefab, canvas).transform;
+        Instantiate(runnerUIPrefab, canvas);
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
         timerLabel.text = "00:00"; // 初期値
         timerLabel.gameObject.SetActive(false); // 初期状態では非表示
@@ -50,6 +49,7 @@ public class RunnerUIManager : MonoBehaviour
         }
 
         blindMask = Instantiate(blindMaskPrefab, canvas);
+        blindMask.transform.SetAsFirstSibling();
         var img = blindMask.GetComponent<Image>();
         if (img == null)
         {
