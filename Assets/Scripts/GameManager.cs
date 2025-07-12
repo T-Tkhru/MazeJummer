@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
@@ -106,8 +107,15 @@ public class GameManager : NetworkBehaviour
             {
                 isRunnerWin = true;
             }
-            // Runner.Shutdown(); // ゲームを終了する
+            // 4秒待つ
+            StartCoroutine(WaitBeforeShutdown());
         }
+    }
+    private IEnumerator WaitBeforeShutdown()
+    {
+        yield return new WaitForSeconds(4f);
+        Debug.Log("ゲームを終了します。");
+        Runner.Shutdown();
     }
     private void StartGameCountdown()
     {

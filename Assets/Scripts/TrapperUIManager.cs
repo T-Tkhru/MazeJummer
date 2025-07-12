@@ -5,6 +5,7 @@ using Unity.Cinemachine;
 using System.Collections.Generic;
 using TMPro;
 using NUnit.Framework;
+using DG.Tweening;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -676,8 +677,17 @@ public class TrapperUIManager : MonoBehaviour
 
     private void OpenResultUI(bool isRunnerWin)
     {
-        var resultUI = Instantiate(resultUIPrefab, canvas);
-        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        var resultUIs = Instantiate(resultUIPrefab, canvas);
+        resultUIs.transform.SetAsLastSibling(); // 最前面に表示
+        GameObject result = resultUIs.transform.Find("Result").gameObject;
+        RectTransform resultRect = result.GetComponent<RectTransform>();
+        result.SetActive(false);
+        float height = ((RectTransform)resultRect.parent).rect.height;
+        Debug.Log("offscreenY: " + height);
+        resultRect.anchoredPosition = new Vector2(0, height); // 画面の上に配置
+        Debug.Log("$Screen.height: " + Screen.height);
+        Transform winLoseTextTransform = result.transform.Find("WinLoseText");
+
         if (winLoseTextTransform != null)
         {
             TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
@@ -695,7 +705,7 @@ public class TrapperUIManager : MonoBehaviour
             Debug.LogError("WinLoseTextが見つかりません");
         }
 
-        Transform timerTextTransform = resultUI.transform.Find("TimerText");
+        Transform timerTextTransform = result.transform.Find("TimerText");
         if (timerTextTransform != null)
         {
             TextMeshProUGUI timerText = timerTextTransform.GetComponent<TextMeshProUGUI>();
@@ -717,8 +727,16 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
+        StartCoroutine(WaitForResultUI(result, resultRect));
+
     }
 
+    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect)
+    {
+        yield return new WaitForSeconds(2f); // 2秒待機
+        resultUI.SetActive(true);
+        resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+    }
     public void RemoveKey(Vector2Int position)
     {
         if (keyUIMap.TryGetValue(position, out var ui))
