@@ -20,6 +20,8 @@ public class PlayerAvatar : NetworkBehaviour
     private int reverseInputRefCount = 0;
 
     private Animator animator;
+    [Networked] private float AnimSpeed { get; set; }
+
 
     public override void Spawned()
     {
@@ -46,16 +48,25 @@ public class PlayerAvatar : NetworkBehaviour
         else
         {
             Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
+            Debug.Log($"プレイヤーの位置: {transform.position}");
         }
         defaultSpeed = characterController.maxSpeed;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("Animatorが見つかりません。アニメーションが正しく動作しない可能性があります。");
+        }
 
     }
 
     public override void Render()
     {
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", AnimSpeed);
+        }
         foreach (var change in _changeDetector.DetectChanges(this, out var previous, out var current))
         {
             switch (change)
@@ -101,6 +112,7 @@ public class PlayerAvatar : NetworkBehaviour
             if (animator != null)
             {
                 float speed = move.magnitude; // 0〜1
+                AnimSpeed = speed; // アニメーションの速度を設定
                 animator.SetFloat("Speed", speed);
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))

@@ -5552,9 +5552,9 @@ GameObject:
   - component: {fileID: 11400084}
   - component: {fileID: 11400086}
   - component: {fileID: 11400088}
+  - component: {fileID: 568946006949336136}
   - component: {fileID: 589969552756335737}
   - component: {fileID: 7294635404451124168}
-  - component: {fileID: 568946006949336136}
   - component: {fileID: 4798202079042050065}
   - component: {fileID: 7037539445285572318}
   m_Layer: 0
@@ -5597,7 +5597,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 3d19e8dfbb0ae9b44a6826ed632f2478, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -5789,6 +5789,26 @@ MonoBehaviour:
   delayWeight: 3
   isKeepFace: 1
   isGUI: 0
+--- !u!114 &568946006949336136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4053972476
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 7294635404451124168}
+  - {fileID: 4798202079042050065}
+  ForceRemoteRenderTimeframe: 0
 --- !u!143 &589969552756335737
 CharacterController:
   m_ObjectHideFlags: 0
@@ -5833,26 +5853,6 @@ MonoBehaviour:
   braking: 100
   maxSpeed: 2
   rotationSpeed: 15
---- !u!114 &568946006949336136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 4053972476
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 7294635404451124168}
-  - {fileID: 4798202079042050065}
-  ForceRemoteRenderTimeframe: 0
 --- !u!114 &4798202079042050065
 MonoBehaviour:
   m_ObjectHideFlags: 0
