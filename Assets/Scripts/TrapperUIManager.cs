@@ -4,6 +4,8 @@ using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using TMPro;
+using NUnit.Framework;
+using DG.Tweening;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -40,7 +42,8 @@ public class TrapperUIManager : MonoBehaviour
 
     private enum TrapType { None, Wall, SpeedDownTrap, BlindTrap, ReverseInputTrap }
     private TrapType currentTrapType = TrapType.None;
-    private TextMeshProUGUI CountDownText;
+    private TextMeshProUGUI countDownText;
+    private TextMeshProUGUI roleText;
     private Image countDownBackground;
     private GameManager gameManager;
     private TextMeshProUGUI timerLabel;
@@ -93,9 +96,10 @@ public class TrapperUIManager : MonoBehaviour
     }
     void Start()
     {
-        CountDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
+        countDownText = GameObject.Find("CountDownText").GetComponent<TextMeshProUGUI>();
         countDownBackground = GameObject.Find("CountDownBackground").GetComponent<Image>();
-        if (CountDownText == null || countDownBackground == null)
+        roleText = GameObject.Find("RoleText").GetComponent<TextMeshProUGUI>();
+        if (countDownText == null || countDownBackground == null)
         {
             Debug.LogError("カウントダウンのUIが見つかりません。シーンに配置されていることを確認してください。");
             return;
@@ -146,8 +150,9 @@ public class TrapperUIManager : MonoBehaviour
 
         if (gameManager.IsGameStarted())
         {
-            CountDownText.gameObject.SetActive(false);
+            countDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
+            roleText.gameObject.SetActive(false); // 役割表示を無効化
             timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
@@ -161,11 +166,17 @@ public class TrapperUIManager : MonoBehaviour
         else
         {
             int countdown = gameManager.GetCountdownSeconds();
-            if (countdown > 0)
+            if (countdown > 3)
             {
-                CountDownText.text = countdown.ToString();
-                CountDownText.gameObject.SetActive(true);
+                countDownText.text = "マッチングしました!\nまもなくゲームを開始します!";
+                countDownText.gameObject.SetActive(true);
                 countDownBackground.gameObject.SetActive(true);
+                roleText.text = "あなたはトラッパーです";
+
+            }
+            else if (countdown > 0)
+            {
+                countDownText.text = countdown.ToString();
             }
         }
     }
@@ -173,7 +184,13 @@ public class TrapperUIManager : MonoBehaviour
     private void UpdateTimerDisplay()
     {
         float remaining = gameManager.GetRemainingTime();
-        int seconds = Mathf.FloorToInt(300f - remaining);
+        if (remaining <= 0)
+        {
+            timerLabel.text = "00:00";
+            return;
+        }
+
+        int seconds = Mathf.CeilToInt(remaining);
         int minutes = seconds / 60;
         int secondsOnly = seconds % 60;
 
@@ -660,8 +677,17 @@ public class TrapperUIManager : MonoBehaviour
 
     private void OpenResultUI(bool isRunnerWin)
     {
-        var resultUI = Instantiate(resultUIPrefab, canvas);
-        Transform winLoseTextTransform = resultUI.transform.Find("WinLoseText");
+        var resultUIs = Instantiate(resultUIPrefab, canvas);
+        resultUIs.transform.SetAsLastSibling(); // 最前面に表示
+        GameObject result = resultUIs.transform.Find("Result").gameObject;
+        RectTransform resultRect = result.GetComponent<RectTransform>();
+        result.SetActive(false);
+        float height = ((RectTransform)resultRect.parent).rect.height;
+        Debug.Log("offscreenY: " + height);
+        resultRect.anchoredPosition = new Vector2(0, height); // 画面の上に配置
+        Debug.Log("$Screen.height: " + Screen.height);
+        Transform winLoseTextTransform = result.transform.Find("WinLoseText");
+
         if (winLoseTextTransform != null)
         {
             TextMeshProUGUI winLoseText = winLoseTextTransform.GetComponent<TextMeshProUGUI>();
@@ -679,14 +705,15 @@ public class TrapperUIManager : MonoBehaviour
             Debug.LogError("WinLoseTextが見つかりません");
         }
 
-        Transform timerTextTransform = resultUI.transform.Find("TimerText");
+        Transform timerTextTransform = result.transform.Find("TimerText");
         if (timerTextTransform != null)
         {
             TextMeshProUGUI timerText = timerTextTransform.GetComponent<TextMeshProUGUI>();
             if (timerText != null)
             {
                 float remainingTime = gameManager.GetRemainingTime();
-                int seconds = Mathf.FloorToInt(300f - remainingTime);
+                int timeLimit = gameManager.GetTimeLimit();
+                int seconds = Mathf.FloorToInt(timeLimit - remainingTime);
                 int minutes = seconds / 60;
                 int secondsOnly = seconds % 60;
                 timerText.text = $"かかった時間：{minutes:D2}:{secondsOnly:D2}";
@@ -700,8 +727,16 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
+        StartCoroutine(WaitForResultUI(result, resultRect));
+
     }
 
+    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect)
+    {
+        yield return new WaitForSeconds(2f); // 2秒待機
+        resultUI.SetActive(true);
+        resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+    }
     public void RemoveKey(Vector2Int position)
     {
         if (keyUIMap.TryGetValue(position, out var ui))

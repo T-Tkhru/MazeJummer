@@ -10,14 +10,4 @@ public class PlayerAvatarView : MonoBehaviour
     {
         cinemachineCamera.Priority.Value = 100;
     }
-
-    public void SetNickName(string nickName)
-    {
-        nameLabel.text = nickName;
-    }
-
-    private void LateUpdate()
-    {
-        nameLabel.transform.rotation = Camera.main.transform.rotation;
-    }
 }

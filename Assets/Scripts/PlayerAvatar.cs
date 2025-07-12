@@ -13,12 +13,15 @@ public class PlayerAvatar : NetworkBehaviour
     private PlayerAvatarView view;
     private float defaultSpeed;
     private int speedDownRefCount = 0;
-    private float slowSpeed = 1.25f;
     [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
     [SerializeField] private GameObject freeLookCamera;
     private bool isReverseInput = false;
     private int reverseInputRefCount = 0;
+
+    private Animator animator;
+    [Networked] private float speed { get; set; }
+
 
     public override void Spawned()
     {
@@ -29,53 +32,37 @@ public class PlayerAvatar : NetworkBehaviour
         // NickName がすでにセットされている可能性があるので、即反映
         view = GetComponent<PlayerAvatarView>();
 
-        if (!string.IsNullOrEmpty(NickName.Value))
-        {
-            view.SetNickName(NickName.Value);
-        }
-
         // 自分自身のアバターにカメラを追従させる
         if (Object.HasInputAuthority)
         {
             Debug.Log("自分のアバターが生成されました。カメラを設定します。");
             // RPCでプレイヤー名を設定する処理をホストに実行してもらう
-            Rpc_SetNickName(PlayerData.NickName);
             view.SetCameraTarget();
         }
         else
         {
             Debug.Log("他のプレイヤーのアバターが生成されました。カメラは設定しません。");
+            Debug.Log($"プレイヤーの位置: {transform.position}");
         }
         defaultSpeed = characterController.maxSpeed;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("Animatorが見つかりません。アニメーションが正しく動作しない可能性があります。");
+        }
+
     }
 
     public override void Render()
     {
-        foreach (var change in _changeDetector.DetectChanges(this, out var previous, out var current))
+        if (animator != null)
         {
-            switch (change)
-            {
-                case nameof(NickName):
-                    var reader = GetPropertyReader<NetworkString<_16>>(nameof(NickName));
-                    var (_, newName) = reader.Read(previous, current);
-                    OnNickNameChanged(newName);
-                    break;
-            }
+            animator.SetFloat("Speed", speed);
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void Rpc_SetNickName(string nickName)
-    {
-        NickName = nickName;
-    }
-
-    // ネットワークプロパティ（NickName）が更新された時に呼ばれるコールバック
-    private void OnNickNameChanged(NetworkString<_16> name)
-    {
-        view.SetNickName(name.Value);
-    }
 
 
     public override void FixedUpdateNetwork()
@@ -92,16 +79,12 @@ public class PlayerAvatar : NetworkBehaviour
         {
             // 入力方向のベクトルを正規化する
             data.Direction.Normalize();
-            // 入力方向を移動方向としてそのまま渡す
-            if (isReverseInput)
+            Vector3 move = data.Direction;
+            characterController.Move(isReverseInput ? -move : move);
+            if (animator != null)
             {
-                // 入力を反転させる
-                characterController.Move(-data.Direction);
-            }
-            else
-            {
-                // 通常の入力方向で移動
-                characterController.Move(data.Direction);
+                speed = move.magnitude; // 0〜1
+                animator.SetFloat("Speed", speed);
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {
@@ -118,7 +101,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     private IEnumerator HandleSpeedDownEffect(float duration)
     {
-        characterController.maxSpeed = slowSpeed;
+        characterController.maxSpeed = defaultSpeed / 2; // 速度を半分にする
         yield return new WaitForSeconds(duration);
         speedDownRefCount--;
         if (speedDownRefCount <= 0)
@@ -155,6 +138,11 @@ public class PlayerAvatar : NetworkBehaviour
     public int GetKeyCount()
     {
         return keyCount;
+    }
+
+    public void ResetSpeed()
+    {
+        speed = 0; // アニメーションの速度をリセット
     }
 
 }

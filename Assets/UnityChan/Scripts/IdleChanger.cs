@@ -3,108 +3,119 @@ using System.Collections;
 
 namespace UnityChan
 {
-//
-// ↑↓キーでループアニメーションを切り替えるスクリプト（ランダム切り替え付き）Ver.3
-// 2014/04/03 N.Kobayashi
-// 2015/03/11 Revised for Unity5 (only)
-//
+	//
+	// ↑↓キーでループアニメーションを切り替えるスクリプト（ランダム切り替え付き）Ver.3
+	// 2014/04/03 N.Kobayashi
+	// 2015/03/11 Revised for Unity5 (only)
+	//
 
-// Require these components when using this script
+	// Require these components when using this script
 	[RequireComponent(typeof(Animator))]
 
 
 
 	public class IdleChanger : MonoBehaviour
 	{
-	
-		private Animator anim;						// Animatorへの参照
-		private AnimatorStateInfo currentState;		// 現在のステート状態を保存する参照
-		private AnimatorStateInfo previousState;	// ひとつ前のステート状態を保存する参照
-		public bool _random = false;				// ランダム判定スタートスイッチ
-		public float _threshold = 0.5f;				// ランダム判定の閾値
+
+		private Animator anim;                      // Animatorへの参照
+		private AnimatorStateInfo currentState;     // 現在のステート状態を保存する参照
+		private AnimatorStateInfo previousState;    // ひとつ前のステート状態を保存する参照
+		public bool _random = false;                // ランダム判定スタートスイッチ
+		public float _threshold = 0.5f;             // ランダム判定の閾値
 		public float _interval = 10f;               // ランダム判定のインターバル
-      //private float _seed = 0.0f;					// ランダム判定用シード
-        public bool isGUI = true;
-	
+													//private float _seed = 0.0f;					// ランダム判定用シード
+		public bool isGUI = true;
+
 
 
 		// Use this for initialization
-		void Start ()
+		void Start()
 		{
 			// 各参照の初期化
-			anim = GetComponent<Animator> ();
-			currentState = anim.GetCurrentAnimatorStateInfo (0);
+			anim = GetComponent<Animator>();
+			currentState = anim.GetCurrentAnimatorStateInfo(0);
 			previousState = currentState;
 			// ランダム判定用関数をスタートする
-			StartCoroutine ("RandomChange");
+			StartCoroutine("RandomChange");
 		}
-	
+
 		// Update is called once per frame
-		void  Update ()
+		void Update()
 		{
 			// ↑キー/スペースが押されたら、ステートを次に送る処理
-			if (Input.GetKeyDown ("up") || Input.GetButton ("Jump")) {
+			if (Input.GetKeyDown("up") || Input.GetButton("Jump"))
+			{
 				// ブーリアンNextをtrueにする
-				anim.SetBool ("Next", true);
+				anim.SetBool("Next", true);
 			}
-		
+
 			// ↓キーが押されたら、ステートを前に戻す処理
-			if (Input.GetKeyDown ("down")) {
+			if (Input.GetKeyDown("down"))
+			{
 				// ブーリアンBackをtrueにする
-				anim.SetBool ("Back", true);
+				anim.SetBool("Back", true);
 			}
-		
+
 			// "Next"フラグがtrueの時の処理
-			if (anim.GetBool ("Next")) {
+			if (anim.GetBool("Next"))
+			{
 				// 現在のステートをチェックし、ステート名が違っていたらブーリアンをfalseに戻す
-				currentState = anim.GetCurrentAnimatorStateInfo (0);
-				if (previousState.fullPathHash != currentState.fullPathHash) {
-					anim.SetBool ("Next", false);
-					previousState = currentState;				
+				currentState = anim.GetCurrentAnimatorStateInfo(0);
+				if (previousState.fullPathHash != currentState.fullPathHash)
+				{
+					anim.SetBool("Next", false);
+					previousState = currentState;
 				}
 			}
-		
+
 			// "Back"フラグがtrueの時の処理
-			if (anim.GetBool ("Back")) {
+			if (anim.GetBool("Back"))
+			{
 				// 現在のステートをチェックし、ステート名が違っていたらブーリアンをfalseに戻す
-				currentState = anim.GetCurrentAnimatorStateInfo (0);
-				if (previousState.fullPathHash != currentState.fullPathHash) {
-					anim.SetBool ("Back", false);
+				currentState = anim.GetCurrentAnimatorStateInfo(0);
+				if (previousState.fullPathHash != currentState.fullPathHash)
+				{
+					anim.SetBool("Back", false);
 					previousState = currentState;
 				}
 			}
 		}
 
-		void OnGUI ()
+		void OnGUI()
 		{
-            if (isGUI)
-            {
-                GUI.Box(new Rect(Screen.width - 110, 10, 100, 90), "Change Motion");
-                if (GUI.Button(new Rect(Screen.width - 100, 40, 80, 20), "Next"))
-                    anim.SetBool("Next", true);
-                if (GUI.Button(new Rect(Screen.width - 100, 70, 80, 20), "Back"))
-                    anim.SetBool("Back", true);
-            }
+			if (isGUI)
+			{
+				GUI.Box(new Rect(Screen.width - 110, 10, 100, 90), "Change Motion");
+				if (GUI.Button(new Rect(Screen.width - 100, 40, 80, 20), "Next"))
+					anim.SetBool("Next", true);
+				if (GUI.Button(new Rect(Screen.width - 100, 70, 80, 20), "Back"))
+					anim.SetBool("Back", true);
+			}
 		}
 
 
 		// ランダム判定用関数
-		IEnumerator RandomChange ()
+		IEnumerator RandomChange()
 		{
 			// 無限ループ開始
-			while (true) {
+			while (true)
+			{
 				//ランダム判定スイッチオンの場合
-				if (_random) {
+				if (_random)
+				{
 					// ランダムシードを取り出し、その大きさによってフラグ設定をする
-					float _seed = Random.Range (0.0f, 1.0f);
-					if (_seed < _threshold) {
-						anim.SetBool ("Back", true);
-					} else if (_seed >= _threshold) {
-						anim.SetBool ("Next", true);
+					float _seed = Random.Range(0.0f, 1.0f);
+					if (_seed < _threshold)
+					{
+						anim.SetBool("Back", true);
+					}
+					else if (_seed >= _threshold)
+					{
+						anim.SetBool("Next", true);
 					}
 				}
 				// 次の判定までインターバルを置く
-				yield return new WaitForSeconds (_interval);
+				yield return new WaitForSeconds(_interval);
 			}
 
 		}
