@@ -83,8 +83,7 @@ public class PlayerAvatar : NetworkBehaviour
             characterController.Move(isReverseInput ? -move : move);
             if (animator != null)
             {
-                float speed = move.magnitude; // 0〜1
-                speed = speed; // アニメーションの速度を設定
+                speed = move.magnitude; // 0〜1
                 animator.SetFloat("Speed", speed);
             }
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
