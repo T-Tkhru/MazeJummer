@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using ExitGames.Client.Photon.StructWrapping;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +11,10 @@ public class RunnerUIManager : MonoBehaviour
 
     [SerializeField] private GameObject blindMaskPrefab;
 
-    public GameObject blindMask { get; private set; }
+    private GameObject blindMask;
     private Material blindMaskMaterial;
     private int blindRefCount = 0;
+    private bool isBlindActive = false;
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
@@ -28,6 +30,9 @@ public class RunnerUIManager : MonoBehaviour
     private GameObject runnerUI;
     private Image[] keyIcons; // 鍵の画像を格納する配列
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
+    private GameObject blindEffectUI;
+    private GameObject speedDownEffectUI;
+    private GameObject reverseInputEffectUI;
 
 
     private void Awake()
@@ -41,6 +46,12 @@ public class RunnerUIManager : MonoBehaviour
 
         canvas = FindFirstObjectByType<Canvas>().transform;
         runnerUI = Instantiate(runnerUIPrefab, canvas);
+        blindEffectUI = runnerUI.transform.Find("BlindEffectUI").gameObject;
+        speedDownEffectUI = runnerUI.transform.Find("SpeedDownEffectUI").gameObject;
+        reverseInputEffectUI = runnerUI.transform.Find("ReverseInputEffectUI").gameObject;
+        blindEffectUI.SetActive(false);
+        speedDownEffectUI.SetActive(false);
+        reverseInputEffectUI.SetActive(false);
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
         timerLabel.text = "00:00"; // 初期値
 
@@ -118,6 +129,7 @@ public class RunnerUIManager : MonoBehaviour
             else
             {
                 UpdateTimerDisplay(); // タイマーの表示を更新
+                UpdateTrapEffectUI();
             }
         }
         else
@@ -170,6 +182,50 @@ public class RunnerUIManager : MonoBehaviour
         }
     }
 
+    private void UpdateTrapEffectUI()
+    {
+        var avatar = GameObject.FindGameObjectWithTag("Avatar").GetComponent<PlayerAvatar>();
+        if (avatar.GetBlindTime() > 0)
+        {
+            if (!isBlindActive)
+            {
+                ActivateBlind();
+            }
+            blindEffectUI.SetActive(true);
+            float remainingTime = avatar.GetBlindTime();
+            blindEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            if (isBlindActive)
+            {
+                StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+                isBlindActive = false;
+            }
+            blindEffectUI.SetActive(false);
+        }
+        if (avatar.GetSpeedDownTime() > 0)
+        {
+            speedDownEffectUI.SetActive(true);
+            float remainingTime = avatar.GetSpeedDownTime();
+            speedDownEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            speedDownEffectUI.SetActive(false);
+        }
+        if (avatar.GetReverseInputTime() > 0)
+        {
+            reverseInputEffectUI.SetActive(true);
+            float remainingTime = avatar.GetReverseInputTime();
+            reverseInputEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            reverseInputEffectUI.SetActive(false);
+        }
+    }
+
     private IEnumerator PulseOnce(TextMeshProUGUI text)
     {
         Vector3 baseScale = Vector3.one;
@@ -198,11 +254,11 @@ public class RunnerUIManager : MonoBehaviour
     }
 
 
-    public void ActivateBlind(float duration)
+    public void ActivateBlind()
     {
-        blindRefCount++;
+        isBlindActive = true;
         blindMask.SetActive(true);
-        StartCoroutine(HandleBlindEffect(duration));
+        StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
     }
 
     private IEnumerator HandleBlindEffect(float duration)

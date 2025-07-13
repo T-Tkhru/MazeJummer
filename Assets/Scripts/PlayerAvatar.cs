@@ -6,38 +6,31 @@ using UnityEngine;
 
 public class PlayerAvatar : NetworkBehaviour
 {
-    // プレイヤー名のネットワークプロパティを定義する
-    [Networked] private NetworkString<_16> NickName { get; set; }
-    private ChangeDetector _changeDetector;
     private NetworkCharacterController characterController;
-    private PlayerAvatarView view;
     private float defaultSpeed;
-    private int speedDownRefCount = 0;
     [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
     [SerializeField] private GameObject freeLookCamera;
     private bool isReverseInput = false;
-    private int reverseInputRefCount = 0;
 
     private Animator animator;
     [Networked] private float speed { get; set; }
+    [Networked] private TickTimer BlindTimer { get; set; } // 速度ダウンのタイマー
+    [Networked] private TickTimer SpeedDownTimer { get; set; } // 速度ダウンのタイマー
+    [Networked] private TickTimer ReverseInputTimer { get; set; } // 入力反転のタイマー
 
 
     public override void Spawned()
     {
         // ネットワークキャラクターコントローラーを取得
         characterController = GetComponent<NetworkCharacterController>();
-        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
-        // NickName がすでにセットされている可能性があるので、即反映
-        view = GetComponent<PlayerAvatarView>();
 
         // 自分自身のアバターにカメラを追従させる
         if (Object.HasInputAuthority)
         {
             Debug.Log("自分のアバターが生成されました。カメラを設定します。");
-            // RPCでプレイヤー名を設定する処理をホストに実行してもらう
-            view.SetCameraTarget();
+            freeLookCamera.GetComponent<CinemachineCamera>().Priority.Value = 100;
         }
         else
         {
@@ -75,6 +68,7 @@ public class PlayerAvatar : NetworkBehaviour
             return;
         }
         freeLookCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+        TrapEffectUpdate();
         if (GetInput(out NetworkInputData data))
         {
             // 入力方向のベクトルを正規化する
@@ -93,38 +87,61 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
-    public void ActivateSpeedDown(float duration)
+    private void TrapEffectUpdate()
     {
-        speedDownRefCount++;
-        StartCoroutine(HandleSpeedDownEffect(duration));
+        if (SpeedDownTimer.Expired(Runner))
+        {
+            SpeedDownTimer = TickTimer.None;
+            characterController.maxSpeed = defaultSpeed; // 元の速度に戻す
+        }
+        if (ReverseInputTimer.Expired(Runner))
+        {
+            ReverseInputTimer = TickTimer.None;
+            isReverseInput = false; // 入力の反転を解除
+        }
+        if (BlindTimer.Expired(Runner))
+        {
+            BlindTimer = TickTimer.None;
+        }
     }
 
-    private IEnumerator HandleSpeedDownEffect(float duration)
+    public void ActivateSpeedDown(float duration)
     {
-        characterController.maxSpeed = defaultSpeed / 2; // 速度を半分にする
-        yield return new WaitForSeconds(duration);
-        speedDownRefCount--;
-        if (speedDownRefCount <= 0)
+        if (SpeedDownTimer.IsRunning)
         {
-            speedDownRefCount = 0;
-            characterController.maxSpeed = defaultSpeed;
+
+            duration += SpeedDownTimer.RemainingTime(Runner) ?? 0f; // 既存のタイマーがある場合、残り時間を加算
+            SpeedDownTimer = TickTimer.CreateFromSeconds(Runner, duration);
+        }
+        else
+        {
+            SpeedDownTimer = TickTimer.CreateFromSeconds(Runner, duration);
+            characterController.maxSpeed = defaultSpeed / 2; // 速度を半分にする
         }
     }
     public void ActivateReverseInput(float duration)
     {
-        reverseInputRefCount++;
-        StartCoroutine(HandleReverseInputEffect(duration));
-    }
-    private IEnumerator HandleReverseInputEffect(float duration)
-    {
-        // 入力を反転させるための処理を実装
-        isReverseInput = true;
-        yield return new WaitForSeconds(duration);
-        reverseInputRefCount--;
-        if (reverseInputRefCount <= 0)
+        if (ReverseInputTimer.IsRunning)
         {
-            reverseInputRefCount = 0;
-            isReverseInput = false; // 入力の反転を解除
+            duration += ReverseInputTimer.RemainingTime(Runner) ?? 0f; // 既存のタイマーがある場合、残り時間を加算
+            ReverseInputTimer = TickTimer.CreateFromSeconds(Runner, duration);
+        }
+        else
+        {
+            ReverseInputTimer = TickTimer.CreateFromSeconds(Runner, duration);
+            isReverseInput = true; // 入力の反転を有効化
+        }
+    }
+    public void ActivateBlind(float duration)
+    {
+        if (BlindTimer.IsRunning)
+        {
+            duration += BlindTimer.RemainingTime(Runner) ?? 0f; // 既存のタイマーがある場合、残り時間を加算
+            BlindTimer = TickTimer.CreateFromSeconds(Runner, duration);
+        }
+        else
+        {
+            BlindTimer = TickTimer.CreateFromSeconds(Runner, duration);
         }
     }
 
@@ -143,6 +160,20 @@ public class PlayerAvatar : NetworkBehaviour
     public void ResetSpeed()
     {
         speed = 0; // アニメーションの速度をリセット
+    }
+
+    public float GetBlindTime()
+    {
+        return BlindTimer.RemainingTime(Runner) ?? 0f;
+    }
+    public float GetSpeedDownTime()
+    {
+        return SpeedDownTimer.RemainingTime(Runner) ?? 0f;
+    }
+
+    public float GetReverseInputTime()
+    {
+        return ReverseInputTimer.RemainingTime(Runner) ?? 0f;
     }
 
 }

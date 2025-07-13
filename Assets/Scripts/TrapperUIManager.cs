@@ -53,6 +53,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject blindMaskPrefab;
     public GameObject blindMask { get; private set; }
     private Material blindMaskMaterial;
+    private bool isBlindActive = false;
     private int blindRefCount = 0;
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
@@ -148,12 +149,13 @@ public class TrapperUIManager : MonoBehaviour
             return;
         }
 
-
         // カウントダウン表示処理
         HandleTimerDisplay();
 
         // ゲーム中のUI更新処理
         UpdatePlayerUI();
+
+        UpdateBlindMask();
     }
 
 
@@ -280,6 +282,23 @@ public class TrapperUIManager : MonoBehaviour
         if (currentPlayerPos != lastPlayerPos)
         {
             UpdateButtonInteractable(currentPlayerPos); // ボタンのインタラクションを更新
+        }
+    }
+
+    private void UpdateBlindMask()
+    {
+        var avatar = GameObject.FindGameObjectWithTag("Avatar").GetComponent<PlayerAvatar>();
+        if (avatar.GetBlindTime() > 0)
+        {
+            if (!isBlindActive)
+            {
+                ActivateBlind();
+            }
+        }
+        else if (isBlindActive)
+        {
+            StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+            isBlindActive = false;
         }
     }
 
@@ -719,11 +738,11 @@ public class TrapperUIManager : MonoBehaviour
         trapStockImage.sprite = stockSprites[remaining];
     }
 
-    public void ActivateBlind(float duration)
+    public void ActivateBlind()
     {
-        blindRefCount++;
+        isBlindActive = true;
         blindMask.SetActive(true);
-        StartCoroutine(HandleBlindEffect(duration));
+        StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
     }
 
     private IEnumerator HandleBlindEffect(float duration)

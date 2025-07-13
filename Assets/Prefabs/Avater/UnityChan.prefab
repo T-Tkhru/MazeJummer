@@ -5556,7 +5556,6 @@ GameObject:
   - component: {fileID: 589969552756335737}
   - component: {fileID: 7294635404451124168}
   - component: {fileID: 4798202079042050065}
-  - component: {fileID: 7037539445285572318}
   m_Layer: 0
   m_Name: UnityChan
   m_TagString: Avatar
@@ -5865,20 +5864,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   freeLookCamera: {fileID: 2218369882793569530}
---- !u!114 &7037539445285572318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cf7f4b220b2ef94f82bae5d5ade6257, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nameLabel: {fileID: 0}
-  cinemachineCamera: {fileID: 1099759295126453870}
 --- !u!1 &100270
 GameObject:
   m_ObjectHideFlags: 0

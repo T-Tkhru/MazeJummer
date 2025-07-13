@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e2cb5cc2eb5f3c948bb4f5e9e129a511
+guid: 074366e404079804ba7cec1846fc7c8b
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Overlay_0
+      name: SpeedDown_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1600
-        height: 128
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,8 +125,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2265ea57ad026684cb638ecefa241dd1
-      internalID: -405318653
+      spriteID: a57cec11d9ad2dc43bb8a0d54b1b9c16
+      internalID: -284815996
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6790503d53ed2c242990768f247d22ee
+    spriteID: 13db55db502e02141bc841004509c42e
     internalID: 0
     vertices: []
     indices: 
@@ -145,7 +145,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Overlay_0: -405318653
+      SpeedDown_0: -284815996
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
