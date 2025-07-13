@@ -89,6 +89,8 @@ public class RunnerUIManager : MonoBehaviour
             Debug.LogError("CountDownTextまたはCountDownBackgroundが見つかりません。");
             return;
         }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
@@ -106,6 +108,8 @@ public class RunnerUIManager : MonoBehaviour
                 if (!isResultUIOpen)
                 {
                     isResultUIOpen = true; // 結果UIが開いている状態にする
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
                     OpenResultUI(gameManager.IsRunnerWin());
                 }
                 return;
