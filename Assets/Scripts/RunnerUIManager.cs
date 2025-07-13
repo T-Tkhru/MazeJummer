@@ -26,6 +26,7 @@ public class RunnerUIManager : MonoBehaviour
     private Transform canvas; // Canvasの参照
     [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
     private Image[] keyIcons; // 鍵の画像を格納する配列
+    private int lastDisplayedSeconds = -1; // 直前に表示した秒数
 
 
     private void Awake()
@@ -147,11 +148,55 @@ public class RunnerUIManager : MonoBehaviour
         }
 
         int seconds = Mathf.CeilToInt(remaining);
-        int minutes = seconds / 60;
-        int secondsOnly = seconds % 60;
+        if (seconds != lastDisplayedSeconds)
+        {
+            lastDisplayedSeconds = seconds;
 
-        timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+            // 表示更新
+            int minutes = seconds / 60;
+            int secondsOnly = seconds % 60;
+            timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+
+            // 30秒以下なら脈打ちアニメを再生
+            if (seconds <= 30)
+            {
+                StartCoroutine(PulseOnce(timerLabel));
+                timerLabel.color = Color.red;
+            }
+            else
+            {
+                timerLabel.color = Color.white;
+            }
+        }
     }
+
+    private IEnumerator PulseOnce(TextMeshProUGUI text)
+    {
+        Vector3 baseScale = Vector3.one;
+        Vector3 maxScale = baseScale * 1.3f;
+        float pulseDuration = 0.2f;
+
+        // 膨らむ
+        float t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(baseScale, maxScale, normalized);
+            yield return null;
+        }
+
+        // 戻る
+        t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(maxScale, baseScale, normalized);
+            yield return null;
+        }
+    }
+
 
     public void ActivateBlind(float duration)
     {
