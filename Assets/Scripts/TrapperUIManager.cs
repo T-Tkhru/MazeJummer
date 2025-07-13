@@ -60,6 +60,13 @@ public class TrapperUIManager : MonoBehaviour
 
     private bool isResultUIOpen = false;
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
+    private Button createWallButton;
+    private Button createSpeedDownButton;
+    private Button createBlindTrapButton;
+    private Button createReverseInputTrapButton;
+    private Button currentSelectedButton;
+    [SerializeField] private Color selectedColor = Color.green;
+    [SerializeField] private Color defaultColor = Color.white;
 
 
 
@@ -315,7 +322,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void AttachButtonListeners()
     {
-        Button createWallButton = trapperUI.Find("CreateWall").GetComponent<Button>();
+        createWallButton = trapperUI.Find("CreateWall").GetComponent<Button>();
         if (createWallButton != null)
         {
             createWallButton.onClick.AddListener(SelectMakeWall);
@@ -324,7 +331,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateWallボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createSpeedDownButton = trapperUI.Find("CreateSpeedDownTrap").GetComponent<Button>();
+        createSpeedDownButton = trapperUI.Find("CreateSpeedDownTrap").GetComponent<Button>();
         if (createSpeedDownButton != null)
         {
             createSpeedDownButton.onClick.AddListener(SelectSpeedDownTrap);
@@ -333,7 +340,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateSpeedDownTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createBlindTrapButton = trapperUI.Find("CreateBlindTrap").GetComponent<Button>();
+        createBlindTrapButton = trapperUI.Find("CreateBlindTrap").GetComponent<Button>();
         if (createBlindTrapButton != null)
         {
             createBlindTrapButton.onClick.AddListener(SelectMakeBlindTrap);
@@ -342,7 +349,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateBlindTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
+        createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
         if (createReverseInputTrapButton != null)
         {
             createReverseInputTrapButton.onClick.AddListener(SelectMakeReverseInputTrap);
@@ -441,6 +448,7 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
+        currentSelectedButton.GetComponent<Image>().color = defaultColor;
         switch (currentTrapType)
         {
             case TrapType.Wall:
@@ -586,6 +594,7 @@ public class TrapperUIManager : MonoBehaviour
         // 壁を作るボタンが押されたときの処理
         Debug.Log("壁を作るボタンが押されました。");
         currentTrapType = TrapType.Wall;
+        UpdateButtonColor(createWallButton);
 
     }
 
@@ -593,12 +602,14 @@ public class TrapperUIManager : MonoBehaviour
     {
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
         currentTrapType = TrapType.SpeedDownTrap;
+        UpdateButtonColor(createSpeedDownButton);
     }
 
     public void SelectMakeBlindTrap()
     {
         Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
+        UpdateButtonColor(createBlindTrapButton);
     }
 
     public void SelectMakeReverseInputTrap()
@@ -606,6 +617,19 @@ public class TrapperUIManager : MonoBehaviour
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
+        UpdateButtonColor(createReverseInputTrapButton);
+    }
+
+    private void UpdateButtonColor(Button selectedButton)
+    {
+        if (currentSelectedButton != null)
+        {
+            currentSelectedButton.GetComponent<Image>().color = defaultColor;
+        }
+
+        selectedButton.GetComponent<Image>().color = selectedColor;
+        currentSelectedButton = selectedButton;
+
     }
 
     private List<(int x, int y)> GetKeyPositions()
