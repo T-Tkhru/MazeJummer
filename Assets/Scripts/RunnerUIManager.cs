@@ -25,6 +25,7 @@ public class RunnerUIManager : MonoBehaviour
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
     private Transform canvas; // Canvasの参照
     [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
+    private GameObject runnerUI;
     private Image[] keyIcons; // 鍵の画像を格納する配列
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
 
@@ -39,10 +40,9 @@ public class RunnerUIManager : MonoBehaviour
         Instance = this;
 
         canvas = FindFirstObjectByType<Canvas>().transform;
-        Instantiate(runnerUIPrefab, canvas);
+        runnerUI = Instantiate(runnerUIPrefab, canvas);
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
         timerLabel.text = "00:00"; // 初期値
-        timerLabel.gameObject.SetActive(false); // 初期状態では非表示
 
         // BlindMask を生成して Canvas に配置
         if (canvas == null)
@@ -77,7 +77,7 @@ public class RunnerUIManager : MonoBehaviour
                 Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
             }
         }
-
+        runnerUI.SetActive(false);
     }
     private void Start()
     {
@@ -102,7 +102,7 @@ public class RunnerUIManager : MonoBehaviour
             countDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
             roleText.gameObject.SetActive(false);
-            timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
+            runnerUI.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
                 timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
