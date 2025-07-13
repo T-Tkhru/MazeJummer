@@ -67,6 +67,7 @@ public class TrapperUIManager : MonoBehaviour
     private Button currentSelectedButton;
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Sprite[] stockSprites;
 
 
 
@@ -654,6 +655,8 @@ public class TrapperUIManager : MonoBehaviour
         currentTrapType = TrapType.None; // トラップを使用した後はNoneに戻す
         trapUseCounts[type]++;
         Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
+        Image TrapStockImage = trapperUI.Find($"Create{type}Bar").GetComponent<Image>();
+        UpdateTrapStockDisplay(maxTraps - trapUseCounts[type], TrapStockImage);
         if (trapUseCounts[type] >= maxTraps)
         {
             Debug.Log($"{type} トラップの使用回数が最大に達しました。");
@@ -663,6 +666,13 @@ public class TrapperUIManager : MonoBehaviour
                 button.interactable = false; // ボタンを無効化
             }
         }
+    }
+    private void UpdateTrapStockDisplay(int remaining, Image trapStockImage)
+    {
+        Debug.Log($"トラップの残り数: {remaining}");
+        remaining = Mathf.Clamp(remaining, 0, stockSprites.Length - 1);
+        Debug.Log($"トラップの残り数（クランプ後）: {remaining}");
+        trapStockImage.sprite = stockSprites[remaining];
     }
 
     public void ActivateBlind(float duration)
