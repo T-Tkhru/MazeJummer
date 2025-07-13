@@ -128,10 +128,14 @@ public class TrapperUIManager : MonoBehaviour
             isGenerated = true;
         }
 
-        if (gameManager.IsGameFinished() && !isResultUIOpen)
+        if (gameManager.IsGameFinished())
         {
-            isResultUIOpen = true; // 結果UIが開いている状態にする
-            OpenResultUI(gameManager.IsRunnerWin());
+            timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
+            if (!isResultUIOpen)
+            {
+                isResultUIOpen = true; // 結果UIが開いている状態にする
+                OpenResultUI(gameManager.IsRunnerWin());
+            }
             return;
         }
 
