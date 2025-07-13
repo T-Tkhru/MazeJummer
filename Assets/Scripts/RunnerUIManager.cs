@@ -300,9 +300,7 @@ public class RunnerUIManager : MonoBehaviour
         RectTransform resultRect = result.GetComponent<RectTransform>();
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;
-        Debug.Log("offscreenY: " + height);
         resultRect.anchoredPosition = new Vector2(0, height); // 画面の上に配置
-        Debug.Log("$Screen.height: " + Screen.height);
         Transform winLoseTextTransform = result.transform.Find("WinLoseText");
 
         if (winLoseTextTransform != null)
