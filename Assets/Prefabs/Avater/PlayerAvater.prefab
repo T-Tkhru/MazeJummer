@@ -480,7 +480,6 @@ GameObject:
   - component: {fileID: -517223871777387927}
   - component: {fileID: -4480872714489441838}
   - component: {fileID: 8908043421248018119}
-  - component: {fileID: 3571530090003666984}
   m_Layer: 0
   m_Name: PlayerAvater
   m_TagString: Avatar
@@ -582,20 +581,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   freeLookCamera: {fileID: 1508628122770003621}
---- !u!114 &3571530090003666984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8436688241603493814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cf7f4b220b2ef94f82bae5d5ade6257, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nameLabel: {fileID: 7195670764245965798}
-  cinemachineCamera: {fileID: 875822019946549155}
 --- !u!1 &8799987858292219313
 GameObject:
   m_ObjectHideFlags: 0

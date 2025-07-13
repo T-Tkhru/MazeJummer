@@ -18,7 +18,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [Networked] public TickTimer Timer { get; set; } // タイマー
     [SerializeField] private GameObject trapperUIManager;
     [SerializeField] private GameObject runnerUIManager;
-    [SerializeField] private string sessionName; // セッション名デバッグ用、本番では削除する
+    [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
 
     private async void Start()
@@ -30,8 +30,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
-        string sessionName = null;
-        sessionName = GetSessionName(); //デバッグ用で削除中
+        sessionName = GetSessionName();
+
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {

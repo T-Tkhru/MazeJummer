@@ -57,3 +57,10 @@ MonoBehaviour:
   keyUI: {fileID: 5527624290676667426, guid: b572f3541fff20b4888738d8dd0da80c, type: 3}
   blindMaskPrefab: {fileID: 7782637402052183175, guid: f40876e4b526dc940a8f5774e51c76c9, type: 3}
   resultUIPrefab: {fileID: 469194680219122916, guid: c2714524772c6e141bd88f09d1504e5e, type: 3}
+  selectedColor: {r: 0.7137255, g: 0.9607843, b: 0, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  stockSprites:
+  - {fileID: 56060590, guid: 6f3e78c7d45653942887acea16ef796b, type: 3}
+  - {fileID: 451984238, guid: 5446602ff2548e34db0a21ffef6cf656, type: 3}
+  - {fileID: -888574136, guid: 0f301e2f3ab84494b88c1f03aa833ef6, type: 3}
+  - {fileID: -58116218, guid: 828526af3002fd94bbf9316af55613b3, type: 3}

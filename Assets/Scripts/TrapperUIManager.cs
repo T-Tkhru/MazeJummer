@@ -53,6 +53,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject blindMaskPrefab;
     public GameObject blindMask { get; private set; }
     private Material blindMaskMaterial;
+    private bool isBlindActive = false;
     private int blindRefCount = 0;
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
@@ -60,6 +61,15 @@ public class TrapperUIManager : MonoBehaviour
 
     private bool isResultUIOpen = false;
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
+    private Button createWallButton;
+    private Button createSpeedDownButton;
+    private Button createBlindTrapButton;
+    private Button createReverseInputTrapButton;
+    private Button currentSelectedButton;
+    [SerializeField] private Color selectedColor = Color.green;
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Sprite[] stockSprites;
+    private int lastDisplayedSeconds = -1; // 直前に表示した秒数
 
 
 
@@ -128,19 +138,24 @@ public class TrapperUIManager : MonoBehaviour
             isGenerated = true;
         }
 
-        if (gameManager.IsGameFinished() && !isResultUIOpen)
+        if (gameManager.IsGameFinished())
         {
-            isResultUIOpen = true; // 結果UIが開いている状態にする
-            OpenResultUI(gameManager.IsRunnerWin());
+            timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
+            if (!isResultUIOpen)
+            {
+                isResultUIOpen = true; // 結果UIが開いている状態にする
+                OpenResultUI(gameManager.IsRunnerWin());
+            }
             return;
         }
-
 
         // カウントダウン表示処理
         HandleTimerDisplay();
 
         // ゲーム中のUI更新処理
         UpdatePlayerUI();
+
+        UpdateBlindMask();
     }
 
 
@@ -191,10 +206,53 @@ public class TrapperUIManager : MonoBehaviour
         }
 
         int seconds = Mathf.CeilToInt(remaining);
-        int minutes = seconds / 60;
-        int secondsOnly = seconds % 60;
+        if (seconds != lastDisplayedSeconds)
+        {
+            lastDisplayedSeconds = seconds;
 
-        timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+            // 表示更新
+            int minutes = seconds / 60;
+            int secondsOnly = seconds % 60;
+            timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+
+            // 30秒以下なら脈打ちアニメを再生
+            if (seconds <= 30)
+            {
+                StartCoroutine(PulseOnce(timerLabel));
+                timerLabel.color = Color.red;
+            }
+            else
+            {
+                timerLabel.color = Color.white;
+            }
+        }
+    }
+
+    private IEnumerator PulseOnce(TextMeshProUGUI text)
+    {
+        Vector3 baseScale = Vector3.one;
+        Vector3 maxScale = baseScale * 1.3f;
+        float pulseDuration = 0.2f;
+
+        // 膨らむ
+        float t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(baseScale, maxScale, normalized);
+            yield return null;
+        }
+
+        // 戻る
+        t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(maxScale, baseScale, normalized);
+            yield return null;
+        }
     }
 
     private void UpdatePlayerUI()
@@ -224,6 +282,23 @@ public class TrapperUIManager : MonoBehaviour
         if (currentPlayerPos != lastPlayerPos)
         {
             UpdateButtonInteractable(currentPlayerPos); // ボタンのインタラクションを更新
+        }
+    }
+
+    private void UpdateBlindMask()
+    {
+        var avatar = GameObject.FindGameObjectWithTag("Avatar").GetComponent<PlayerAvatar>();
+        if (avatar.GetBlindTime() > 0)
+        {
+            if (!isBlindActive)
+            {
+                ActivateBlind();
+            }
+        }
+        else if (isBlindActive)
+        {
+            StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+            isBlindActive = false;
         }
     }
 
@@ -311,7 +386,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void AttachButtonListeners()
     {
-        Button createWallButton = trapperUI.Find("CreateWall").GetComponent<Button>();
+        createWallButton = trapperUI.Find("CreateWall").GetComponent<Button>();
         if (createWallButton != null)
         {
             createWallButton.onClick.AddListener(SelectMakeWall);
@@ -320,7 +395,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateWallボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createSpeedDownButton = trapperUI.Find("CreateSpeedDownTrap").GetComponent<Button>();
+        createSpeedDownButton = trapperUI.Find("CreateSpeedDownTrap").GetComponent<Button>();
         if (createSpeedDownButton != null)
         {
             createSpeedDownButton.onClick.AddListener(SelectSpeedDownTrap);
@@ -329,7 +404,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateSpeedDownTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createBlindTrapButton = trapperUI.Find("CreateBlindTrap").GetComponent<Button>();
+        createBlindTrapButton = trapperUI.Find("CreateBlindTrap").GetComponent<Button>();
         if (createBlindTrapButton != null)
         {
             createBlindTrapButton.onClick.AddListener(SelectMakeBlindTrap);
@@ -338,7 +413,7 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("CreateBlindTrapボタンが見つかりません。トラッパーUIのPrefabを確認してください。");
         }
-        Button createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
+        createReverseInputTrapButton = trapperUI.Find("CreateReverseInputTrap").GetComponent<Button>();
         if (createReverseInputTrapButton != null)
         {
             createReverseInputTrapButton.onClick.AddListener(SelectMakeReverseInputTrap);
@@ -437,6 +512,7 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
+        currentSelectedButton.GetComponent<Image>().color = defaultColor;
         switch (currentTrapType)
         {
             case TrapType.Wall:
@@ -582,6 +658,7 @@ public class TrapperUIManager : MonoBehaviour
         // 壁を作るボタンが押されたときの処理
         Debug.Log("壁を作るボタンが押されました。");
         currentTrapType = TrapType.Wall;
+        UpdateButtonColor(createWallButton);
 
     }
 
@@ -589,12 +666,14 @@ public class TrapperUIManager : MonoBehaviour
     {
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
         currentTrapType = TrapType.SpeedDownTrap;
+        UpdateButtonColor(createSpeedDownButton);
     }
 
     public void SelectMakeBlindTrap()
     {
         Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
+        UpdateButtonColor(createBlindTrapButton);
     }
 
     public void SelectMakeReverseInputTrap()
@@ -602,6 +681,19 @@ public class TrapperUIManager : MonoBehaviour
         // トラップ3を作るボタンが押されたときの処理
         Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
+        UpdateButtonColor(createReverseInputTrapButton);
+    }
+
+    private void UpdateButtonColor(Button selectedButton)
+    {
+        if (currentSelectedButton != null)
+        {
+            currentSelectedButton.GetComponent<Image>().color = defaultColor;
+        }
+
+        selectedButton.GetComponent<Image>().color = selectedColor;
+        currentSelectedButton = selectedButton;
+
     }
 
     private List<(int x, int y)> GetKeyPositions()
@@ -626,6 +718,8 @@ public class TrapperUIManager : MonoBehaviour
         currentTrapType = TrapType.None; // トラップを使用した後はNoneに戻す
         trapUseCounts[type]++;
         Debug.Log($"{type} トラップを使用しました。使用回数: {trapUseCounts[type]}, 残り使用回数: {maxTraps - trapUseCounts[type]}");
+        Image TrapStockImage = trapperUI.Find($"Create{type}Bar").GetComponent<Image>();
+        UpdateTrapStockDisplay(maxTraps - trapUseCounts[type], TrapStockImage);
         if (trapUseCounts[type] >= maxTraps)
         {
             Debug.Log($"{type} トラップの使用回数が最大に達しました。");
@@ -636,12 +730,19 @@ public class TrapperUIManager : MonoBehaviour
             }
         }
     }
-
-    public void ActivateBlind(float duration)
+    private void UpdateTrapStockDisplay(int remaining, Image trapStockImage)
     {
-        blindRefCount++;
+        Debug.Log($"トラップの残り数: {remaining}");
+        remaining = Mathf.Clamp(remaining, 0, stockSprites.Length - 1);
+        Debug.Log($"トラップの残り数（クランプ後）: {remaining}");
+        trapStockImage.sprite = stockSprites[remaining];
+    }
+
+    public void ActivateBlind()
+    {
+        isBlindActive = true;
         blindMask.SetActive(true);
-        StartCoroutine(HandleBlindEffect(duration));
+        StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
     }
 
     private IEnumerator HandleBlindEffect(float duration)

@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using ExitGames.Client.Photon.StructWrapping;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +11,10 @@ public class RunnerUIManager : MonoBehaviour
 
     [SerializeField] private GameObject blindMaskPrefab;
 
-    public GameObject blindMask { get; private set; }
+    private GameObject blindMask;
     private Material blindMaskMaterial;
     private int blindRefCount = 0;
+    private bool isBlindActive = false;
     private float blindTransitionDuration = 0.5f; // 縮小・拡大の時間
     private float blindMinRadius = 0.2f;
     private float blindMaxRadius = 1.2f;
@@ -25,7 +27,12 @@ public class RunnerUIManager : MonoBehaviour
     [SerializeField] private GameObject resultUIPrefab; // 結果UIのPrefab
     private Transform canvas; // Canvasの参照
     [SerializeField] private GameObject runnerUIPrefab; // RunnerUIのPrefab
+    private GameObject runnerUI;
     private Image[] keyIcons; // 鍵の画像を格納する配列
+    private int lastDisplayedSeconds = -1; // 直前に表示した秒数
+    private GameObject blindEffectUI;
+    private GameObject speedDownEffectUI;
+    private GameObject reverseInputEffectUI;
 
 
     private void Awake()
@@ -38,10 +45,15 @@ public class RunnerUIManager : MonoBehaviour
         Instance = this;
 
         canvas = FindFirstObjectByType<Canvas>().transform;
-        Instantiate(runnerUIPrefab, canvas);
+        runnerUI = Instantiate(runnerUIPrefab, canvas);
+        blindEffectUI = runnerUI.transform.Find("BlindEffectUI").gameObject;
+        speedDownEffectUI = runnerUI.transform.Find("SpeedDownEffectUI").gameObject;
+        reverseInputEffectUI = runnerUI.transform.Find("ReverseInputEffectUI").gameObject;
+        blindEffectUI.SetActive(false);
+        speedDownEffectUI.SetActive(false);
+        reverseInputEffectUI.SetActive(false);
         timerLabel = GameObject.Find("TimerLabel").GetComponent<TextMeshProUGUI>();
         timerLabel.text = "00:00"; // 初期値
-        timerLabel.gameObject.SetActive(false); // 初期状態では非表示
 
         // BlindMask を生成して Canvas に配置
         if (canvas == null)
@@ -76,7 +88,7 @@ public class RunnerUIManager : MonoBehaviour
                 Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
             }
         }
-
+        runnerUI.SetActive(false);
     }
     private void Start()
     {
@@ -89,6 +101,8 @@ public class RunnerUIManager : MonoBehaviour
             Debug.LogError("CountDownTextまたはCountDownBackgroundが見つかりません。");
             return;
         }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
@@ -99,13 +113,15 @@ public class RunnerUIManager : MonoBehaviour
             countDownText.gameObject.SetActive(false);
             countDownBackground.gameObject.SetActive(false);
             roleText.gameObject.SetActive(false);
-            timerLabel.gameObject.SetActive(true); // タイマー表示を有効化
+            runnerUI.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
                 timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
                 if (!isResultUIOpen)
                 {
                     isResultUIOpen = true; // 結果UIが開いている状態にする
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
                     OpenResultUI(gameManager.IsRunnerWin());
                 }
                 return;
@@ -113,6 +129,7 @@ public class RunnerUIManager : MonoBehaviour
             else
             {
                 UpdateTimerDisplay(); // タイマーの表示を更新
+                UpdateTrapEffectUI();
             }
         }
         else
@@ -143,17 +160,105 @@ public class RunnerUIManager : MonoBehaviour
         }
 
         int seconds = Mathf.CeilToInt(remaining);
-        int minutes = seconds / 60;
-        int secondsOnly = seconds % 60;
+        if (seconds != lastDisplayedSeconds)
+        {
+            lastDisplayedSeconds = seconds;
 
-        timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+            // 表示更新
+            int minutes = seconds / 60;
+            int secondsOnly = seconds % 60;
+            timerLabel.text = $"{minutes:D2}:{secondsOnly:D2}";
+
+            // 30秒以下なら脈打ちアニメを再生
+            if (seconds <= 30)
+            {
+                StartCoroutine(PulseOnce(timerLabel));
+                timerLabel.color = Color.red;
+            }
+            else
+            {
+                timerLabel.color = Color.white;
+            }
+        }
     }
 
-    public void ActivateBlind(float duration)
+    private void UpdateTrapEffectUI()
     {
-        blindRefCount++;
+        var avatar = GameObject.FindGameObjectWithTag("Avatar").GetComponent<PlayerAvatar>();
+        if (avatar.GetBlindTime() > 0)
+        {
+            if (!isBlindActive)
+            {
+                ActivateBlind();
+            }
+            blindEffectUI.SetActive(true);
+            float remainingTime = avatar.GetBlindTime();
+            blindEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            if (isBlindActive)
+            {
+                StartCoroutine(AnimateRadius(blindMinRadius, blindMaxRadius, blindTransitionDuration));
+                isBlindActive = false;
+            }
+            blindEffectUI.SetActive(false);
+        }
+        if (avatar.GetSpeedDownTime() > 0)
+        {
+            speedDownEffectUI.SetActive(true);
+            float remainingTime = avatar.GetSpeedDownTime();
+            speedDownEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            speedDownEffectUI.SetActive(false);
+        }
+        if (avatar.GetReverseInputTime() > 0)
+        {
+            reverseInputEffectUI.SetActive(true);
+            float remainingTime = avatar.GetReverseInputTime();
+            reverseInputEffectUI.GetComponentInChildren<TextMeshProUGUI>().text = $"{remainingTime:F1}秒";
+        }
+        else
+        {
+            reverseInputEffectUI.SetActive(false);
+        }
+    }
+
+    private IEnumerator PulseOnce(TextMeshProUGUI text)
+    {
+        Vector3 baseScale = Vector3.one;
+        Vector3 maxScale = baseScale * 1.3f;
+        float pulseDuration = 0.2f;
+
+        // 膨らむ
+        float t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(baseScale, maxScale, normalized);
+            yield return null;
+        }
+
+        // 戻る
+        t = 0f;
+        while (t < pulseDuration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / pulseDuration;
+            text.transform.localScale = Vector3.Lerp(maxScale, baseScale, normalized);
+            yield return null;
+        }
+    }
+
+
+    public void ActivateBlind()
+    {
+        isBlindActive = true;
         blindMask.SetActive(true);
-        StartCoroutine(HandleBlindEffect(duration));
+        StartCoroutine(AnimateRadius(blindMaxRadius, blindMinRadius, blindTransitionDuration));
     }
 
     private IEnumerator HandleBlindEffect(float duration)
