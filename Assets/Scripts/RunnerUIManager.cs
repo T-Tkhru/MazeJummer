@@ -80,14 +80,6 @@ public class RunnerUIManager : MonoBehaviour
         {
             Debug.LogError("KeyImageの子オブジェクトが見つかりません。");
         }
-        else
-        {
-            foreach (var keyIcon in keyIcons)
-            {
-                keyIcon.gameObject.SetActive(false); // 初期状態では非表示
-                Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
-            }
-        }
         runnerUI.SetActive(false);
     }
     private void Start()
@@ -357,7 +349,11 @@ public class RunnerUIManager : MonoBehaviour
     {
         for (int i = 0; i < keyIcons.Length; i++)
         {
-            keyIcons[i].gameObject.SetActive(i < keyCount);
+            // 色を設定
+            if (i < keyCount)
+            {
+                keyIcons[i].color = new Color(1, 0.8f, 0.2f, 1);
+            }
         }
     }
 
