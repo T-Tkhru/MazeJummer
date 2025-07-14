@@ -863,4 +863,9 @@ public class TrapperUIManager : MonoBehaviour
     {
         isDisconnected = true;
     }
+
+    public bool GetIsResultUiOpen()
+    {
+        return isResultUIOpen;
+    }
 }

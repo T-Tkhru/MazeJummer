@@ -162,10 +162,14 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
         // ホストマイグレーションが発生した場合の処理（タイトルに戻るよう促す）
-        Transform canvas = FindFirstObjectByType<Canvas>().transform;
-        Instantiate(disconnectedUIPrefab, canvas);
-        FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
-        StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+        // リザルトが表示されていない場合のみ、タイトルへ戻る
+        if (!TrapperUIManager.Instance.GetIsResultUiOpen())
+        {
+            Transform canvas = FindFirstObjectByType<Canvas>().transform;
+            Instantiate(disconnectedUIPrefab, canvas);
+            FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
+            StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+        }
 
     }
     private IEnumerator ReturnToTitleAfterDelay(float delaySeconds)
