@@ -70,6 +70,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private Color defaultColor = Color.white;
     [SerializeField] private Sprite[] stockSprites;
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
+    private bool isDisconnected = false; // 切断状態かどうか
 
 
 
@@ -122,7 +123,7 @@ public class TrapperUIManager : MonoBehaviour
 
     void Update()
     {
-        if (isResultUIOpen) { return; }
+        if (isResultUIOpen || isDisconnected) { return; }
         if (gameManager == null)
         {
             gameManager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
@@ -856,5 +857,10 @@ public class TrapperUIManager : MonoBehaviour
             TrapUIMap.Remove(position);
             tileUIs[position.x, position.y].GetComponent<Button>().enabled = true; // タイルのボタンを再度有効化
         }
+    }
+
+    public void SetDisconnected()
+    {
+        isDisconnected = true;
     }
 }

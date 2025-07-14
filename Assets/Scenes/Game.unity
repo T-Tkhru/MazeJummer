@@ -553,6 +553,8 @@ MonoBehaviour:
   runnerUIManager: {fileID: 4426806031260053276, guid: 1987902017798b64892d76ac525ed2f0, type: 3}
   sessionName: 1
   sceneTransitionManagerPrefab: {fileID: 8012713299214258031, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+  disconnectedUIPrefab: {fileID: 469194680219122916, guid: 8de8476f9f24cba45b1b58d67403ca6d, type: 3}
+  canvas: {fileID: 1600186380}
 --- !u!4 &416937552
 Transform:
   m_ObjectHideFlags: 0

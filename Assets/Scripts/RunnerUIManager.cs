@@ -33,6 +33,7 @@ public class RunnerUIManager : MonoBehaviour
     private GameObject blindEffectUI;
     private GameObject speedDownEffectUI;
     private GameObject reverseInputEffectUI;
+    private bool isDisconnected = false; // 切断状態かどうか
 
 
     private void Awake()
@@ -100,6 +101,12 @@ public class RunnerUIManager : MonoBehaviour
     private void Update()
     {
         if (gameManager == null) return;
+        if (isDisconnected)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
         if (gameManager.IsGameStarted())
         {
             countDownText.gameObject.SetActive(false);
@@ -355,6 +362,12 @@ public class RunnerUIManager : MonoBehaviour
                 keyIcons[i].color = new Color(1, 0.8f, 0.2f, 1);
             }
         }
+    }
+
+    public void SetDisconnected()
+    {
+        isDisconnected = true;
+
     }
 
 }

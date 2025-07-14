@@ -20,6 +20,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameObject runnerUIManager;
     [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
+    [SerializeField] private GameObject disconnectedUIPrefab; // MazeManagerのプレハブ
 
     private async void Start()
     {
@@ -131,6 +132,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
+        Transform canvas = FindFirstObjectByType<Canvas>().transform;
+        Instantiate(disconnectedUIPrefab, canvas);
+        FindAnyObjectByType<RunnerUIManager>().SetDisconnected();
+        StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+
     }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
@@ -153,7 +159,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     void INetworkRunnerCallbacks.OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    {
+        // ホストマイグレーションが発生した場合の処理（タイトルに戻るよう促す）
+        Transform canvas = FindFirstObjectByType<Canvas>().transform;
+        Instantiate(disconnectedUIPrefab, canvas);
+        FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
+        StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+
+    }
+    private IEnumerator ReturnToTitleAfterDelay(float delaySeconds)
+    {
+        yield return new WaitForSeconds(delaySeconds);
+        // タイトルへ遷移
+        SceneTransitionManager.Instance.ReturnToMainMenu();
+    }
     void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     void INetworkRunnerCallbacks.OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
     void INetworkRunnerCallbacks.OnSceneLoadDone(NetworkRunner runner) { }
