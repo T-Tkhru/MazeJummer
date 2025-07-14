@@ -4,9 +4,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using TMPro;
-using NUnit.Framework;
 using DG.Tweening;
-using Unity.VisualScripting;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -15,6 +13,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
     [SerializeField] private RectTransform playerUI;
+    [SerializeField] private RectTransform goalPositionUI;
     [SerializeField] private RectTransform speedDownTrapUI;
     [SerializeField] private RectTransform blindTrapUI;
     [SerializeField] private RectTransform reverseInputTrapUI;
@@ -352,6 +351,14 @@ public class TrapperUIManager : MonoBehaviour
 
             }
         }
+        tileUIs[width - 2, height - 2].GetComponent<Button>().enabled = false; // ゴールのUIはクリック不可にする
+        // ゴール位置のUIを生成
+        goalPositionUI = Instantiate(goalPositionUI, trapperUI);
+        goalPositionUI.anchoredPosition = new Vector2(
+            UIStartPos.x + (width - 2) * tileSize,
+            UIStartPos.y + (height - 2) * tileSize
+        );
+        goalPositionUI.SetAsLastSibling(); // ゴールUIを最前面に表示
         playerUI = Instantiate(playerUI, trapperUI);
         if (playerUI == null)
         {
