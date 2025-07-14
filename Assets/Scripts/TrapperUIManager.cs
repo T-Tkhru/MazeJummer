@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using NUnit.Framework;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class TrapperUIManager : MonoBehaviour
 {
@@ -71,6 +72,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private Sprite[] stockSprites;
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
     private bool isDisconnected = false; // 切断状態かどうか
+    private GameObject warningText; // 警告メッセージ用のUI
 
 
 
@@ -382,6 +384,8 @@ public class TrapperUIManager : MonoBehaviour
         {
             CreateKeyUI(pos.x, pos.y);
         }
+        warningText = GameObject.Find("WarningText");
+        warningText.SetActive(false); // 警告メッセージを非表示に初期化
         gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
@@ -566,6 +570,8 @@ public class TrapperUIManager : MonoBehaviour
             if (check.success == "Cannot")
             {
                 Debug.LogWarning("壁を開けることができません。");
+                // UIも表示する
+                warningText.SetActive(true);
                 mazeData[x, y] = 0; // 通路のデータを元に戻す
                 return;
             }
@@ -660,7 +666,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("壁を作るボタンが押されました。");
         currentTrapType = TrapType.Wall;
         UpdateButtonColor(createWallButton);
-
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectSpeedDownTrap()
@@ -668,6 +674,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
         currentTrapType = TrapType.SpeedDownTrap;
         UpdateButtonColor(createSpeedDownButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectMakeBlindTrap()
@@ -675,6 +682,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
         UpdateButtonColor(createBlindTrapButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectMakeReverseInputTrap()
@@ -683,6 +691,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
         UpdateButtonColor(createReverseInputTrapButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     private void UpdateButtonColor(Button selectedButton)
