@@ -34,6 +34,7 @@ public class RunnerUIManager : MonoBehaviour
     private GameObject speedDownEffectUI;
     private GameObject reverseInputEffectUI;
     private bool isDisconnected = false; // 切断状態かどうか
+    private bool isCursorToggled = false;
 
 
     private void Awake()
@@ -101,6 +102,18 @@ public class RunnerUIManager : MonoBehaviour
     private void Update()
     {
         if (gameManager == null) return;
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
+        {
+            isCursorToggled = !isCursorToggled;
+            Cursor.lockState = isCursorToggled ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = isCursorToggled;
+        }
+        if (isCursorToggled && Input.GetMouseButtonDown(0))
+        {
+            isCursorToggled = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         if (isDisconnected)
         {
             Cursor.lockState = CursorLockMode.None;
