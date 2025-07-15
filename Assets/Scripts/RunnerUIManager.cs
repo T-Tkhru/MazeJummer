@@ -33,6 +33,7 @@ public class RunnerUIManager : MonoBehaviour
     private GameObject blindEffectUI;
     private GameObject speedDownEffectUI;
     private GameObject reverseInputEffectUI;
+    private bool isDisconnected = false; // 切断状態かどうか
 
 
     private void Awake()
@@ -80,14 +81,6 @@ public class RunnerUIManager : MonoBehaviour
         {
             Debug.LogError("KeyImageの子オブジェクトが見つかりません。");
         }
-        else
-        {
-            foreach (var keyIcon in keyIcons)
-            {
-                keyIcon.gameObject.SetActive(false); // 初期状態では非表示
-                Debug.Log($"KeyImage: {keyIcon.name} が見つかりました。");
-            }
-        }
         runnerUI.SetActive(false);
     }
     private void Start()
@@ -108,6 +101,22 @@ public class RunnerUIManager : MonoBehaviour
     private void Update()
     {
         if (gameManager == null) return;
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        if (isDisconnected)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
         if (gameManager.IsGameStarted())
         {
             countDownText.gameObject.SetActive(false);
@@ -300,9 +309,7 @@ public class RunnerUIManager : MonoBehaviour
         RectTransform resultRect = result.GetComponent<RectTransform>();
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;
-        Debug.Log("offscreenY: " + height);
         resultRect.anchoredPosition = new Vector2(0, height); // 画面の上に配置
-        Debug.Log("$Screen.height: " + Screen.height);
         Transform winLoseTextTransform = result.transform.Find("WinLoseText");
 
         if (winLoseTextTransform != null)
@@ -359,8 +366,18 @@ public class RunnerUIManager : MonoBehaviour
     {
         for (int i = 0; i < keyIcons.Length; i++)
         {
-            keyIcons[i].gameObject.SetActive(i < keyCount);
+            // 色を設定
+            if (i < keyCount)
+            {
+                keyIcons[i].color = new Color(1, 0.8f, 0.2f, 1);
+            }
         }
+    }
+
+    public void SetDisconnected()
+    {
+        isDisconnected = true;
+
     }
 
 }

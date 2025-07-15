@@ -150,7 +150,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeLimit: 180
-  isSoloMode: 0
   maxTraps: 3
 --- !u!114 &296390127
 MonoBehaviour:
@@ -273,8 +272,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.50546163, y: 0.000000025714916, z: -0.000000015063936, w: 0.8628491}
-  m_LocalPosition: {x: 0, y: 3.5674574, z: -2.0000002}
+  m_LocalRotation: {x: 0.45695835, y: -0.000000037489123, z: 0.000000019259353, w: 0.8894881}
+  m_LocalPosition: {x: 2.6545043, y: 3.162016, z: -1.7789108}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -553,6 +552,7 @@ MonoBehaviour:
   runnerUIManager: {fileID: 4426806031260053276, guid: 1987902017798b64892d76ac525ed2f0, type: 3}
   sessionName: 1
   sceneTransitionManagerPrefab: {fileID: 8012713299214258031, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+  disconnectedUIPrefab: {fileID: 469194680219122916, guid: 8de8476f9f24cba45b1b58d67403ca6d, type: 3}
 --- !u!4 &416937552
 Transform:
   m_ObjectHideFlags: 0

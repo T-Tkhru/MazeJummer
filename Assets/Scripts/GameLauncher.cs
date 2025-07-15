@@ -20,17 +20,40 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameObject runnerUIManager;
     [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
+    [SerializeField] private GameObject disconnectedUIPrefab; // MazeManagerのプレハブ
 
     private async void Start()
     {
-        if (SceneTransitionManager.Instance == null)
+#if UNITY_EDITOR
+        string sessionPrefix;
+        if (EnvironmentConfig.IsDevelopMaster)
+        {
+            sessionPrefix = "master_dev_";
+            Debug.Log("開発マスター環境で実行中です。セッション名のプレフィックスを 'master_dev_' に設定します。");
+        }
+        else
+        {
+            sessionPrefix = "dev_";
+            Debug.Log("開発環境で実行中です。セッション名のプレフィックスを 'dev_' に設定します。");
+        }
+        if (SceneTransitionManager.Instance == null) // Gameシーンから開始したときに呼ばれる、インスペクタで指定したsessionNameを使用する
         {
             Instantiate(sceneTransitionManagerPrefab);
-            Debug.Log("SceneTransitionManager を自動生成しました");
+            Debug.Log("SceneTransitionManager を自動生成しました。エディターで実行中です。");
+            sessionName = sessionPrefix + sessionName;
         }
+        else // Startシーンから開始したときに呼ばれる、GetSessionName()を使用する
+        {
+            Debug.Log("SceneTransitionManager はすでに存在します。エディターで実行中です。");
+            sessionName = $"{sessionPrefix}{GetSessionName()}";
+        }
+#else
+            Debug.Log("Unity Editor以外の環境では、プレフィックスなしのセッション名を使用します。");
+            sessionName = GetSessionName();
+#endif
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
-        sessionName = GetSessionName();
+
 
         // セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
@@ -114,7 +137,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             var mazeManagerObject = runner.Spawn(mazeManager, spawnPosition, Quaternion.identity);
             var maze = mazeManagerObject.GetComponent<MazeManager>();
             maze.GenerateMazeOnServer(runner);
-            PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
+
 
             var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
             Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
@@ -131,6 +154,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
+        Transform canvas = FindFirstObjectByType<Canvas>().transform;
+        Instantiate(disconnectedUIPrefab, canvas);
+        FindAnyObjectByType<RunnerUIManager>().SetDisconnected();
+        StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+
     }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
@@ -153,7 +181,25 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     void INetworkRunnerCallbacks.OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    {
+        // ホストマイグレーションが発生した場合の処理（タイトルに戻るよう促す）
+        // リザルトが表示されていない場合のみ、タイトルへ戻る
+        if (!TrapperUIManager.Instance.GetIsResultUiOpen())
+        {
+            Transform canvas = FindFirstObjectByType<Canvas>().transform;
+            Instantiate(disconnectedUIPrefab, canvas);
+            FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
+            StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+        }
+
+    }
+    private IEnumerator ReturnToTitleAfterDelay(float delaySeconds)
+    {
+        yield return new WaitForSeconds(delaySeconds);
+        // タイトルへ遷移
+        SceneTransitionManager.Instance.ReturnToMainMenu();
+    }
     void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     void INetworkRunnerCallbacks.OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
     void INetworkRunnerCallbacks.OnSceneLoadDone(NetworkRunner runner) { }

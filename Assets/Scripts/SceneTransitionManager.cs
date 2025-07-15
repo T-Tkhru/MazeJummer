@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransitionManager : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField sessionNameInputField;
 
     public static SceneTransitionManager Instance { get; private set; }
 
@@ -31,6 +30,7 @@ public class SceneTransitionManager : MonoBehaviour
 
     public void JoinGameWithID()
     {
+        TMP_InputField sessionNameInputField = FindFirstObjectByType<TMP_InputField>();
         string inputID = sessionNameInputField.text.Trim();
         if (string.IsNullOrEmpty(inputID))
         {
