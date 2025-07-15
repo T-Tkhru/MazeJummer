@@ -23,10 +23,18 @@
 ### ランナー
 - 移動：WASD
 - 視点移動：マウス（左右方向のみ）
+※Escキー、Altキーでマウスカーソルを表示させることができます。画面をクリックするとまた非表示になります。
 ### トラッパー
 - トラップ/壁の生成：右のトラップ項目を選択⇒生成したい位置をクリック
 ※ランナーの周囲2マスは選択できないようになっています
 <img width="958" height="537" alt="image" src="https://github.com/user-attachments/assets/c7d076b0-b6d9-4c45-b877-e0bff020f5b7" />
+
+## プレイ動画
+https://youtu.be/_4BBIs2nW0Y
+
+https://github.com/user-attachments/assets/6c367f90-115b-45f8-a545-42a2d310e12a
+
+
 
 
 
