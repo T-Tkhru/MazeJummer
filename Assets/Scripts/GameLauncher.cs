@@ -137,7 +137,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             var mazeManagerObject = runner.Spawn(mazeManager, spawnPosition, Quaternion.identity);
             var maze = mazeManagerObject.GetComponent<MazeManager>();
             maze.GenerateMazeOnServer(runner);
-            PlayerData.NickName = "HostPlayer"; // ホストの名前を設定
+
 
             var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
             Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");

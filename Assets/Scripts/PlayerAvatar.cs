@@ -80,10 +80,12 @@ public class PlayerAvatar : NetworkBehaviour
                 speed = move.magnitude; // 0〜1
                 animator.SetFloat("Speed", speed);
             }
+#if UNITY_EDITOR
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {
                 characterController.Jump();
             }
+#endif
         }
     }
 
