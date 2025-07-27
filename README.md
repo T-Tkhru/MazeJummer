@@ -1,6 +1,7 @@
 # 更新履歴
 - 2025/7/6：ReadMe作成
 - 2025/7/15：ReadMe更新
+- 2025/7/27：WebGL対応した、テスト公開URL→https://unityroom.com/games/mazejummer
 
 # ゲーム概要
 2人対戦迷路脱出ゲームです。脱出側（ランナー）と妨害側（トラッパー）に分かれて対戦します。
@@ -52,4 +53,5 @@ Unity6.1（6000.1.3f1）
 # ビルド
 ビルドはWindows環境（.exe）を想定しています。メニューバーの「File」→「Build Profiles」を開き、Windowsが選択されているのを確認してビルドしてください。
 他の環境でのビルド検証結果は以下の通りです。
-- WebGL：UnityRoomにて検証。Windows以外のOSでは動作確認できた。WindowsのみUIは表示されるがCameraがレンダリングされず灰色一色になってしまう。
+- WebGL：UnityRoomにて検証。~~Windows以外のOSでは動作確認できた。WindowsのみUIは表示されるがCameraがレンダリングされず灰色一色になってしまう。~~
+  - 2025/7/27更新：修正しWindowsでもUnityRoom上で動作確認できた、URL→https://unityroom.com/games/mazejummer
