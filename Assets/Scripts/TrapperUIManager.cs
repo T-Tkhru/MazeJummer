@@ -798,6 +798,8 @@ public class TrapperUIManager : MonoBehaviour
         var resultUIs = Instantiate(resultUIPrefab, canvas);
         resultUIs.transform.SetAsLastSibling(); // 最前面に表示
         GameObject result = resultUIs.transform.Find("Result").gameObject;
+        Button closeButton = result.transform.Find("CloseButton").GetComponent<Button>();
+        closeButton.interactable = false; // アニメーション中はボタンを無効化
         RectTransform resultRect = result.GetComponent<RectTransform>();
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;
@@ -845,15 +847,19 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
-        StartCoroutine(WaitForResultUI(result, resultRect));
+        StartCoroutine(WaitForResultUI(result, resultRect, closeButton));
 
     }
 
-    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect)
+    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect, Button closeButton)
     {
         yield return new WaitForSeconds(2f); // 2秒待機
         resultUI.SetActive(true);
-        resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        var tween = resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        yield return tween.WaitForCompletion();
+        closeButton.interactable = true;
+
+        Debug.Log("リザルトUIのアニメーションが完了しました。ボタンが有効になりました。");
     }
     public void RemoveKey(Vector2Int position)
     {

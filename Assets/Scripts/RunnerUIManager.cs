@@ -361,14 +361,8 @@ public class RunnerUIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f); // 2秒待機
         resultUI.SetActive(true);
-        // resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
-        // アニメーションを実行してコールバックで完了を検知
         var tween = resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
-
-        // アニメーション完了まで待機
         yield return tween.WaitForCompletion();
-
-        // アニメーション完了後にボタンを有効化
         closeButton.interactable = true;
 
         Debug.Log("リザルトUIのアニメーションが完了しました。ボタンが有効になりました。");
