@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Fusion.Sockets;
 using TMPro;
@@ -21,6 +22,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
     [SerializeField] private GameObject disconnectedUIPrefab; // MazeManagerのプレハブ
+    private Vector3 spawnPosition = new Vector3(1, 5, 1); // プレイヤーの生成位置
+    private int playerCount = 2; // プレイヤー数を2に設定
 
     private async void Start()
     {
@@ -60,7 +63,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             GameMode = GameMode.AutoHostOrClient,
             SessionName = sessionName,
-            PlayerCount = 2, // プレイヤー数を2に設定
+            PlayerCount = playerCount, // プレイヤー数を2に設定
             Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
         });
         Debug.Log($"セッション開始結果: {result}");
@@ -77,23 +80,28 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             countDownText.text = "このIDはすでに別のルームで使用されています。";
             StartCoroutine(WaitAndLoadStartScene(3f)); // 3秒後にスタートシーンに戻る
         }
+
+        // 脱出側、妨害側で分岐
+        // ホストが脱出側、クライアントが妨害側
         if (networkRunner.IsClient)
         {
-            // cinemachineのカメラを無効化する
+            // mainカメラを俯瞰視点で固定する（昔の名残）
             var cinemachineCamera = FindFirstObjectByType<Camera>().GetComponent<CinemachineBrain>();
             if (cinemachineCamera != null)
             {
-                // cinemachineのカメラを無効化する
                 cinemachineCamera.enabled = false;
                 Debug.Log("Cinemachineカメラを無効化しました");
                 var camera = Camera.main;
                 camera.transform.position = new Vector3(13, 25, 13);
                 camera.transform.rotation = Quaternion.Euler(90, 0, 0);
             }
-            Instantiate(trapperUIManager); // クライアント用のUIを生成
+
+            // 妨害側のUIを生成
+            Instantiate(trapperUIManager);
         }
         else if (networkRunner.IsServer)
         {
+            // 脱出側のUIを生成
             Instantiate(runnerUIManager);
         }
     }
@@ -131,14 +139,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // プレイヤーIDを使って、最初のプレイヤーと2人目以降で分岐する
         if (player.PlayerId == 1)
         {
-            // 最初のプレイヤー（ホスト）
-            Vector3 spawnPosition = new Vector3(1, 5, 1);
             // MazeManagerを生成して、迷路を生成する
             var mazeManagerObject = runner.Spawn(mazeManager, spawnPosition, Quaternion.identity);
-            var maze = mazeManagerObject.GetComponent<MazeManager>();
-            maze.GenerateMazeOnServer(runner);
-
-
+            mazeManagerObject.GetComponent<MazeManager>().GenerateMazeOnServer(runner);
             var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
             Debug.Log($"プレイヤー {player.PlayerId} が参加しました。アバターを{spawnPosition} で生成しました。");
             // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
