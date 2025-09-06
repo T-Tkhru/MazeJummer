@@ -83,7 +83,7 @@ public class TrapperUIManager : MonoBehaviour
         }
         Instance = this;
         // BlindMask を生成して Canvas に配置
-        canvas = FindFirstObjectByType<Canvas>().transform;
+        canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
         if (canvas == null)
         {
             Debug.LogError("Canvasがシーンに存在しません");

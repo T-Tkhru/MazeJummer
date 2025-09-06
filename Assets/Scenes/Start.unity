@@ -886,6 +886,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &827068440 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1962685612609399833, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+  m_PrefabInstance: {fileID: 7028877451579467430}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &922944234
 GameObject:
   m_ObjectHideFlags: 0
@@ -2009,9 +2020,25 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 104728488615962871, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: fadePanel
+      value: 
+      objectReference: {fileID: 827068440}
+    - target: {fileID: 104728488615962871, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
       propertyPath: sessionNameInputField
       value: 
       objectReference: {fileID: 744453808}
+    - target: {fileID: 1962685612609399833, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2511146816424507571, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442276122446126076, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7148927342004182492, guid: 573fcd0a2111ff640a2d9be05650a185, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.42855
@@ -2068,7 +2095,7 @@ SceneRoots:
   - {fileID: 961739753}
   - {fileID: 203844589}
   - {fileID: 1914913206}
-  - {fileID: 1340894660}
   - {fileID: 7028877451579467430}
+  - {fileID: 1340894660}
   - {fileID: 922944236}
   - {fileID: 1807874982}

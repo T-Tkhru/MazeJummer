@@ -31,24 +31,11 @@ public class TitleUIManager : MonoBehaviour
     private void OnStartButtonClicked()
     {
         titleSoundManager.PlayButtonSound();
-        StartCoroutine(WaitAndJoinGameAuto());
+        SceneTransitionManager.Instance.JoinGameAuto();
     }
-
     private void OnStartWithIDButtonClicked()
     {
         titleSoundManager.PlayButtonSound();
-        StartCoroutine(WaitAndJoinGameWithID());
-    }
-
-    private System.Collections.IEnumerator WaitAndJoinGameAuto()
-    {
-        yield return new WaitForSeconds(1f);
-        SceneTransitionManager.Instance.JoinGameAuto();
-    }
-
-    private System.Collections.IEnumerator WaitAndJoinGameWithID()
-    {
-        yield return new WaitForSeconds(1f);
         SceneTransitionManager.Instance.JoinGameWithID();
     }
 }

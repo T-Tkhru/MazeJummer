@@ -45,7 +45,7 @@ public class RunnerUIManager : MonoBehaviour
         }
         Instance = this;
 
-        canvas = FindFirstObjectByType<Canvas>().transform;
+        canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
         runnerUI = Instantiate(runnerUIPrefab, canvas);
         blindEffectUI = runnerUI.transform.Find("BlindEffectUI").gameObject;
         speedDownEffectUI = runnerUI.transform.Find("SpeedDownEffectUI").gameObject;
