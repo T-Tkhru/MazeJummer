@@ -1,13 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/GAME_SPEC.md.meta
-guid: 12adad273f154be42a1dffecd84745a0
-TextScriptImporter:
-========
-guid: d9f35a5e95240064aa23b2090da08c40
+guid: 9e8dbc11f4478164bb6071d4a5e8e7cb
 labels:
 - FusionPrefab
 PrefabImporter:
->>>>>>>> 59a5de9462986ed15c1fb9680df60be9751ed65f:Assets/Prefabs/21929_Key_v1.prefab.meta
   externalObjects: {}
   userData: 
   assetBundleName: 
