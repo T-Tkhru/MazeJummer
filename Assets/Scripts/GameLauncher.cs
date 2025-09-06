@@ -21,6 +21,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
     [SerializeField] private GameObject disconnectedUIPrefab; // MazeManagerのプレハブ
+    private bool isGameFinished = false; // ゲームが終了したかどうか
 
     private async void Start()
     {
@@ -98,6 +99,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    public void FinishGame()
+    {
+
+        isGameFinished = true; // ゲームが終了したことを示す
+
+    }
+
     void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -160,6 +168,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
+        GameObject resultUI = GameObject.Find("ResultUI(Clone)");
+        if (resultUI != null)
+        {
+            Debug.Log("ゲーム終了後は何もしません");
+            return;
+        }
         // ホストマイグレーションが発生した場合の処理（タイトルに戻るよう促す）
         Transform canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
         Instantiate(disconnectedUIPrefab, canvas);
