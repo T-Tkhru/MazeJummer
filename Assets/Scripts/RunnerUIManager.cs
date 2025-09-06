@@ -105,6 +105,16 @@ public class RunnerUIManager : MonoBehaviour
     private void Update()
     {
         if (gameManager == null) return;
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         if (isDisconnected)
         {
             Cursor.lockState = CursorLockMode.None;
@@ -303,6 +313,8 @@ public class RunnerUIManager : MonoBehaviour
         resultUIs.transform.SetAsLastSibling(); // 最前面に表示
         GameObject result = resultUIs.transform.Find("Result").gameObject;
         RectTransform resultRect = result.GetComponent<RectTransform>();
+        Button closeButton = result.transform.Find("CloseButton").GetComponent<Button>();
+        closeButton.interactable = false; // アニメーション中はボタンを無効化
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;
         resultRect.anchoredPosition = new Vector2(0, height); // 画面の上に配置
@@ -347,15 +359,19 @@ public class RunnerUIManager : MonoBehaviour
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
-        StartCoroutine(WaitForResultUI(result, resultRect));
+        StartCoroutine(WaitForResultUI(result, resultRect, closeButton));
 
     }
 
-    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect)
+    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect, Button closeButton)
     {
         yield return new WaitForSeconds(2f); // 2秒待機
         resultUI.SetActive(true);
-        resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        var tween = resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        yield return tween.WaitForCompletion();
+        closeButton.interactable = true;
+
+        Debug.Log("リザルトUIのアニメーションが完了しました。ボタンが有効になりました。");
     }
 
     public void UpdateKeyDisplay(int keyCount)

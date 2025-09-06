@@ -1,6 +1,7 @@
 using CreateMaze;
 using Fusion;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class MazeManager : NetworkBehaviour
 {
@@ -12,6 +13,7 @@ public class MazeManager : NetworkBehaviour
     private Vector3 goalPosition;
     [SerializeField] private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
+    private float keyOffset = 0.25f; // 鍵のオフセット、鍵の高さを考慮して0.5fに設定
     [SerializeField] private NetworkObject speedDownTrapPrefab;
     [SerializeField] private NetworkObject blindTrapPrefab;
     [SerializeField] private NetworkObject reverseInputTrapPrefab;
@@ -36,12 +38,13 @@ public class MazeManager : NetworkBehaviour
                 }
             }
         }
-        runner.Spawn(keyPrefab, new Vector3(width - 2, wallOffset, 1), Quaternion.identity); // 鍵を生成
-        runner.Spawn(keyPrefab, new Vector3(1, wallOffset, height - 2), Quaternion.identity); // 鍵を生成
+        // 鍵を迷路の端に生成
+        runner.Spawn(keyPrefab, new Vector3(width - 2, keyOffset, 1), Quaternion.Euler(-90, 0, 0));
+        runner.Spawn(keyPrefab, new Vector3(1, keyOffset, height - 2), Quaternion.Euler(-90, 0, 0));
 
         goalPosition.x = width - 2; // ゴール位置のX座標を迷路の幅に合わせる
         goalPosition.z = height - 2; // ゴール位置のZ座標を迷路の高さに合わせる
-        goalPosition.y = 1.5f; // ゴールのY座標を1.5fに設定
+        goalPosition.y = goalPallPrefab.transform.localScale.y * 0.5f;
         var goalPall = runner.Spawn(goalPallPrefab, goalPosition, Quaternion.identity);
         Debug.Log($"ゴールを生成しました: {goalPall.gameObject.name} at {goalPosition}");
     }

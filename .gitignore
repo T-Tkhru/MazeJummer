@@ -73,3 +73,7 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# マスター開発環境識別用
+Assets/Resources/environment_config.json
+Assets/Resources/environment_config.json.meta

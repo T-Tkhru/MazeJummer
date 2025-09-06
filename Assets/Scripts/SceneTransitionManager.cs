@@ -35,6 +35,7 @@ public class SceneTransitionManager : MonoBehaviour
 
     public void JoinGameWithID()
     {
+        TMP_InputField sessionNameInputField = FindFirstObjectByType<TMP_InputField>();
         string inputID = sessionNameInputField.text.Trim();
         if (string.IsNullOrEmpty(inputID))
         {

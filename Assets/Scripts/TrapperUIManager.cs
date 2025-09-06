@@ -4,7 +4,6 @@ using System.Collections;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using TMPro;
-using NUnit.Framework;
 using DG.Tweening;
 
 public class TrapperUIManager : MonoBehaviour
@@ -14,6 +13,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private GameObject roadUI;
     private Transform canvas;
     [SerializeField] private RectTransform playerUI;
+    [SerializeField] private RectTransform goalPositionUI;
     [SerializeField] private RectTransform speedDownTrapUI;
     [SerializeField] private RectTransform blindTrapUI;
     [SerializeField] private RectTransform reverseInputTrapUI;
@@ -71,6 +71,7 @@ public class TrapperUIManager : MonoBehaviour
     [SerializeField] private Sprite[] stockSprites;
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
     private bool isDisconnected = false; // 切断状態かどうか
+    private GameObject warningText; // 警告メッセージ用のUI
 
 
 
@@ -350,6 +351,14 @@ public class TrapperUIManager : MonoBehaviour
 
             }
         }
+        tileUIs[width - 2, height - 2].GetComponent<Button>().enabled = false; // ゴールのUIはクリック不可にする
+        // ゴール位置のUIを生成
+        goalPositionUI = Instantiate(goalPositionUI, trapperUI);
+        goalPositionUI.anchoredPosition = new Vector2(
+            UIStartPos.x + (width - 2) * tileSize,
+            UIStartPos.y + (height - 2) * tileSize
+        );
+        goalPositionUI.SetAsLastSibling(); // ゴールUIを最前面に表示
         playerUI = Instantiate(playerUI, trapperUI);
         if (playerUI == null)
         {
@@ -382,6 +391,8 @@ public class TrapperUIManager : MonoBehaviour
         {
             CreateKeyUI(pos.x, pos.y);
         }
+        warningText = GameObject.Find("WarningText");
+        warningText.SetActive(false); // 警告メッセージを非表示に初期化
         gameManager.RPC_ClientReady(); // 準備完了であることを通知
     }
 
@@ -566,6 +577,8 @@ public class TrapperUIManager : MonoBehaviour
             if (check.success == "Cannot")
             {
                 Debug.LogWarning("壁を開けることができません。");
+                // UIも表示する
+                warningText.SetActive(true);
                 mazeData[x, y] = 0; // 通路のデータを元に戻す
                 return;
             }
@@ -660,7 +673,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("壁を作るボタンが押されました。");
         currentTrapType = TrapType.Wall;
         UpdateButtonColor(createWallButton);
-
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectSpeedDownTrap()
@@ -668,6 +681,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("スピードダウントラップを作るボタンが押されました。");
         currentTrapType = TrapType.SpeedDownTrap;
         UpdateButtonColor(createSpeedDownButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectMakeBlindTrap()
@@ -675,6 +689,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("ブラインドトラップを作るボタンが押されました。");
         currentTrapType = TrapType.BlindTrap;
         UpdateButtonColor(createBlindTrapButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     public void SelectMakeReverseInputTrap()
@@ -683,6 +698,7 @@ public class TrapperUIManager : MonoBehaviour
         Debug.Log("操作反転トラップを作るボタンが押されました。");
         currentTrapType = TrapType.ReverseInputTrap;
         UpdateButtonColor(createReverseInputTrapButton);
+        warningText.SetActive(false); // 警告メッセージを非表示にする
     }
 
     private void UpdateButtonColor(Button selectedButton)
@@ -784,6 +800,8 @@ public class TrapperUIManager : MonoBehaviour
         var resultUIs = Instantiate(resultUIPrefab, canvas);
         resultUIs.transform.SetAsLastSibling(); // 最前面に表示
         GameObject result = resultUIs.transform.Find("Result").gameObject;
+        Button closeButton = result.transform.Find("CloseButton").GetComponent<Button>();
+        closeButton.interactable = false; // アニメーション中はボタンを無効化
         RectTransform resultRect = result.GetComponent<RectTransform>();
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;
@@ -831,15 +849,19 @@ public class TrapperUIManager : MonoBehaviour
         {
             Debug.LogError("ResultUI内にTimerTextという名前のオブジェクトが見つかりません。");
         }
-        StartCoroutine(WaitForResultUI(result, resultRect));
+        StartCoroutine(WaitForResultUI(result, resultRect, closeButton));
 
     }
 
-    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect)
+    private IEnumerator WaitForResultUI(GameObject resultUI, RectTransform resultRect, Button closeButton)
     {
         yield return new WaitForSeconds(2f); // 2秒待機
         resultUI.SetActive(true);
-        resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        var tween = resultRect.DOAnchorPos(Vector2.zero, 1.5f).SetEase(Ease.OutBounce);
+        yield return tween.WaitForCompletion();
+        closeButton.interactable = true;
+
+        Debug.Log("リザルトUIのアニメーションが完了しました。ボタンが有効になりました。");
     }
     public void RemoveKey(Vector2Int position)
     {
@@ -864,5 +886,10 @@ public class TrapperUIManager : MonoBehaviour
     public void SetDisconnected()
     {
         isDisconnected = true;
+    }
+
+    public bool GetIsResultUiOpen()
+    {
+        return isResultUIOpen;
     }
 }

@@ -47,6 +47,7 @@ MonoBehaviour:
   wallUI: {fileID: 2807970961836477232, guid: d1b71ddb1171da842847987d3e5a335e, type: 3}
   roadUI: {fileID: 642666866390021736, guid: 37e3a358c37babc4686171453b36b195, type: 3}
   playerUI: {fileID: 5527624290676667426, guid: e7ef8b1f601d5cd448e9dfd8df43ced3, type: 3}
+  goalPositionUI: {fileID: 7027057271092039797, guid: d652887a79a286849a4fde7918e7a2a2, type: 3}
   speedDownTrapUI: {fileID: 5527624290676667426, guid: 0f492268281309441b83255f85baf4f1, type: 3}
   blindTrapUI: {fileID: 5527624290676667426, guid: f89218f206b04494886717efb7f1e9b6, type: 3}
   reverseInputTrapUI: {fileID: 5527624290676667426, guid: 25db775cb7fe7394c82d619981ba2c59, type: 3}

@@ -12,7 +12,8 @@ public class GameManager : NetworkBehaviour
     private NetworkBool isCountDownTriggered { get; set; } = false;
     [Networked] private NetworkBool isClientReady { get; set; } = false; // クライアントが準備完了かどうか
     [Networked] private TickTimer GameStartTimer { get; set; } // ゲーム開始のカウントダウンタイマー
-    [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
+    // [SerializeField] private bool isSoloMode = false; // ソロモードかどうか
+    private bool isSoloMode = false; // 一時的にインスペクターから設定できないようにする
     [SerializeField] private int maxTraps = 3; // 最大トラップ数
     [Networked] private NetworkBool isRunnerWin { get; set; } = false; // ランナーが勝利したかどうか
 
