@@ -5,6 +5,7 @@ public class TitleUIManager : MonoBehaviour
 {
     [SerializeField] private Button startGameAutoButton;
     [SerializeField] private Button startGameWithIDButton;
+    [SerializeField] private TitleSoundManager titleSoundManager;
 
     void OnEnable()
     {
@@ -29,10 +30,25 @@ public class TitleUIManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
-        SceneTransitionManager.Instance.JoinGameAuto();
+        titleSoundManager.PlayButtonSound();
+        StartCoroutine(WaitAndJoinGameAuto());
     }
+
     private void OnStartWithIDButtonClicked()
     {
+        titleSoundManager.PlayButtonSound();
+        StartCoroutine(WaitAndJoinGameWithID());
+    }
+
+    private System.Collections.IEnumerator WaitAndJoinGameAuto()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneTransitionManager.Instance.JoinGameAuto();
+    }
+
+    private System.Collections.IEnumerator WaitAndJoinGameWithID()
+    {
+        yield return new WaitForSeconds(1f);
         SceneTransitionManager.Instance.JoinGameWithID();
     }
 }
