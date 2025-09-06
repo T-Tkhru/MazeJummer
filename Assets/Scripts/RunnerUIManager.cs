@@ -4,6 +4,10 @@ using ExitGames.Client.Photon.StructWrapping;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+// BGM停止用
+using System;
 
 public class RunnerUIManager : MonoBehaviour
 {
@@ -293,6 +297,8 @@ public class RunnerUIManager : MonoBehaviour
 
     private void OpenResultUI(bool isRunnerWin)
     {
+        // BGMを止める
+        if (SoundManager.Instance != null) SoundManager.Instance.StopBGM();
         var resultUIs = Instantiate(resultUIPrefab, canvas);
         resultUIs.transform.SetAsLastSibling(); // 最前面に表示
         GameObject result = resultUIs.transform.Find("Result").gameObject;

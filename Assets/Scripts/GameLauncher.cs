@@ -21,7 +21,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private string sessionName; // セッション名デバッグ用
     [SerializeField] private GameObject sceneTransitionManagerPrefab; // シーン遷移マネージャーのプレハブ
     [SerializeField] private GameObject disconnectedUIPrefab; // MazeManagerのプレハブ
-    private bool isGameFinished = false; // ゲームが終了したかどうか
 
     private async void Start()
     {
@@ -99,12 +98,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public void FinishGame()
-    {
-
-        isGameFinished = true; // ゲームが終了したことを示す
-
-    }
 
     void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
