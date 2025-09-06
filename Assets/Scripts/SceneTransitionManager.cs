@@ -11,6 +11,7 @@ public class SceneTransitionManager : MonoBehaviour
     [SerializeField] private Image fadePanel;
 
     public static SceneTransitionManager Instance { get; private set; }
+    private float fadeDuration = 0.5f;
 
     private void Awake()
     {
@@ -29,7 +30,7 @@ public class SceneTransitionManager : MonoBehaviour
     {
         Debug.Log("自動マッチングでゲーム開始");
         PlayerPrefs.SetString("SessionName", ""); // 空にして自動マッチメイク
-        FadeOutAndLoadScene("Game", 0.5f);
+        FadeOutAndLoadScene("Game", fadeDuration);
     }
 
     public void JoinGameWithID()
@@ -43,7 +44,7 @@ public class SceneTransitionManager : MonoBehaviour
 
         Debug.Log($"ID指定でゲーム開始: {inputID}");
         PlayerPrefs.SetString("SessionName", inputID); // 後でScene側で読み取る
-        FadeOutAndLoadScene("Game", 1f);
+        FadeOutAndLoadScene("Game", fadeDuration);
     }
 
     public void ReturnToMainMenu()
@@ -55,7 +56,7 @@ public class SceneTransitionManager : MonoBehaviour
             networkRunner.Shutdown();
             Destroy(networkRunner.gameObject);
         }
-        FadeOutAndLoadScene("Start", 0.5f);
+        FadeOutAndLoadScene("Start", fadeDuration);
     }
     /// <summary>
     /// フェードアウト後にシーン遷移し、遷移先で自動的にフェードインする
@@ -78,7 +79,7 @@ public class SceneTransitionManager : MonoBehaviour
         fadePanel.color = new Color(0, 0, 0, 1); // 初期は真っ黒
 
         // アルファを1→0に変化させる
-        fadePanel.DOFade(0f, 0.5f).OnComplete(() =>
+        fadePanel.DOFade(0f, fadeDuration).OnComplete(() =>
         {
             fadePanel.gameObject.SetActive(false);
             Debug.Log("フェードイン完了！");
