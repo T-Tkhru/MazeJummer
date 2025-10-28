@@ -29,10 +29,12 @@ public class TitleUIManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
+        SoundManager.Instance?.PlayButtonSE();
         SceneTransitionManager.Instance.JoinGameAuto();
     }
     private void OnStartWithIDButtonClicked()
     {
+        SoundManager.Instance?.PlayButtonSE();
         SceneTransitionManager.Instance.JoinGameWithID();
     }
 }

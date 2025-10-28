@@ -128,6 +128,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+
     void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -157,7 +158,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
-        Transform canvas = FindFirstObjectByType<Canvas>().transform;
+        Transform canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
         Instantiate(disconnectedUIPrefab, canvas);
         FindAnyObjectByType<RunnerUIManager>().SetDisconnected();
         StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
@@ -186,6 +187,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
+        GameObject resultUI = GameObject.Find("ResultUI(Clone)");
+        if (resultUI != null)
+        {
+            Debug.Log("ゲーム終了後は何もしません");
+            return;
+        }
         // ホストマイグレーションが発生した場合の処理（タイトルに戻るよう促す）
         // リザルトが表示されていない場合のみ、タイトルへ戻る
         if (!TrapperUIManager.Instance.GetIsResultUiOpen())
