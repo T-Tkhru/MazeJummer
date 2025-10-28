@@ -173,7 +173,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         data.Direction = cameraRotation * inputDirection;
         data.Buttons.Set(NetworkInputButtons.Jump, Input.GetButton("Jump"));
-        data.Buttons.Set(NetworkInputButtons.BreakBlock, Input.GetKeyDown(KeyCode.E));
+        // GetKeyDown() は1フレームだけを検知するため、短く押すと入力フレームのタイミングを外す可能性がある
+        // GetKey() に変更することで、押されている間は継続的に検知できる
+        data.Buttons.Set(NetworkInputButtons.BreakBlock, Input.GetKey(KeyCode.E));
 
         input.Set(data);
     }

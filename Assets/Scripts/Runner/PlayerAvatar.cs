@@ -19,6 +19,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] private TickTimer BlindTimer { get; set; } // 速度ダウンのタイマー
     [Networked] private TickTimer SpeedDownTimer { get; set; } // 速度ダウンのタイマー
     [Networked] private TickTimer ReverseInputTimer { get; set; } // 入力反転のタイマー
+    [Networked] private NetworkBool prevBreakBlockInput { get; set; } = false; // 前フレームのEボタン入力状態
 
 
     public override void Spawned()
@@ -81,10 +82,13 @@ public class PlayerAvatar : NetworkBehaviour
                 speed = move.magnitude; // 0〜1
                 animator.SetFloat("Speed", speed);
             }
-            if (data.Buttons.IsSet(NetworkInputButtons.BreakBlock))
+            // Eボタンが「押された瞬間」だけ検知する（前フレームでは押されていなかったが、今フレームで押されている）
+            bool currentBreakBlockInput = data.Buttons.IsSet(NetworkInputButtons.BreakBlock);
+            if (currentBreakBlockInput && !prevBreakBlockInput)
             {
                 BreakBlock(range: breakRange);
             }
+            prevBreakBlockInput = currentBreakBlockInput; // 次フレームのために入力状態を保存
 #if UNITY_EDITOR
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
             {
