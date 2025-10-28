@@ -1,11 +1,7 @@
 fileFormatVersion: 2
-guid: 5094317ddb6bdc049aac25f854861ab9
-MonoImporter:
+guid: 4fd90b87c149ab94b9d8b670c1c70afa
+DefaultImporter:
   externalObjects: {}
-  serializedVersion: 2
-  defaultReferences: []
-  executionOrder: 0
-  icon: {instanceID: 0}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -14,5 +10,5 @@ AssetOrigin:
   productId: 267958
   packageName: Photon Fusion
   packageVersion: 2.0.8
-  assetPath: Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.AssemblyAttributes.cs
+  assetPath: Assets/Photon/Fusion/Plugins/NanoSockets/libnanosockets_LICENSE.txt
   uploadId: 807342
