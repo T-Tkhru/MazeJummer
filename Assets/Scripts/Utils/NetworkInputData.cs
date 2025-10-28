@@ -9,5 +9,6 @@ public struct NetworkInputData : INetworkInput
 
 public enum NetworkInputButtons
 {
-    Jump
+    Jump,
+    BreakBlock
 }

@@ -11,6 +11,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] private int keyCount { get; set; } = 0;
     private GameManager gameManager;
     [SerializeField] private GameObject freeLookCamera;
+    [SerializeField] private float breakRange = 1.0f;
     private bool isReverseInput = false;
 
     private Animator animator;
@@ -79,6 +80,10 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 speed = move.magnitude; // 0〜1
                 animator.SetFloat("Speed", speed);
+            }
+            if (data.Buttons.IsSet(NetworkInputButtons.BreakBlock))
+            {
+                BreakBlock(range: breakRange);
             }
 #if UNITY_EDITOR
             if (data.Buttons.IsSet(NetworkInputButtons.Jump))
@@ -153,6 +158,49 @@ public class PlayerAvatar : NetworkBehaviour
         Debug.Log($"鍵を取得しました！現在の鍵の数: {keyCount}");
         RunnerUIManager.Instance?.UpdateKeyDisplay(keyCount);
     }
+
+    public void BreakBlock(float range = 2.0f)
+    {
+        // 👇 プレイヤーの位置と向きを基準に Ray を発射
+        Vector3 origin = transform.position;
+        Vector3 direction = transform.forward;
+        Debug.Log($"BreakBlock: origin={origin}, direction={direction}, range={range}");
+
+        Ray ray = new Ray(origin, direction);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            GameObject hitObj = hit.collider.gameObject;
+
+            if (hitObj.CompareTag("Wall"))
+            {
+                NetworkObject networkObj = hitObj.GetComponent<NetworkObject>();
+                if (networkObj != null)
+                {
+                    Runner.Despawn(networkObj);
+                    Debug.Log($"Wallブロックを破壊しました: {hitObj.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"ヒットしたWallにNetworkObjectがありません: {hitObj.name}");
+                }
+            }
+            else
+            {
+                Debug.Log($"Wall以外のオブジェクトにヒットしました: {hitObj.tag}");
+            }
+        }
+        else
+        {
+            Debug.Log("目の前に破壊できるWallがありません。");
+        }
+
+        // 🔍 デバッグ用に Ray を可視化
+        Debug.DrawRay(origin, direction * range, Color.red, 1.0f);
+    }
+
+
 
     public int GetKeyCount()
     {
