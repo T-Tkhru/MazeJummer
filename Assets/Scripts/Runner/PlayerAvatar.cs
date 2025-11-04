@@ -179,11 +179,18 @@ public class PlayerAvatar : NetworkBehaviour
 
             if (hitObj.CompareTag("Wall"))
             {
-                NetworkObject networkObj = hitObj.GetComponent<NetworkObject>();
-                if (networkObj != null)
+                Wall wall = hitObj.GetComponent<Wall>();
+                if (wall != null)
                 {
-                    Runner.Despawn(networkObj);
-                    Debug.Log($"Wallブロックを破壊しました: {hitObj.name}");
+                    bool result = wall.DespawnWall();
+                    if (result)
+                    {
+                        Debug.Log($"Wallブロックを破壊しました: {hitObj.name}");
+                    }
+                    else
+                    {
+                        Debug.Log($"外周のためWallブロックの破壊に失敗しました: {hitObj.name}");
+                    }
                 }
                 else
                 {

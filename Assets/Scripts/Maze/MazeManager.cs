@@ -35,6 +35,11 @@ public class MazeManager : NetworkBehaviour
                     // 壁の位置に壁のプレハブを生成
                     Vector3 position = new Vector3(x, wallOffset, y);
                     var wall = runner.Spawn(wallPrefab, position, Quaternion.identity);
+                    if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
+                    {
+                        // 外壁の場合、WallスクリプトのisOuterWallをtrueに設定
+                        wall.GetComponent<Wall>().SetOuterWall(true);
+                    }
                 }
             }
         }
