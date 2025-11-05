@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class SceneTransitionManager : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField sessionNameInputField;
     [SerializeField] private Image fadePanel;
 
     public static SceneTransitionManager Instance { get; private set; }
@@ -35,7 +34,15 @@ public class SceneTransitionManager : MonoBehaviour
 
     public void JoinGameWithID()
     {
+        // 毎回 Titleシーン内から InputField を検索（シーン遷移後も対応）
         TMP_InputField sessionNameInputField = FindFirstObjectByType<TMP_InputField>();
+
+        if (sessionNameInputField == null)
+        {
+            Debug.LogError("InputField が見つかりません。Titleシーンに配置されていることを確認してください。");
+            return;
+        }
+
         string inputID = sessionNameInputField.text.Trim();
         if (string.IsNullOrEmpty(inputID))
         {
@@ -58,6 +65,7 @@ public class SceneTransitionManager : MonoBehaviour
             Destroy(networkRunner.gameObject);
         }
         FadeOutAndLoadScene("Start", fadeDuration);
+        // シーン遷移後に
     }
     /// <summary>
     /// フェードアウト後にシーン遷移し、遷移先で自動的にフェードインする
