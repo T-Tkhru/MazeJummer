@@ -524,7 +524,13 @@ public class TrapperUIManager : MonoBehaviour
 
     public void OnClickRoadButton(int x, int y)
     {
-        currentSelectedButton.GetComponent<Image>().color = defaultColor;
+
+        // 前回選択されたボタンの色をリセット
+        if (currentSelectedButton != null)
+        {
+            currentSelectedButton.GetComponent<Image>().color = defaultColor;
+        }
+
         switch (currentTrapType)
         {
             case TrapType.Wall:
