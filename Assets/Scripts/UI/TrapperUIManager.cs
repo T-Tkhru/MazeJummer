@@ -883,6 +883,30 @@ public class TrapperUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Wall が Despawn されたときに呼ばれる
+    /// 壁のUIタイルを roadタイルに変更する
+    /// </summary>
+    public void OnWallDespawned(Vector2Int gridPos)
+    {
+        // グリッド座標が有効な範囲内か確認
+        if (gridPos.x < 0 || gridPos.x >= width || gridPos.y < 0 || gridPos.y >= height)
+        {
+            Debug.LogWarning($"OnWallDespawned: グリッド座標が範囲外です: {gridPos}");
+            return;
+        }
+
+        // 既存の壁UIタイルを削除
+        if (tileUIs[gridPos.x, gridPos.y] != null)
+        {
+            Destroy(tileUIs[gridPos.x, gridPos.y]);
+        }
+
+        // 新しい road タイルを生成
+        CreateRoadUI(gridPos.x, gridPos.y);
+        Debug.Log($"Wall Despawn を検知しました。グリッド位置 {gridPos} を road に変更しました。");
+    }
+
     public void SetDisconnected()
     {
         isDisconnected = true;
