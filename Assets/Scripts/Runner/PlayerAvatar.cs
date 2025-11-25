@@ -20,6 +20,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] private TickTimer SpeedDownTimer { get; set; } // 速度ダウンのタイマー
     [Networked] private TickTimer ReverseInputTimer { get; set; } // 入力反転のタイマー
     [Networked] private NetworkBool prevBreakBlockInput { get; set; } = false; // 前フレームのEボタン入力状態
+    [Networked] private int remainingWallBreaks { get; set; } = 0; // 残りの壁破壊回数
 
 
     public override void Spawned()
@@ -165,6 +166,11 @@ public class PlayerAvatar : NetworkBehaviour
 
     public void BreakBlock(float range = 2.0f)
     {
+        if (remainingWallBreaks <= 0)
+        {
+            Debug.Log("壁を破壊する残り回数がありません。");
+            return;
+        }
         // 👇 プレイヤーの位置と向きを基準に Ray を発射
         Vector3 origin = transform.position;
         Vector3 direction = transform.forward;
@@ -186,6 +192,7 @@ public class PlayerAvatar : NetworkBehaviour
                     if (result)
                     {
                         Debug.Log($"Wallブロックを破壊しました: {hitObj.name}");
+                        remainingWallBreaks--;
                     }
                     else
                     {
@@ -206,9 +213,6 @@ public class PlayerAvatar : NetworkBehaviour
         {
             Debug.Log("目の前に破壊できるWallがありません。");
         }
-
-        // 🔍 デバッグ用に Ray を可視化
-        Debug.DrawRay(origin, direction * range, Color.red, 1.0f);
     }
 
 
