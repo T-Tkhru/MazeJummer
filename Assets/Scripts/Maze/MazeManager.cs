@@ -97,7 +97,7 @@ public class MazeManager : NetworkBehaviour
             deadEndList.RemoveAt(index); // 同じ場所に複数生成しないようにリストから削除
 
             Vector3 hammerPosition = new Vector3(pos.x, keyAndHammerOffset, pos.y);
-            var hammer = Runner.Spawn(hammerPrefab, hammerPosition, Quaternion.identity);
+            var hammer = Runner.Spawn(hammerPrefab, hammerPosition, Quaternion.Euler(30, 0, 0));
             Debug.Log($"ハンマーを生成しました: {hammer.gameObject.name} at {hammerPosition}");
         }
     }
