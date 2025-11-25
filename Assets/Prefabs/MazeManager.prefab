@@ -54,6 +54,7 @@ MonoBehaviour:
   reverseInputTrapPrefab: {fileID: 5944782399499760111, guid: 1bbf0a59535fc794c83252103e3e83c7, type: 3}
   keyPrefab: {fileID: 8246735872582247556, guid: 9e8dbc11f4478164bb6071d4a5e8e7cb, type: 3}
   goalPallPrefab: {fileID: 7216509601418447910, guid: bd25bfb34e2e13f40a36712193301699, type: 3}
+  hammerPrefab: {fileID: 6005652752246323082, guid: dc02f57a916958e4a9bd163418827aa1, type: 3}
 --- !u!114 &7084658060512160853
 MonoBehaviour:
   m_ObjectHideFlags: 0

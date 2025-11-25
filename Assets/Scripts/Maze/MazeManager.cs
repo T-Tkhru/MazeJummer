@@ -19,6 +19,7 @@ public class MazeManager : NetworkBehaviour
     [SerializeField] private NetworkObject reverseInputTrapPrefab;
     [SerializeField] private NetworkObject keyPrefab;
     [SerializeField] private NetworkObject goalPallPrefab;
+    [SerializeField] private NetworkObject hammerPrefab;
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -52,6 +53,8 @@ public class MazeManager : NetworkBehaviour
         goalPosition.y = goalPallPrefab.transform.localScale.y * 0.5f;
         var goalPall = runner.Spawn(goalPallPrefab, goalPosition, Quaternion.identity);
         Debug.Log($"ゴールを生成しました: {goalPall.gameObject.name} at {goalPosition}");
+        // ハンマーを迷路の外に生成
+        runner.Spawn(hammerPrefab, new Vector3(-1, keyOffset, -1), Quaternion.Euler(-90, 0, 0));
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
