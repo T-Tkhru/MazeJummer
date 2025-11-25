@@ -2,6 +2,7 @@ using CreateMaze;
 using Fusion;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 public class MazeManager : NetworkBehaviour
 {
@@ -13,13 +14,15 @@ public class MazeManager : NetworkBehaviour
     private Vector3 goalPosition;
     [SerializeField] private NetworkPrefabRef wallPrefab; // 壁のプレハブ、迷路生成に使用する
     private float wallOffset = 0.5f; // 壁のオフセット、壁の高さを考慮して0.5fに設定
-    private float keyOffset = 0.25f; // 鍵のオフセット、鍵の高さを考慮して0.5fに設定
+    private float keyAndHammerOffset = 0.25f; // 鍵のオフセット、鍵の高さを考慮して0.25fに設定
     [SerializeField] private NetworkObject speedDownTrapPrefab;
     [SerializeField] private NetworkObject blindTrapPrefab;
     [SerializeField] private NetworkObject reverseInputTrapPrefab;
     [SerializeField] private NetworkObject keyPrefab;
     [SerializeField] private NetworkObject goalPallPrefab;
     [SerializeField] private NetworkObject hammerPrefab;
+    [SerializeField] private int hammerCount = 3; // 生成するハンマーの数
+    private List<Vector2Int> deadEndList = new(); // 行き止まりのリスト、要素は[x,y]
 
     public void GenerateMazeOnServer(NetworkRunner runner)
     {
@@ -42,19 +45,61 @@ public class MazeManager : NetworkBehaviour
                         wall.GetComponent<Wall>().SetOuterWall(true);
                     }
                 }
+                else if (maze[x, y] == Path)
+                {
+                    CheckDeadEnd(maze, x, y);
+                }
             }
         }
         // 鍵を迷路の端に生成
-        runner.Spawn(keyPrefab, new Vector3(width - 2, keyOffset, 1), Quaternion.Euler(-90, 0, 0));
-        runner.Spawn(keyPrefab, new Vector3(1, keyOffset, height - 2), Quaternion.Euler(-90, 0, 0));
+        runner.Spawn(keyPrefab, new Vector3(width - 2, keyAndHammerOffset, 1), Quaternion.Euler(-90, 0, 0));
+        runner.Spawn(keyPrefab, new Vector3(1, keyAndHammerOffset, height - 2), Quaternion.Euler(-90, 0, 0));
 
         goalPosition.x = width - 2; // ゴール位置のX座標を迷路の幅に合わせる
         goalPosition.z = height - 2; // ゴール位置のZ座標を迷路の高さに合わせる
         goalPosition.y = goalPallPrefab.transform.localScale.y * 0.5f;
         var goalPall = runner.Spawn(goalPallPrefab, goalPosition, Quaternion.identity);
         Debug.Log($"ゴールを生成しました: {goalPall.gameObject.name} at {goalPosition}");
-        // ハンマーを迷路の外に生成
-        runner.Spawn(hammerPrefab, new Vector3(-1, keyOffset, -1), Quaternion.Euler(-90, 0, 0));
+        // ハンマーを行き止まりに生成
+        GenerateHammer();
+    }
+
+    private void CheckDeadEnd(int[,] maze, int x, int y)
+    {
+        int wallCount = 0;
+        // 上下左右のセルをチェック
+        if (x > 0 && maze[x - 1, y] == Wall) wallCount++; // 左
+        if (x < width - 1 && maze[x + 1, y] == Wall) wallCount++; // 右
+        if (y > 0 && maze[x, y - 1] == Wall) wallCount++; // 下
+        if (y < height - 1 && maze[x, y + 1] == Wall) wallCount++; // 上
+
+        // 壁が3つある場合、行き止まりと判断
+        if (wallCount == 3)
+        {
+            deadEndList.Add(new Vector2Int(x, y));
+            Debug.Log($"行き止まりを検出: ({x}, {y})");
+        }
+    }
+    private void GenerateHammer()
+    {
+        Debug.Log("deadEndListの要素数: " + deadEndList.Count);
+        // 行き止まりからランダムにハンマーを生成
+        var random = new System.Random();
+        for (int i = 0; i < hammerCount; i++)
+        {
+            if (deadEndList.Count == 0)
+            {
+                Debug.LogWarning("行き止まりが不足しています。これ以上ハンマーを生成できません。");
+                break;
+            }
+            int index = random.Next(deadEndList.Count);
+            Vector2Int pos = deadEndList[index];
+            deadEndList.RemoveAt(index); // 同じ場所に複数生成しないようにリストから削除
+
+            Vector3 hammerPosition = new Vector3(pos.x, keyAndHammerOffset, pos.y);
+            var hammer = Runner.Spawn(hammerPrefab, hammerPosition, Quaternion.identity);
+            Debug.Log($"ハンマーを生成しました: {hammer.gameObject.name} at {hammerPosition}");
+        }
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
