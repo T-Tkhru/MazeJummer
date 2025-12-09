@@ -910,7 +910,7 @@ public class TrapperUIManager : MonoBehaviour
 
         // 新しい road タイルを生成
         CreateRoadUI(gridPos.x, gridPos.y);
-        Debug.Log($"Wall Despawn を検知しました。グリッド位置 {gridPos} を road に変更しました。");
+        // Debug.Log($"Wall Despawn を検知しました。グリッド位置 {gridPos} を road に変更しました。");
     }
 
     public void SetDisconnected()

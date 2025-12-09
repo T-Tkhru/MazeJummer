@@ -21,7 +21,7 @@ public class MazeManager : NetworkBehaviour
     [SerializeField] private NetworkObject keyPrefab;
     [SerializeField] private NetworkObject goalPallPrefab;
     [SerializeField] private NetworkObject hammerPrefab;
-    [SerializeField] private int hammerCount = 3; // 生成するハンマーの数
+    [SerializeField] private int hammerCount = 2; // 生成するハンマーの数
     private List<Vector2Int> deadEndList = new(); // 行き止まりのリスト、要素は[x,y]
 
     public void GenerateMazeOnServer(NetworkRunner runner)
