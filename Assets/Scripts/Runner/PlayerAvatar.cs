@@ -193,6 +193,7 @@ public class PlayerAvatar : NetworkBehaviour
                     {
                         Debug.Log($"Wallブロックを破壊しました: {hitObj.name}");
                         remainingWallBreaks--;
+                        RunnerUIManager.Instance?.UpdateHammerDisplay(remainingWallBreaks);
                     }
                     else
                     {
@@ -219,6 +220,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         remainingWallBreaks += count;
         Debug.Log($"壁破壊回数を{count}回分追加しました。現在の残り回数: {remainingWallBreaks}");
+        RunnerUIManager.Instance?.UpdateHammerDisplay(remainingWallBreaks);
     }
 
 

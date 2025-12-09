@@ -37,6 +37,7 @@ public class RunnerUIManager : MonoBehaviour
     private GameObject blindEffectUI;
     private GameObject speedDownEffectUI;
     private GameObject reverseInputEffectUI;
+    private TextMeshProUGUI hammerCountText;
     private bool isDisconnected = false; // 切断状態かどうか
 
 
@@ -54,6 +55,7 @@ public class RunnerUIManager : MonoBehaviour
         blindEffectUI = runnerUI.transform.Find("BlindEffectUI").gameObject;
         speedDownEffectUI = runnerUI.transform.Find("SpeedDownEffectUI").gameObject;
         reverseInputEffectUI = runnerUI.transform.Find("ReverseInputEffectUI").gameObject;
+        hammerCountText = runnerUI.transform.Find("HammerCountUI/HammerCountText").GetComponent<TextMeshProUGUI>();
         blindEffectUI.SetActive(false);
         speedDownEffectUI.SetActive(false);
         reverseInputEffectUI.SetActive(false);
@@ -390,6 +392,11 @@ public class RunnerUIManager : MonoBehaviour
     {
         isDisconnected = true;
 
+    }
+
+    public void UpdateHammerDisplay(int hammerCount)
+    {
+        hammerCountText.text = $"×{hammerCount}";
     }
 
 }
