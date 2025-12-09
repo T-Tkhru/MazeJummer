@@ -66,6 +66,11 @@ public class MazeManager : NetworkBehaviour
 
     private void CheckDeadEnd(int[,] maze, int x, int y)
     {
+        if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
+        {
+            // 迷路の端は行き止まりとしてカウントしない（鍵、もしくはスタートゴール地点のため）
+            return;
+        }
         int wallCount = 0;
         // 上下左右のセルをチェック
         if (x > 0 && maze[x - 1, y] == Wall) wallCount++; // 左
