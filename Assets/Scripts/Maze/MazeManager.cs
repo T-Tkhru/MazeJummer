@@ -61,7 +61,7 @@ public class MazeManager : NetworkBehaviour
         var goalPall = runner.Spawn(goalPallPrefab, goalPosition, Quaternion.identity);
         Debug.Log($"ゴールを生成しました: {goalPall.gameObject.name} at {goalPosition}");
         // ハンマーを行き止まりに生成
-        GenerateHammer();
+        GenerateHammer(runner);
     }
 
     private void CheckDeadEnd(int[,] maze, int x, int y)
@@ -80,7 +80,7 @@ public class MazeManager : NetworkBehaviour
             Debug.Log($"行き止まりを検出: ({x}, {y})");
         }
     }
-    private void GenerateHammer()
+    private void GenerateHammer(NetworkRunner runner)
     {
         Debug.Log("deadEndListの要素数: " + deadEndList.Count);
         // 行き止まりからランダムにハンマーを生成
@@ -97,7 +97,7 @@ public class MazeManager : NetworkBehaviour
             deadEndList.RemoveAt(index); // 同じ場所に複数生成しないようにリストから削除
 
             Vector3 hammerPosition = new Vector3(pos.x, keyAndHammerOffset, pos.y);
-            var hammer = Runner.Spawn(hammerPrefab, hammerPosition, Quaternion.Euler(30, 0, 0));
+            var hammer = runner.Spawn(hammerPrefab, hammerPosition, Quaternion.Euler(30, 0, 0));
             Debug.Log($"ハンマーを生成しました: {hammer.gameObject.name} at {hammerPosition}");
         }
     }
