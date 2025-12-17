@@ -289,7 +289,18 @@ public class TrapperUIManager : MonoBehaviour
 
     private void UpdateBlindMask()
     {
-        var avatar = GameObject.FindGameObjectWithTag("Avatar").GetComponent<PlayerAvatar>();
+        var avatarGameObject = GameObject.FindGameObjectWithTag("Avatar");
+        if (avatarGameObject == null)
+        {
+            return; // アバターがまだ生成されていない
+        }
+
+        var avatar = avatarGameObject.GetComponent<PlayerAvatar>();
+        if (avatar == null)
+        {
+            return; // PlayerAvatar コンポーネントが見つからない
+        }
+
         if (avatar.GetBlindTime() > 0)
         {
             if (!isBlindActive)
