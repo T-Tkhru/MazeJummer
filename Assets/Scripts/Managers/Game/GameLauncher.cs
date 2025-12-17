@@ -159,9 +159,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
         Transform canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
-        Instantiate(disconnectedUIPrefab, canvas);
+        var disconnectedUI = Instantiate(disconnectedUIPrefab, canvas);
         FindAnyObjectByType<RunnerUIManager>().SetDisconnected();
-        StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+        StartCoroutine(ReturnToTitleAfterDelay(5f, disconnectedUI)); // 5秒後にタイトルへ戻る
 
     }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
@@ -201,16 +201,17 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (!TrapperUIManager.Instance.GetIsResultUiOpen())
         {
             Transform canvas = FindFirstObjectByType<Canvas>().transform;
-            Instantiate(disconnectedUIPrefab, canvas);
+            var disconnectedUI = Instantiate(disconnectedUIPrefab, canvas);
             FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
-            StartCoroutine(ReturnToTitleAfterDelay(5f)); // 5秒後にタイトルへ戻る
+            StartCoroutine(ReturnToTitleAfterDelay(5f, disconnectedUI)); // 5秒後にタイトルへ戻る
         }
 
     }
-    private IEnumerator ReturnToTitleAfterDelay(float delaySeconds)
+    private IEnumerator ReturnToTitleAfterDelay(float delaySeconds, GameObject disconnectedUI)
     {
         yield return new WaitForSeconds(delaySeconds);
         // タイトルへ遷移
+        Destroy(disconnectedUI);
         SceneTransitionManager.Instance.ReturnToMainMenu();
     }
     void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
