@@ -131,12 +131,12 @@ public class RunnerUIManager : MonoBehaviour
             runnerUI.SetActive(true); // タイマー表示を有効化
             if (gameManager.IsGameFinished())
             {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
                 if (!isResultUIOpen)
                 {
                     isResultUIOpen = true; // 結果UIが開いている状態にする
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
                     OpenResultUI(gameManager.IsRunnerWin());
                 }
                 return;
