@@ -107,6 +107,18 @@ public class RunnerUIManager : MonoBehaviour
     private void Update()
     {
         if (gameManager == null) return;
+        if (gameManager.IsGameFinished())
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
+            if (!isResultUIOpen)
+            {
+                isResultUIOpen = true; // 結果UIが開いている状態にする
+                OpenResultUI(gameManager.IsRunnerWin());
+            }
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -129,23 +141,8 @@ public class RunnerUIManager : MonoBehaviour
             countDownBackground.gameObject.SetActive(false);
             roleText.gameObject.SetActive(false);
             runnerUI.SetActive(true); // タイマー表示を有効化
-            if (gameManager.IsGameFinished())
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                timerLabel.gameObject.SetActive(false); // タイマー表示を無効化
-                if (!isResultUIOpen)
-                {
-                    isResultUIOpen = true; // 結果UIが開いている状態にする
-                    OpenResultUI(gameManager.IsRunnerWin());
-                }
-                return;
-            }
-            else
-            {
-                UpdateTimerDisplay(); // タイマーの表示を更新
-                UpdateTrapEffectUI();
-            }
+            UpdateTimerDisplay(); // タイマーの表示を更新
+            UpdateTrapEffectUI();
         }
         else
         {
