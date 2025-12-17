@@ -72,6 +72,7 @@ public class TrapperUIManager : MonoBehaviour
     private int lastDisplayedSeconds = -1; // 直前に表示した秒数
     private bool isDisconnected = false; // 切断状態かどうか
     private GameObject warningText; // 警告メッセージ用のUI
+    private PlayerAvatar cachedAvatar; // アバターのキャッシュ（毎フレームの検索削減用）
 
 
 
@@ -259,15 +260,14 @@ public class TrapperUIManager : MonoBehaviour
 
     private void UpdatePlayerUI()
     {
-        Transform playerTransform = GameObject.FindGameObjectWithTag("Avatar")?.transform;
-        if (playerTransform == null)
+        var avatar = GetCachedAvatar();
+        if (avatar == null)
         {
-            Debug.LogError("敵のアバターが見つかりません。シーンに配置されていることを確認してください。");
             return;
         }
         if (playerUI == null) return;
 
-        Vector3 playerPos = playerTransform.position;
+        Vector3 playerPos = avatar.transform.position;
 
         // UIの位置を敵の位置に合わせる
         Vector2 anchoredPos = new Vector2(
@@ -287,18 +287,25 @@ public class TrapperUIManager : MonoBehaviour
         }
     }
 
+    private PlayerAvatar GetCachedAvatar()
+    {
+        if (cachedAvatar == null)
+        {
+            var avatarGameObject = GameObject.FindGameObjectWithTag("Avatar");
+            if (avatarGameObject != null)
+            {
+                cachedAvatar = avatarGameObject.GetComponent<PlayerAvatar>();
+            }
+        }
+        return cachedAvatar;
+    }
+
     private void UpdateBlindMask()
     {
-        var avatarGameObject = GameObject.FindGameObjectWithTag("Avatar");
-        if (avatarGameObject == null)
-        {
-            return; // アバターがまだ生成されていない
-        }
-
-        var avatar = avatarGameObject.GetComponent<PlayerAvatar>();
+        var avatar = GetCachedAvatar();
         if (avatar == null)
         {
-            return; // PlayerAvatar コンポーネントが見つからない
+            return; // アバターがまだ生成されていない
         }
 
         if (avatar.GetBlindTime() > 0)
