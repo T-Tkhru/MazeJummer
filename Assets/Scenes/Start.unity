@@ -1519,8 +1519,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonSE: {fileID: 8300000, guid: aceda8470fb051c4fac968d70dda9727, type: 3}
-  titleBGM: {fileID: 8300000, guid: a4509c4017933cc4eb54ed573a8dd0ae, type: 3}
-  gameBGM: {fileID: 8300000, guid: 00ff6fd0f03885e43b45e9aabb9cfbe6, type: 3}
+  titleBGM: {fileID: 8300000, guid: aacdcdeca16679a46819d9212a2740b9, type: 3}
+  gameBGM: {fileID: 8300000, guid: 75c3b413b153a07428482583d097554f, type: 3}
   resultBGM: {fileID: 0}
   bgmOutput: {fileID: -2438876574653635186, guid: f3a4a277a1cae7f4b95a2a48c7c88b9e, type: 2}
   seOutput: {fileID: 4508356224282756379, guid: f3a4a277a1cae7f4b95a2a48c7c88b9e, type: 2}
