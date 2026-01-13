@@ -132,6 +132,12 @@ public class TrapperUIManager : MonoBehaviour
             return;
         }
 
+        // GameManagerがDespawnされている場合は処理しない
+        if (gameManager.Object == null || !gameManager.Object.IsValid)
+        {
+            return;
+        }
+
         // UIの初期生成
         if (!isGenerated)
         {
@@ -164,7 +170,7 @@ public class TrapperUIManager : MonoBehaviour
 
     private void HandleTimerDisplay()
     {
-        if (gameManager == null) return;
+        if (gameManager == null || gameManager.Object == null || !gameManager.Object.IsValid) return;
 
         if (gameManager.IsGameStarted())
         {

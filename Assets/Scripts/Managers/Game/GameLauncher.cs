@@ -162,12 +162,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        // クライアント（トラッパー）が切断された場合の処理
+        // ランナー側に通知しUI表示
         Debug.Log($"プレイヤー {player.PlayerId} が退出しました。");
         Transform canvas = GameObject.FindGameObjectWithTag("GameCanvas").transform;
         var disconnectedUI = Instantiate(disconnectedUIPrefab, canvas);
         FindAnyObjectByType<RunnerUIManager>().SetDisconnected();
         StartCoroutine(ReturnToTitleAfterDelay(5f, disconnectedUI)); // 5秒後にタイトルへ戻る
-
     }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
@@ -185,7 +186,35 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         input.Set(data);
     }
     void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        Debug.Log($"NetworkRunner がシャットダウンしました。理由: {shutdownReason}");
+
+        // ホスト（ランナー）が切断された場合の処理
+        // WebGLではここが呼ばれていたので、ここにトラッパー側がタイトルに戻る処理を書く
+        // マイグレーションの機能でタイトルに戻る機能は不要になるかもしれないが、一応残しておく
+
+        // ランナー側なら何もしない
+        if (runner.IsServer)
+        {
+            return;
+        }
+
+        GameObject resultUI = GameObject.Find("ResultUI(Clone)");
+        if (resultUI != null)
+        {
+            Debug.Log("ゲーム終了後は何もしません");
+            return;
+        }
+        // リザルトが表示されていない場合のみ、タイトルへ戻る
+        if (!TrapperUIManager.Instance.GetIsResultUiOpen())
+        {
+            Transform canvas = FindFirstObjectByType<Canvas>().transform;
+            var disconnectedUI = Instantiate(disconnectedUIPrefab, canvas);
+            FindAnyObjectByType<TrapperUIManager>().SetDisconnected();
+            StartCoroutine(ReturnToTitleAfterDelay(5f, disconnectedUI)); // 5秒後にタイトルへ戻る
+        }
+    }
     void INetworkRunnerCallbacks.OnConnectedToServer(NetworkRunner runner) { }
     void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
     void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
