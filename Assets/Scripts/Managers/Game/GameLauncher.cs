@@ -25,7 +25,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private Vector3 spawnPosition = new Vector3(1, 5, 1); // プレイヤーの生成位置
     private int playerCount = 2; // プレイヤー数を2に設定
 
-    private async void Start()
+    private void Start()
+    {
+        _ = StartGameAsync();
+    }
+
+    private async Awaitable StartGameAsync()
     {
 #if UNITY_EDITOR
         string sessionPrefix;
