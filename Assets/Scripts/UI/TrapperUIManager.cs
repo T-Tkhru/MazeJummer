@@ -538,6 +538,9 @@ public class TrapperUIManager : MonoBehaviour
             yield break;
         }
 
+        // 少し待つ
+        yield return new WaitForSeconds(0.1f);
+
         Debug.Log("準備完了。UIを生成します。");
         GenerateUI();
     }
