@@ -141,7 +141,6 @@ public class TrapperUIManager : MonoBehaviour
         // UIの初期生成
         if (!isGenerated)
         {
-            if (!checkSpawnable()) return; // 壁が足りなければ生成しない
             maxTraps = gameManager.GetMaxTraps(); // 最大トラップ数を取得
             StartCoroutine(DelayedGenerateUI());
             isGenerated = true;
@@ -477,29 +476,69 @@ public class TrapperUIManager : MonoBehaviour
 
     private IEnumerator DelayedGenerateUI()
     {
-        // アバターが生成されるまで待つ
-        GameObject avatarObj = null;
-        float timeout = 10f; // タイムアウト時間（秒）
+        float timeout = 10f;
         float elapsed = 0f;
 
+        // MazeManagerを取得
+        MazeManager tempMazeManager = null;
+        while (tempMazeManager == null && elapsed < timeout)
+        {
+            GameObject mazeManagerObj = GameObject.Find("MazeManager(Clone)");
+            if (mazeManagerObj != null)
+            {
+                tempMazeManager = mazeManagerObj.GetComponent<MazeManager>();
+            }
+            if (tempMazeManager == null)
+            {
+                yield return null;
+                elapsed += Time.deltaTime;
+            }
+        }
+
+        if (tempMazeManager == null)
+        {
+            Debug.LogError("タイムアウト: MazeManagerが見つかりませんでした。");
+            isGenerated = false;
+            yield break;
+        }
+
+        // 壁の95%以上が生成されるまで待つ
+        int expectedWalls = (tempMazeManager.width * tempMazeManager.height) / 2;
+        Debug.Log($"期待される壁の数: {expectedWalls}, width: {tempMazeManager.width}, height: {tempMazeManager.height} ");
+        elapsed = 0f;
+        while (elapsed < timeout)
+        {
+            int wallCount = GameObject.FindGameObjectsWithTag("Wall").Length;
+            if (wallCount >= expectedWalls * 0.95f)
+            {
+                Debug.Log($"壁の生成完了: {wallCount} (目安: {expectedWalls})");
+                break;
+            }
+            yield return null;
+            elapsed += Time.deltaTime;
+        }
+
+        // アバターが生成されるまで待つ
+        GameObject avatarObj = null;
+        elapsed = 0f;
         while (avatarObj == null && elapsed < timeout)
         {
             avatarObj = GameObject.FindGameObjectWithTag("Avatar");
             if (avatarObj == null)
             {
-                yield return null; // 1フレーム待つ
+                yield return null;
                 elapsed += Time.deltaTime;
             }
         }
 
         if (avatarObj == null)
         {
-            Debug.LogError("タイムアウト: Avatarが見つかりませんでした。UIの生成を中止します。");
-            isGenerated = false; // 再試行できるようにフラグをリセット
+            Debug.LogError("タイムアウト: Avatarが見つかりませんでした。");
+            isGenerated = false;
             yield break;
         }
 
-        Debug.Log("Avatarが見つかりました。UIを生成します。");
+        Debug.Log("準備完了。UIを生成します。");
         GenerateUI();
     }
 
@@ -550,23 +589,6 @@ public class TrapperUIManager : MonoBehaviour
 
     }
 
-    private bool checkSpawnable()
-    {
-        int leastWalls = (width * height) * 2 - 4; // 最低限必要な壁の数
-        // シーンにある壁の数をカウント
-        int wallCount = GameObject.FindGameObjectsWithTag("Wall").Length;
-        Debug.Log($"現在の壁の数: {wallCount}");
-        if (wallCount < leastWalls)
-        {
-            Debug.LogWarning("壁の数が足りません。生成できません。");
-            return false; // 壁の数が足りない場合は生成しない
-        }
-        else
-        {
-            Debug.Log("壁の数が十分です。生成できます。");
-            return true;
-        }
-    }
 
     public void OnClickRoadButton(int x, int y)
     {
