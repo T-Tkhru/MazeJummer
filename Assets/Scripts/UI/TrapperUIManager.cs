@@ -477,7 +477,29 @@ public class TrapperUIManager : MonoBehaviour
 
     private IEnumerator DelayedGenerateUI()
     {
-        yield return new WaitForSeconds(0.01f);
+        // アバターが生成されるまで待つ
+        GameObject avatarObj = null;
+        float timeout = 10f; // タイムアウト時間（秒）
+        float elapsed = 0f;
+
+        while (avatarObj == null && elapsed < timeout)
+        {
+            avatarObj = GameObject.FindGameObjectWithTag("Avatar");
+            if (avatarObj == null)
+            {
+                yield return null; // 1フレーム待つ
+                elapsed += Time.deltaTime;
+            }
+        }
+
+        if (avatarObj == null)
+        {
+            Debug.LogError("タイムアウト: Avatarが見つかりませんでした。UIの生成を中止します。");
+            isGenerated = false; // 再試行できるようにフラグをリセット
+            yield break;
+        }
+
+        Debug.Log("Avatarが見つかりました。UIを生成します。");
         GenerateUI();
     }
 
