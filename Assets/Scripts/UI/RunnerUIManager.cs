@@ -313,6 +313,15 @@ public class RunnerUIManager : MonoBehaviour
         GameObject result = resultUIs.transform.Find("Result").gameObject;
         RectTransform resultRect = result.GetComponent<RectTransform>();
         Button closeButton = result.transform.Find("CloseButton").GetComponent<Button>();
+        ReturnToMainMenuButton returnScript = closeButton.GetComponent<ReturnToMainMenuButton>();
+        if (returnScript != null)
+        {
+            returnScript.SetGameFinished(true);
+        }
+        else
+        {
+            Debug.LogError("CloseButtonにReturnToMainMenuButtonスクリプトが見つかりません。");
+        }
         closeButton.interactable = false; // アニメーション中はボタンを無効化
         result.SetActive(false);
         float height = ((RectTransform)resultRect.parent).rect.height;

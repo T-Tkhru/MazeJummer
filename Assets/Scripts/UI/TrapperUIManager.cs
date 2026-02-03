@@ -878,6 +878,15 @@ public class TrapperUIManager : MonoBehaviour
         resultUIs.transform.SetAsLastSibling(); // 最前面に表示
         GameObject result = resultUIs.transform.Find("Result").gameObject;
         Button closeButton = result.transform.Find("CloseButton").GetComponent<Button>();
+        ReturnToMainMenuButton returnScript = closeButton.GetComponent<ReturnToMainMenuButton>();
+        if (returnScript != null)
+        {
+            returnScript.SetGameFinished(true);
+        }
+        else
+        {
+            Debug.LogError("CloseButtonにReturnToMainMenuButtonスクリプトが見つかりません。");
+        }
         closeButton.interactable = false; // アニメーション中はボタンを無効化
         RectTransform resultRect = result.GetComponent<RectTransform>();
         result.SetActive(false);
