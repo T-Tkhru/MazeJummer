@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d96af8b40e2cb943bf352a417976821, type: 2}
+  - {fileID: 2100000, guid: 71906a615f1fecb4f88d84d833ff64ed, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -163,5 +163,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7d7b1fd2f77ebf46bb5d35ebe5dc391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wall
-  position: 
-  isOuterWall: 0
