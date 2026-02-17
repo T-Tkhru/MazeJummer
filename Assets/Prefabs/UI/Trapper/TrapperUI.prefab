@@ -514,7 +514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.63529414, g: 0.8352942, b: 0.77647066, a: 1}
+  m_Color: {r: 0.93333334, g: 0.8627451, b: 0.7019608, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1830,9 +1830,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
     - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 699950990243819514, guid: d261e2e5ab278ff4ca6285670348655b, type: 2}
+    - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
     - target: {fileID: 5444379976415182318, guid: 4001f8059856beb449f869dd95669d10, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0

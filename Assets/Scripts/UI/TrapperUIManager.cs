@@ -231,7 +231,7 @@ public class TrapperUIManager : MonoBehaviour
             }
             else
             {
-                timerLabel.color = Color.white;
+                timerLabel.color = Color.black;
             }
         }
     }
